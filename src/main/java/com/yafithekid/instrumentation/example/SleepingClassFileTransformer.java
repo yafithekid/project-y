@@ -1,16 +1,17 @@
 package com.yafithekid.instrumentation.example;
 
 
+import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.lang.reflect.Field;
-import java.net.Socket;
 import java.security.ProtectionDomain;
+import java.util.Arrays;
+import java.util.List;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtField;
-import javassist.CtMethod;
+import com.yafithekid.instrumentation.configs.Config;
+import com.yafithekid.instrumentation.configs.MonitoredClass;
+import com.yafithekid.instrumentation.configs.MonitoredMethod;
+import javassist.*;
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.AdviceAdapter;
 import org.objectweb.asm.tree.FieldNode;
@@ -39,35 +40,93 @@ public class SleepingClassFileTransformer implements ClassFileTransformer {
 
         byte[] byteCode = classfileBuffer;
         System.out.println("loader: "+loader.getClass().getName()+" class: "+className);
+//        if (className.equals("com/yafithekid/instrumentation/example/Sleeping")) {
+//            //TODO kayaknya modifikasinya pada suatu CC harus sekali doang.
+//            //byteCode = monitorRunningTime(byteCode, "com.yafithekid.instrumentation.example.Sleeping", "randomSleep");
+            //byteCode = monitorMemoryUsage(byteCode, "com.yafithekid.instrumentation.example.Sleeping", "randomSleep");
+////            try {
+////                ClassPool cp = ClassPool.getDefault();
+////                CtClass cc = cp.get("com.yafithekid.instrumentation.example.Sleeping");
+////                CtMethod m = cc.getDeclaredMethod("randomSleep");
+////                CtField ctField = new CtField(CtClass.longType,"elapsedTime",cc);
+////                cc.addField(ctField, CtField.Initializer.constant(5L));
+////                //m.addLocalVariable("elapsedTime", CtClass.longType);
+////                m.insertBefore("elapsedTime = System.currentTimeMillis();");
+////                m.insertAfter("{elapsedTime = System.currentTimeMillis() - elapsedTime;"
+////                        + "System.out.println(\"Method Executed in ms: \" + elapsedTime);}");
+////
+////                byteCode = cc.toBytecode();
+////                cc.detach();
+////            } catch (Exception ex) {
+////                ex.printStackTrace();
+////            }
+//        }
 
-        if (className.equals("com/yafithekid/instrumentation/example/Sleeping")) {
+        return modifyByteCode(byteCode,className,Config.createDummy());
 
-            try {
-                ClassPool cp = ClassPool.getDefault();
-                CtClass cc = cp.get("com.yafithekid.instrumentation.example.Sleeping");
-                CtMethod m = cc.getDeclaredMethod("randomSleep");
-                CtField ctField = new CtField(CtClass.longType,"elapsedTime",cc);
-                cc.addField(ctField, CtField.Initializer.constant(5L));
-                //m.addLocalVariable("elapsedTime", CtClass.longType);
-                m.insertBefore("elapsedTime = System.currentTimeMillis();");
-                m.insertAfter("{elapsedTime = System.currentTimeMillis() - elapsedTime;"
-                        + "System.out.println(\"Method Executed in ms: \" + elapsedTime);}");
-
-                byteCode = cc.toBytecode();
-                cc.detach();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        return byteCode;
 
         // END OF TRANSFORMATION USING JAVASSIST
 
     }
 
-    public void monitorRunningTime(String className,String methodName){
+    public byte[] monitorRunningTime(byte[] byteCode,String className,String methodName){
+        ClassPool cp = ClassPool.getDefault();
+        CtClass cc = null;
+        try {
+            cc = cp.get(className);
+            CtMethod m = cc.getDeclaredMethod(methodName);
+            String fieldName = "elapsedTime_"+methodName;
+            CtField ctField = new CtField(CtClass.longType,fieldName,cc);
+            cc.addField(ctField, CtField.Initializer.constant(5L));
+            m.insertBefore(fieldName+" = System.currentTimeMillis();");
+            m.insertAfter("{"+fieldName+" = System.currentTimeMillis() - "+fieldName+";"
+                    + "System.out.println(\"Method Executed in ms: \" + "+fieldName+");}");
+            byteCode = cc.toBytecode();
+            cc.detach();
+        } catch (NotFoundException | CannotCompileException | IOException e) {
+            e.printStackTrace();
+        }
+        return byteCode;
+    }
 
+    public byte[] monitorMemoryUsage(byte[] byteCode,String className,String methodName){
+        ClassPool cp = ClassPool.getDefault();
+        CtClass cc = null;
+        try {
+            cc = cp.get(className);
+            CtMethod m = cc.getDeclaredMethod(methodName);
+            String fieldName = "memoryUsage_"+methodName;
+            CtField ctField = new CtField(CtClass.longType,fieldName,cc);
+            cc.addField(ctField, CtField.Initializer.constant(5L));
+            m.insertBefore(fieldName+" = Runtime.getRuntime().freeMemory();");
+            m.insertAfter("{"+fieldName+" = "+fieldName+" - Runtime.getRuntime().freeMemory();"
+                    + "System.out.println(\"Memory usage is: \" + "+fieldName+");}");
+            byte[] ret = cc.toBytecode();
+            cc.detach();
+            return ret;
+        } catch (NotFoundException | CannotCompileException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public byte[] modifyByteCode(byte[] byteCode,String className,Config config){
+        byte[] modified = byteCode;
+        //TODO impl
+        System.out.println("modifying bytecodes...");
+        for (MonitoredClass mc: config.getClasses()){
+            String classname = new String(mc.getName());
+            classname = classname.replace(".","/");
+            if (className.equals(classname)){
+                System.out.println(className+" found");
+                for(MonitoredMethod mm: mc.getMethods()){
+                    byte[] old = Arrays.copyOf(modified, modified.length);
+                    modified = monitorMemoryUsage(modified,mc.getName(),mm.getName());
+                    assert (!Arrays.equals(old,modified));
+                }
+            }
+        }
+        return modified;
     }
 
 //    class MemoryUsageVisitor extends ClassVisitor {
