@@ -10,7 +10,6 @@ public class Agent {
     public static void premain(String agentArgs, Instrumentation inst) {
         try {
             Runtime.getRuntime().exec("java -jar instrumentation-listener-1.0.jar");
-            System.out.println("ok");
         } catch (IOException e) {
             e.printStackTrace();
         }
