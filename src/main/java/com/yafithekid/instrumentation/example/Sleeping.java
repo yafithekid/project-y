@@ -1,37 +1,41 @@
 package com.yafithekid.instrumentation.example;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class Sleeping {
 
     public void randomSleep() throws InterruptedException {
-        // randomly sleeps between 500ms and 1200s
-        long randomSleepDuration = (long) (500 + Math.random() * 700);
+        //sleep for 100 ms
+        long randomSleepDuration = 100;
         System.out.printf("Sleeping for %d ms ..\n", randomSleepDuration);
         Thread.sleep(randomSleepDuration);
 
     }
 
-    public List<Integer> bigList(){
-        List<Integer> mboh = new ArrayList<>();
-
-        for(int i = 0; i < 1000000; i++){
-            mboh.add(i);
-        }
-        System.out.println("add list");
-        return mboh;
-    }
-
     public static void main(String[] args){
         Sleeping sleeping = new Sleeping();
         try {
+            long eltime = System.currentTimeMillis();
             sleeping.randomSleep();
-            sleeping.bigList();
+            System.out.println("total = "+(System.currentTimeMillis() - eltime));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
+
+//    public static void main(String[] args){
+//        int n = Integer.parseInt(args[0]);
+//        Sleeping sleeping = new Sleeping();
+//        try {
+//            long eltime = System.currentTimeMillis();
+//            for(int i = 0; i < n; i++){
+//                sleeping.randomSleep();
+//            }
+//            System.out.println("total = "+(System.currentTimeMillis() - eltime));
+//
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
 }
+
