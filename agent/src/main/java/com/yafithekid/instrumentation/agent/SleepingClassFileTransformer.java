@@ -1,4 +1,4 @@
-package com.yafithekid.instrumentation.example;
+package com.yafithekid.instrumentation.agent;
 
 
 import java.io.IOException;
@@ -6,16 +6,12 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.yafithekid.instrumentation.configs.Config;
-import com.yafithekid.instrumentation.configs.MonitoredClass;
-import com.yafithekid.instrumentation.configs.MonitoredMethod;
+import com.yafithekid.instrumentation.agent.configs.Config;
+import com.yafithekid.instrumentation.agent.configs.MonitoredClass;
+import com.yafithekid.instrumentation.agent.configs.MonitoredMethod;
 import javassist.*;
-import org.objectweb.asm.*;
-import org.objectweb.asm.commons.AdviceAdapter;
-import org.objectweb.asm.tree.FieldNode;
 
 public class SleepingClassFileTransformer implements ClassFileTransformer {
 
@@ -40,6 +36,7 @@ public class SleepingClassFileTransformer implements ClassFileTransformer {
         //START OF JAVASSSIST
 
         byte[] byteCode = classfileBuffer;
+        System.out.println(className);
         return modifyByteCode(byteCode,className,Config.createDummy());
 
 
@@ -61,7 +58,11 @@ public class SleepingClassFileTransformer implements ClassFileTransformer {
                     + "System.out.println(\"Method Executed in ms: \" + "+fieldName+");}");
             byteCode = cc.toBytecode();
             cc.detach();
-        } catch (NotFoundException | CannotCompileException | IOException e) {
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return byteCode;
@@ -100,7 +101,13 @@ public class SleepingClassFileTransformer implements ClassFileTransformer {
             byte[] ret = cc.toBytecode();
             cc.detach();
             return ret;
-        } catch (NotFoundException | CannotCompileException | IOException e) {
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -114,7 +121,7 @@ public class SleepingClassFileTransformer implements ClassFileTransformer {
             classname = classname.replace(".","/");
             if (className.equals(classname)){
                 System.out.println(className+" found");
-                List<String> mboh = new ArrayList<>();
+                List<String> mboh = new ArrayList<String>();
                 for(MonitoredMethod mm: mc.getMethods()){
                     mboh.add(mm.getName());
                 }

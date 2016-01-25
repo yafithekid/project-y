@@ -1,4 +1,4 @@
-package com.yafithekid.instrumentation.configs;
+package com.yafithekid.instrumentation.agent.configs;
 
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -11,7 +11,7 @@ public class Config {
     private List<MonitoredClass> classes;
 
     public Config(){
-        this.classes = new ArrayList<>();
+        this.classes = new ArrayList<MonitoredClass>();
     }
     public void addMonitoredClass(MonitoredClass mc){
         classes.add(mc);
@@ -26,8 +26,6 @@ public class Config {
     }
 
     public static void main(String []args) throws IOException {
-
-
         ObjectMapper om = new ObjectMapper();
         System.out.println(om.writeValueAsString(createDummy()));
     }
@@ -35,7 +33,7 @@ public class Config {
     public static Config createDummy(){
         Config config = new Config();
 
-        MonitoredClass monitoredClass = new MonitoredClass("com.yafithekid.instrumentation.example.Sleeping");
+        MonitoredClass monitoredClass = new MonitoredClass("com.yafithekid.instrumentation.agent.Sleeping");
         MonitoredMethod method = new MonitoredMethod("randomSleep").memory().time();
         monitoredClass.addMonitoredMethod(method);
         monitoredClass.addMonitoredMethod(new MonitoredMethod("bigList"));

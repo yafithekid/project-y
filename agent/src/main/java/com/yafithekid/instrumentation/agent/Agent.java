@@ -1,9 +1,7 @@
-package com.yafithekid.instrumentation.example;
+package com.yafithekid.instrumentation.agent;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 public class Agent {
 

@@ -1,4 +1,4 @@
-package com.yafithekid.instrumentation.configs;
+package com.yafithekid.instrumentation.agent.configs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class MonitoredClass {
 
     public MonitoredClass(String name){
         this.name = name;
-        methods = new ArrayList<>();
+        methods = new ArrayList<MonitoredMethod>();
     }
 
     public void addMonitoredMethod(MonitoredMethod mm){

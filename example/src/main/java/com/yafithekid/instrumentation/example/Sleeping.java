@@ -15,13 +15,14 @@ public class Sleeping {
     }
 
     public List<Integer> bigList(){
-        List<Integer> mboh = new ArrayList<>();
-
-        for(int i = 0; i < 1000000; i++){
-            mboh.add(i);
-        }
-        System.out.println("add list");
-        return mboh;
+//        List<Integer> mboh = new ArrayList<>();
+//
+//        for(int i = 0; i < 1000000; i++){
+//            mboh.add(i);
+//        }
+//        System.out.println("add list");
+//        return mboh;
+        return new ArrayList<Integer>();
     }
 
     public static void main(String[] args){

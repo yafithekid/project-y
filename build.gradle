@@ -18,7 +18,7 @@ dependencies {
 
 task deploySleeping(type: Jar){
     manifest {
-        attributes 'Main-Class': 'com.yafithekid.instrumentation.example.Sleeping'
+        attributes 'Main-Class': 'com.yafithekid.instrumentation.agent.Sleeping'
     }
     baseName = project.name + '-sleeping'
     from {
@@ -29,7 +29,7 @@ task deploySleeping(type: Jar){
 
 task deployAgent(type: Jar){
     manifest {
-        attributes 'Premain-Class': 'com.yafithekid.instrumentation.example.Agent'
+        attributes 'Premain-Class': 'com.yafithekid.instrumentation.agent.Agent'
     }
     baseName = project.name + '-agent'
     from {
