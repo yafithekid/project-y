@@ -9,7 +9,7 @@ public class MonitoredClass {
 
     public MonitoredClass(String name){
         this.name = name;
-        methods = new ArrayList<>();
+        methods = new ArrayList<MonitoredMethod>();
     }
 
     public void addMonitoredMethod(MonitoredMethod mm){
@@ -30,5 +30,16 @@ public class MonitoredClass {
 
     public void setMethods(List<MonitoredMethod> methods) {
         this.methods = methods;
+    }
+
+    //TODO remove
+    public static void main(String[] args){
+        byte[] woi = new byte[10];
+        woi[0] = 0;
+        woi[1] = 1;
+        byte[] mboh = woi;
+        System.out.print(mboh[0]+ " " + mboh[1]);
+        woi[0] = 1;
+        System.out.print(mboh[0]+ " " + mboh[1]);
     }
 }
