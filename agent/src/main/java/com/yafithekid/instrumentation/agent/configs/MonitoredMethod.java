@@ -40,4 +40,12 @@ public class MonitoredMethod {
     public void setMonitor(List<String> monitor) {
         this.monitor = monitor;
     }
+
+    public boolean monitorRuntime(){
+        return monitor.contains(MONITOR_TIME);
+    }
+
+    public boolean monitorMemory(){
+        return monitor.contains(MONITOR_MEMORY);
+    }
 }
