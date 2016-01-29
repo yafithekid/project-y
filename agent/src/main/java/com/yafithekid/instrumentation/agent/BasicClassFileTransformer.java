@@ -20,7 +20,8 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      * Method name for data collecting. will be appended to each end of method
      */
     public static final String DATA_COLLECT_METHOD = "__dcMethod";
-
+    public static final String collectorHost = "127.0.0.1";
+    public static final int collectorPort = 9000;
 //    public static final String COLLECTOR_CLIENT_CLASSNAME = "com.yafithekid.instrumentation.CollectorClient";
     @Override
     public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
@@ -139,16 +140,39 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      */
     void createDataCollectMethod(CtClass ctClass){
         try {
+            //TODO set to async
             ClassPool cp = ClassPool.getDefault();
             //construct method body
             //make the method abstract, insert the method and set to non-abstract.
-            String methodBody = "{System.out.println($1);}";
+            String methodBody = "{" +
+                    "java.net.Socket __client = new java.net.Socket(\""+collectorHost+"\","+collectorPort+");" +
+                    "System.out.println($1);" +
+                    "java.io.OutputStream __outToServer = __client.getOutputStream();" +
+
+                    "java.io.DataOutputStream __out = new java.io.DataOutputStream(__outToServer);" +
+                    "__out.writeUTF($1);"+
+                    "__client.close();" +
+                    "}";
+//            String methodBody = "{" + "System.out.println($1);" + "}";
             CtMethod dataCollectMethod = CtNewMethod.make("public abstract void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
+
             dataCollectMethod.setBody(methodBody);
+
+            //add socket exception handler
+            //https://jboss-javassist.github.io/javassist/tutorial/tutorial2.html
+            CtClass ioExceptionClass = cp.get("java.io.IOException");
+            String errorMessage = "[ERROR] " +
+                    "Cannot connect to collector " +
+                    collectorHost + ":" + collectorPort;
+            dataCollectMethod.addCatch("{System.out.println(\""+errorMessage+"\"); ($e).printStackTrace(); return;}",ioExceptionClass);
+            ioExceptionClass.detach();
+
             dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
             ctClass.addMethod(dataCollectMethod);
         } catch (CannotCompileException e) {
             //TODO what to do?
+            e.printStackTrace();
+        } catch (NotFoundException e) {
             e.printStackTrace();
         }
     }
