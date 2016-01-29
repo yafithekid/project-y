@@ -12,16 +12,28 @@ import com.yafithekid.instrumentation.agent.configs.Config;
 import com.yafithekid.instrumentation.agent.configs.MonitoredClass;
 import com.yafithekid.instrumentation.agent.configs.MonitoredMethod;
 import javassist.*;
-import javassist.bytecode.ClassFileWriter;
-import javassist.bytecode.MethodInfo;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {
     /**
      * Method name for data collecting. will be appended to each end of method
      */
     public static final String DATA_COLLECT_METHOD = "__dcMethod";
-    public static final String collectorHost = "127.0.0.1";
-    public static final int collectorPort = 9000;
+
+    /**
+     * Collector hostname
+     */
+    public final String mCollectorHost;
+
+    /**
+     * Collector port
+     */
+    public final int mCollectorPort;
+
+    public BasicClassFileTransformer(String collectorHost,int collectorPort){
+        mCollectorHost = collectorHost;
+        mCollectorPort = collectorPort;
+    }
+
 //    public static final String COLLECTOR_CLIENT_CLASSNAME = "com.yafithekid.instrumentation.CollectorClient";
     @Override
     public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
@@ -145,7 +157,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             //construct method body
             //make the method abstract, insert the method and set to non-abstract.
             String methodBody = "{" +
-                    "java.net.Socket __client = new java.net.Socket(\""+collectorHost+"\","+collectorPort+");" +
+                    "java.net.Socket __client = new java.net.Socket(\""+ mCollectorHost +"\","+ mCollectorPort +");" +
                     "System.out.println($1);" +
                     "java.io.OutputStream __outToServer = __client.getOutputStream();" +
 
@@ -163,7 +175,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             CtClass ioExceptionClass = cp.get("java.io.IOException");
             String errorMessage = "[ERROR] " +
                     "Cannot connect to collector " +
-                    collectorHost + ":" + collectorPort;
+                    mCollectorHost + ":" + mCollectorPort;
             dataCollectMethod.addCatch("{System.out.println(\""+errorMessage+"\"); ($e).printStackTrace(); return;}",ioExceptionClass);
             ioExceptionClass.detach();
 
