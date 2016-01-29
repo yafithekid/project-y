@@ -12,8 +12,16 @@ import com.yafithekid.instrumentation.agent.configs.Config;
 import com.yafithekid.instrumentation.agent.configs.MonitoredClass;
 import com.yafithekid.instrumentation.agent.configs.MonitoredMethod;
 import javassist.*;
+import javassist.bytecode.ClassFileWriter;
+import javassist.bytecode.MethodInfo;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {
+    /**
+     * Method name for data collecting. will be appended to each end of method
+     */
+    public static final String DATA_COLLECT_METHOD = "__dcMethod";
+
+//    public static final String COLLECTOR_CLIENT_CLASSNAME = "com.yafithekid.instrumentation.CollectorClient";
     @Override
     public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
@@ -70,9 +78,16 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         byte ret[] = bytecode;
         try {
             cc = cp.get(className);
+            createDataCollectMethod(cc);
+            //TODO erase
+//            CtMethod[] methods = cc.getMethods();
+//            for(CtMethod method:methods){
+//                System.out.println(method.getName());
+//            }
             for(String methodName:methodNames){
                 insertRunningTime(cc,methodName);
                 insertMemoryUsage(cc,methodName);
+                insertDataCollect(cc,methodName);
             }
             ret = cc.toBytecode();
             cc.detach();
@@ -117,5 +132,63 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         return modified;
     }
 
+    /**
+     * Add method for sending data via socket
+     * the first parameter of method is a string that will be given to socket
+     * to access the parameter, use "$1"
+     */
+    void createDataCollectMethod(CtClass ctClass){
+        try {
+            ClassPool cp = ClassPool.getDefault();
+            //construct method body
+            //make the method abstract, insert the method and set to non-abstract.
+            String methodBody = "{System.out.println($1);}";
+            CtMethod dataCollectMethod = CtNewMethod.make("public abstract void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
+            dataCollectMethod.setBody(methodBody);
+            dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
+            ctClass.addMethod(dataCollectMethod);
+        } catch (CannotCompileException e) {
+            //TODO what to do?
+            e.printStackTrace();
+        }
+    }
+
+    void insertDataCollect(CtClass cc,String methodName) throws NotFoundException, CannotCompileException {
+        CtMethod m = cc.getDeclaredMethod(methodName);
+        m.insertAfter(DATA_COLLECT_METHOD+"(\"woi ggwp\");");
+    }
+
+//    TODO should the add-ons of collectorclient is a new class or not?
+//    /**
+//     * create collector client to establish socket connection between target java process and collector process.
+//     * if it is already created, it will not be created again.
+//     */
+//    void createCollectorClient(){
+//        ClassPool cp = ClassPool.getDefault();
+//        try {
+//            cp.get(COLLECTOR_CLIENT_CLASSNAME);
+//            System.out.println("found...");
+//        } catch (NotFoundException e) {
+//            System.out.println("not found...");
+//            String a = COLLECTOR_CLIENT_CLASSNAME;
+//            CtClass ctClass = cp.makeClass(a);
+//            ctClass.setModifiers(ctClass.getModifiers() | Modifier.PUBLIC);
+//            String methodBody = "{System.out.println($1); System.out.println(\"the outsider\");}";
+//            try {
+//                CtMethod dataCollectMethod = CtNewMethod.make("public static abstract void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
+//                dataCollectMethod.setBody(methodBody);
+//                dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
+//                ctClass.addMethod(dataCollectMethod);
+//                ctClass.writeFile();
+//                System.out.println("done");
+//            } catch (CannotCompileException e1) {
+//                e1.printStackTrace();
+//            } catch (NotFoundException e1) {
+//                e1.printStackTrace();
+//            } catch (IOException e1) {
+//                e1.printStackTrace();
+//            }
+//        }
+//    }
 }
 
