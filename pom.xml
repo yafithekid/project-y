@@ -12,5 +12,6 @@
     <modules>
         <module>agent</module>
         <module>example</module>
+        <module>collector</module>
     </modules>
 </project>
