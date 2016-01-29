@@ -7,6 +7,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.yafithekid.instrumentation.agent.configs.Config;
 import com.yafithekid.instrumentation.agent.configs.MonitoredClass;
@@ -191,7 +192,16 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 
     void insertDataCollect(CtClass cc,String methodName) throws NotFoundException, CannotCompileException {
         CtMethod m = cc.getDeclaredMethod(methodName);
-        m.insertAfter(DATA_COLLECT_METHOD+"(\"woi ggwp\");");
+        //invocation
+        //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
+        m.addLocalVariable("__startTime",CtClass.longType);
+        m.addLocalVariable("__endTime",CtClass.longType);
+        m.insertBefore("__startTime = System.currentTimeMillis();");
+        String invocationId = UUID.randomUUID().toString();
+        m.insertAfter("{"+
+                "__endTime = System.currentTimeMillis();" +
+                 DATA_COLLECT_METHOD+"(\""+cc.getName()+" "+methodName+" \"+__startTime+\" \"+__endTime);" +
+                "}");
     }
 
 //    TODO should the add-ons of collectorclient is a new class or not?
