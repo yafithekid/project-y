@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Sleeping {
-
+    static List<Integer> mMboh = new ArrayList<Integer>();
     /**
      * this method will randomly sleeps between 500ms and 1200ms
      * @throws InterruptedException
@@ -32,6 +32,17 @@ public class Sleeping {
         return mboh;
     }
 
+    public List<Integer> mediumList(){
+        for(int i = 0; i < 1000; i++){
+            mMboh.add(i);
+        }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return mMboh;
+    }
     /**
      * this method will just print hello world
      */
@@ -45,6 +56,9 @@ public class Sleeping {
             sleeping.randomSleep();
             sleeping.bigList();
             sleeping.hello();
+            for(int i = 0; i < 1000; i++){
+                sleeping.mediumList();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
