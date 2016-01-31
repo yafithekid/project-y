@@ -11,5 +11,11 @@
 
     <artifactId>collector</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
