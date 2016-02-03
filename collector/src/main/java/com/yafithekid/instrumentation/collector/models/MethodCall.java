@@ -15,6 +15,13 @@ public class MethodCall {
     private Long start;
     private Long end;
 
+    public MethodCall(String class_name,String method,long start,long end){
+        this.class_name = class_name;
+        this.method = method;
+        this.start = start;
+        this.end = end;
+    }
+
     public Long getEnd() {
         return end;
     }
