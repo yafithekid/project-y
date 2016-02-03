@@ -1,14 +1,15 @@
 package com.yafithekid.instrumentation.collector;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import com.yafithekid.instrumentation.collector.services.ProfilingWriter;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class Collector extends Thread{
+public class Collector {
     ServerSocket mServerSocket;
+    ProfilingWriter mProfilingWriter;
     static final int DEFAULT_PORT = 9000;
 
     public Collector(int port) throws IOException {
@@ -19,17 +20,17 @@ public class Collector extends Thread{
     }
 
     public static void main(String[] args){
+        Collector collector = null;
         try {
-            Thread t = new Collector(DEFAULT_PORT);
-            t.start();
-        } catch (IOException e){
-            System.out.println("Cannot start collector!");
+            collector = new Collector(DEFAULT_PORT);
+            collector.run();
+        } catch (IOException e) {
+            System.out.println("[ERROR] Cannot start collector!");
             e.printStackTrace();
         }
-        CollectorClient client = new CollectorClient();
+
     }
 
-    @Override
     public void run(){
         while(true)
         {
@@ -40,15 +41,9 @@ public class Collector extends Thread{
                 Socket server = mServerSocket.accept();
                 System.out.println("Just connected to "
                         + server.getRemoteSocketAddress());
-                DataInputStream in =
-                        new DataInputStream(server.getInputStream());
-                System.out.println(in.readUTF());
-                DataOutputStream out =
-                        new DataOutputStream(server.getOutputStream());
-                out.writeUTF("Thank you for connecting to "
-                        + server.getLocalSocketAddress() + "\nGoodbye!");
-                server.close();
-            }catch(SocketTimeoutException s)
+                Thread t = new ConnectionHandler(server,mProfilingWriter);
+                t.start();
+            } catch(SocketTimeoutException s)
             {
                 System.out.println("Socket timed out!");
                 break;
