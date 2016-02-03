@@ -10,25 +10,14 @@ import java.net.SocketTimeoutException;
 public class Collector {
     ServerSocket mServerSocket;
     ProfilingWriter mProfilingWriter;
-    static final int DEFAULT_PORT = 9000;
+    public static final int DEFAULT_PORT = 9000;
 
-    public Collector(int port) throws IOException {
+    public Collector(int port,ProfilingWriter profilingWriter) throws IOException {
         mServerSocket = new ServerSocket(port);
+        mProfilingWriter = profilingWriter;
         //TODO still need to hardcoded?
         //TODO need to specify timeout?
 //        mServerSocket.setSoTimeout(10000);
-    }
-
-    public static void main(String[] args){
-        Collector collector = null;
-        try {
-            collector = new Collector(DEFAULT_PORT);
-            collector.run();
-        } catch (IOException e) {
-            System.out.println("[ERROR] Cannot start collector!");
-            e.printStackTrace();
-        }
-
     }
 
     public void run(){
