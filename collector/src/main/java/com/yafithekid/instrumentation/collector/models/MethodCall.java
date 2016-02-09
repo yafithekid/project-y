@@ -3,20 +3,20 @@ package com.yafithekid.instrumentation.collector.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
-@Entity("method_calls")
+@Entity("methodCall")
 @Indexes(
     @Index(fields = {@Field("start"),@Field("end")})
 )
 public class MethodCall {
     @Id
     private ObjectId id;
-    private String class_name;
+    private String className;
     private String method;
     private Long start;
     private Long end;
 
     public MethodCall(String class_name,String method,long start,long end){
-        this.class_name = class_name;
+        this.className = class_name;
         this.method = method;
         this.start = start;
         this.end = end;
@@ -47,11 +47,11 @@ public class MethodCall {
     }
 
     public String getClassName() {
-        return class_name;
+        return className;
     }
 
     public void setClassName(String class_name) {
-        this.class_name = class_name;
+        this.className = class_name;
     }
 
     public ObjectId getId() {
