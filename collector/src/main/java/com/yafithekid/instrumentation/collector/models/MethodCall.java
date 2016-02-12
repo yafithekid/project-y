@@ -4,9 +4,10 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
 @Entity("methodCall")
-@Indexes(
+@Indexes(value={
+    @Index(fields = {@Field("className")}),
     @Index(fields = {@Field("start"),@Field("end")})
-)
+})
 public class MethodCall {
     @Id
     private ObjectId id;

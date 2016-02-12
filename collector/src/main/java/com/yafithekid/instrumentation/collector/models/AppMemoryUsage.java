@@ -6,7 +6,8 @@ import org.mongodb.morphia.annotations.*;
 @Entity(value = "appMemoryUsage")
 @Indexes({
     @Index(fields = {@Field("timestamp")}),
-    @Index(fields = {@Field("systemId")})
+    @Index(fields = {@Field("systemId")}),
+    @Index(fields = {@Field("appId")})
 })
 public class AppMemoryUsage {
     @Id

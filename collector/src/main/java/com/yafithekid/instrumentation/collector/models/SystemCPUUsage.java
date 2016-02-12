@@ -6,7 +6,7 @@ import org.mongodb.morphia.annotations.*;
 @Entity(value = "systemCpuUsage")
 @Indexes(value = {
     @Index(fields = {@Field("systemId")}),
-    @Index(fields = {@Field("start"),@Field("end")})
+    @Index(fields = {@Field("timestamp")})
 })
 public class SystemCPUUsage {
     @Id

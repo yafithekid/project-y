@@ -3,8 +3,10 @@ package com.yafithekid.instrumentation.collector;
 
 import com.yafithekid.instrumentation.collector.services.ProfilingWriter;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class ConnectionHandler extends Thread{
@@ -18,10 +20,9 @@ public class ConnectionHandler extends Thread{
 
     @Override
     public void run(){
-        DataInputStream in;
         try {
-            in = new DataInputStream(mSocket.getInputStream());
-            System.out.println(in.readUTF());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
+            System.out.println(reader.readLine());
         } catch (IOException e) {
             e.printStackTrace();
         }
