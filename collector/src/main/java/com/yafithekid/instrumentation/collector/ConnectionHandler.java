@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 public class ConnectionHandler extends Thread{
     private Socket mSocket;
@@ -21,8 +22,20 @@ public class ConnectionHandler extends Thread{
     @Override
     public void run(){
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-            System.out.println(reader.readLine());
+            DataInputStream is = new DataInputStream(mSocket.getInputStream());
+            StringBuffer data = new StringBuffer();
+            String sockInput;
+            boolean stop = false;
+            while (!stop){
+                sockInput = is.readUTF();
+                data.append(sockInput);
+                if (sockInput.endsWith("\n")){
+                    stop = true;
+
+                }
+            }
+            //TODO transform the data
+            System.out.println(data);
         } catch (IOException e) {
             e.printStackTrace();
         }

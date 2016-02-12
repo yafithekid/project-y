@@ -36,7 +36,7 @@ public class HardwareDaemon extends Thread {
                 e.printStackTrace();
             } finally {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(1000000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -49,6 +49,7 @@ public class HardwareDaemon extends Thread {
         Socket client = new Socket(mCollectorHost,mCollectorPort);
         OutputStream outToServer = client.getOutputStream();
         DataOutputStream out = new java.io.DataOutputStream(outToServer);
+        if (!data.endsWith("\n")) data = data + "\n";
         out.writeUTF(data);
         client.close();
     }

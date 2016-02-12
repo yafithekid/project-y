@@ -159,10 +159,10 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             //make the method abstract, insert the method and set to non-abstract.
             String methodBody = "{" +
                     "java.net.Socket __client = new java.net.Socket(\""+ mCollectorHost +"\","+ mCollectorPort +");" +
-                    "System.out.println($1);" +
                     "java.io.OutputStream __outToServer = __client.getOutputStream();" +
-
+                    "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +
                     "java.io.DataOutputStream __out = new java.io.DataOutputStream(__outToServer);" +
+                    "System.out.println($1);" +
                     "__out.writeUTF($1);"+
                     "__client.close();" +
                     "}";
