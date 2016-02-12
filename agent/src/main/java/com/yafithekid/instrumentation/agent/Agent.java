@@ -10,7 +10,8 @@ public class Agent {
         String collectorHost = "127.0.0.1";
         int collectorPort = 9000;
         inst.addTransformer(new BasicClassFileTransformer(collectorHost,collectorPort));
-        Thread t = new HardwareDaemon(collectorHost,collectorPort);
+        //TODO change appId and systemId
+        Thread t = new HardwareDaemon(collectorHost,collectorPort,"1","1");
         t.start();
     }
 

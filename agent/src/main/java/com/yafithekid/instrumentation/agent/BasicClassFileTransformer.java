@@ -200,7 +200,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         String invocationId = UUID.randomUUID().toString();
         m.insertAfter("{"+
                 "__endTime = System.currentTimeMillis();" +
-                 DATA_COLLECT_METHOD+"(\""+cc.getName()+" "+methodName+" \"+__startTime+\" \"+__endTime);" +
+                 DATA_COLLECT_METHOD+"(\"metinv "+cc.getName()+" "+methodName+" \"+__startTime+\" \"+__endTime);" +
                 "}");
     }
 

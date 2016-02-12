@@ -17,11 +17,19 @@ public class AppCPUUsage {
     private double load;
     private long timestamp;
 
-    public AppCPUUsage(String appId, String systemId,long timestamp, double load){
-        this.appId = appId;
-        this.load = load;
-        this.systemId = systemId;
-        this.timestamp = timestamp;
+    /**
+     * Create new instance based from agent output
+     * @param data agent output
+     * @return new instance
+     */
+    public static AppCPUUsage newInstance(String data){
+        AppCPUUsage appCPUUsage = new AppCPUUsage();
+        String[] strings = data.split("\\s+");
+        appCPUUsage.setAppId(strings[1]);
+        appCPUUsage.setSystemId(strings[2]);
+        appCPUUsage.setTimestamp(Long.parseLong(strings[3]));
+        appCPUUsage.setLoad(Double.parseDouble(strings[4]));
+        return appCPUUsage;
     }
 
     public ObjectId getId() {
@@ -36,15 +44,15 @@ public class AppCPUUsage {
         return appId;
     }
 
-    public void setAppId(String machine_id) {
-        this.appId = machine_id;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -54,10 +62,6 @@ public class AppCPUUsage {
 
     public void setLoad(double load) {
         this.load = load;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getSystemId() {

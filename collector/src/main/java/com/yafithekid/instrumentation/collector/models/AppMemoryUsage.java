@@ -19,13 +19,22 @@ public class AppMemoryUsage {
     private long commited;
     private long max;
 
-    public AppMemoryUsage(String appId,String systemId,long timestamp,long used,long commited,long max){
-        this.appId = appId;
-        this.systemId = systemId;
-        this.timestamp = timestamp;
-        this.used = used;
-        this.commited = commited;
-        this.max = max;
+    /**
+     * Create new instance based from agent output
+     * @param data agent output
+     * @return new instance
+     */
+    public static AppMemoryUsage newInstance(String data){
+        AppMemoryUsage appMemoryUsage = new AppMemoryUsage();
+        //This will cause any number of consecutive spaces to split
+        String[] strings = data.split("\\s+");
+        appMemoryUsage.setAppId(strings[1]);
+        appMemoryUsage.setSystemId(strings[2]);
+        appMemoryUsage.setTimestamp(Long.parseLong(strings[3]));
+        appMemoryUsage.setUsed(Long.parseLong(strings[4]));
+        appMemoryUsage.setCommited(Long.parseLong(strings[5]));
+        appMemoryUsage.setMax(Long.parseLong(strings[6]));
+        return appMemoryUsage;
     }
 
     public ObjectId getId() {

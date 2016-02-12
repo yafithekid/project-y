@@ -15,10 +15,20 @@ public class SystemCPUUsage {
     private double load;
     private long timestamp;
 
-    public SystemCPUUsage(String systemId,long timestamp,double load){
-        this.systemId = systemId;
-        this.timestamp = timestamp;
-        this.load = load;
+    /**
+     * Create new instance based from agent output
+     * @param data agent output
+     * @return new instance
+     */
+    public static SystemCPUUsage newInstance(String data){
+        String[] strings = data.split("\\s+");
+
+        SystemCPUUsage systemCPUUsage = new SystemCPUUsage();
+        systemCPUUsage.setSystemId(strings[1]);
+        systemCPUUsage.setTimestamp(Long.parseLong(strings[2]));
+        systemCPUUsage.setLoad(Double.parseDouble(strings[3]));
+
+        return systemCPUUsage;
     }
 
     public ObjectId getId() {

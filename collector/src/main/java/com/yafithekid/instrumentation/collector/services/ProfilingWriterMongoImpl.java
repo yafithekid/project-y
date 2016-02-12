@@ -1,10 +1,7 @@
 package com.yafithekid.instrumentation.collector.services;
 
 import com.mongodb.MongoClient;
-import com.yafithekid.instrumentation.collector.models.AppCPUUsage;
-import com.yafithekid.instrumentation.collector.models.AppMemoryUsage;
-import com.yafithekid.instrumentation.collector.models.MethodCall;
-import com.yafithekid.instrumentation.collector.models.SystemCPUUsage;
+import com.yafithekid.instrumentation.collector.models.*;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 
@@ -22,33 +19,27 @@ public class ProfilingWriterMongoImpl implements ProfilingWriter {
     }
 
     @Override
-    public void methodCall(String classname, String methodname, long start, long end){
-        MethodCall methodCall = new MethodCall(classname,methodname,start,end);
+    public void methodCall(MethodCall methodCall){
         datastore.save(methodCall);
     }
 
     @Override
-    public void appCPUUsage(String appId, String systemId,long timestamp, double load) {
-        AppCPUUsage appCPUUsage = new AppCPUUsage(appId,systemId,timestamp,load);
+    public void appCPUUsage(AppCPUUsage appCPUUsage) {
         datastore.save(appCPUUsage);
     }
 
     @Override
-    public void systemCPUUsage(String systemId, long timestamp, double load) {
-        SystemCPUUsage systemCPUUsage = new SystemCPUUsage(systemId,timestamp,load);
+    public void systemCPUUsage(SystemCPUUsage systemCPUUsage) {
         datastore.save(systemCPUUsage);
     }
 
     @Override
-    public void appMemoryUsage(String appId, String systemId, long timestamp, long used, long commited, long max) {
-        AppMemoryUsage appMemoryUsage = new AppMemoryUsage(appId,systemId,timestamp,used,commited,max);
+    public void appMemoryUsage(AppMemoryUsage appMemoryUsage) {
         datastore.save(appMemoryUsage);
     }
 
-    public static void main(String[] args){
-        ProfilingWriter profilingWriter;
-        profilingWriter = new ProfilingWriterMongoImpl("127.0.0.1",9000);
-        profilingWriter.methodCall("a","b",1,2);
-
+    @Override
+    public void systemMemoryUsage(SystemMemoryUsage systemMemoryUsage) {
+        datastore.save(systemMemoryUsage);
     }
 }

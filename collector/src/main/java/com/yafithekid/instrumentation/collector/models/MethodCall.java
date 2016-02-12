@@ -16,11 +16,22 @@ public class MethodCall {
     private Long start;
     private Long end;
 
-    public MethodCall(String class_name,String method,long start,long end){
-        this.className = class_name;
-        this.method = method;
-        this.start = start;
-        this.end = end;
+    //met classname methodname start end
+
+    /**
+     * Create new instance based from agent output
+     * @param data agent output
+     * @return new instance
+     */
+    public static MethodCall newInstance(String data){
+        MethodCall methodCall = new MethodCall();
+        //This will cause any number of consecutive spaces to split
+        String[] strings = data.split("\\s+");
+        methodCall.setClassName(strings[1]);
+        methodCall.setMethod(strings[2]);
+        methodCall.setStart(Long.parseLong(strings[3]));
+        methodCall.setEnd(Long.parseLong(strings[4]));
+        return methodCall;
     }
 
     public Long getEnd() {
