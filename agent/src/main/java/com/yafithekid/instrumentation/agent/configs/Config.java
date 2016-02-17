@@ -1,8 +1,12 @@
 package com.yafithekid.instrumentation.agent.configs;
 
 
-import org.codehaus.jackson.map.ObjectMapper;
 
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +16,27 @@ import java.util.List;
  */
 public class Config {
     private List<MonitoredClass> classes;
+    private CollectorConfig collector;
+    private long resourceCollectRateMillis;
+    private String appId;
+    private String systemId;
+
+    public static Config readFromFile(String location) throws FileNotFoundException {
+        Gson gson = new Gson();
+        BufferedReader reader = new BufferedReader(new FileReader(location));
+        return gson.fromJson(reader, Config.class);
+    }
 
     public Config(){
         this.classes = new ArrayList<MonitoredClass>();
     }
 
-    /**
-     * Add a class to be monitored. The monitored class to be configured will be given from MonitoredClass.
-     * @param mc
-     */
-    public void addMonitoredClass(MonitoredClass mc){
-        classes.add(mc);
+    public static void main(String []args) throws IOException {
+        String file = "C:\\tugas\\ta\\instrumentation\\agent\\src\\main\\java\\com\\yafithekid\\instrumentation\\agent\\configs\\config.json";
+        Config config = readFromFile(file);
+        Gson gson = new Gson();
+        String s = gson.toJson(config);
+        System.out.println(s);
     }
 
     public List<MonitoredClass> getClasses() {
@@ -33,23 +47,35 @@ public class Config {
         this.classes = classes;
     }
 
-    //TODO erase
-    public static void main(String []args) throws IOException {
-        ObjectMapper om = new ObjectMapper();
-        System.out.println(om.writeValueAsString(createDummy()));
+    public CollectorConfig getCollector() {
+        return collector;
     }
 
-    //TODO erase
-    //intention to test monitored method
-    public static Config createDummy(){
-        Config config = new Config();
+    public void setCollector(CollectorConfig collector) {
+        this.collector = collector;
+    }
 
-        //monitor randomsleep and biglist, but not the hello world.
-        MonitoredClass monitoredClass = new MonitoredClass("com.yafithekid.instrumentation.example.Sleeping");
-        MonitoredMethod method = new MonitoredMethod("randomSleep").memory().time();
-        monitoredClass.addMonitoredMethod(method);
-        monitoredClass.addMonitoredMethod((new MonitoredMethod("bigList")).memory());
-        config.addMonitoredClass(monitoredClass);
-        return config;
+    public long getResourceCollectRateMillis() {
+        return resourceCollectRateMillis;
+    }
+
+    public void setResourceCollectRateMillis(long resourceCollectRateMillis) {
+        this.resourceCollectRateMillis = resourceCollectRateMillis;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
     }
 }

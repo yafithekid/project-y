@@ -30,16 +30,19 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      */
     public final int mCollectorPort;
 
-    public BasicClassFileTransformer(String collectorHost,int collectorPort){
-        mCollectorHost = collectorHost;
-        mCollectorPort = collectorPort;
+    private Config mConfig;
+
+    public BasicClassFileTransformer(Config config){
+        mConfig = config;
+        mCollectorHost = config.getCollector().getHost();
+        mCollectorPort = config.getCollector().getPort();
     }
 
 //    public static final String COLLECTOR_CLIENT_CLASSNAME = "com.yafithekid.instrumentation.CollectorClient";
     @Override
     public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        classfileBuffer = modifyByteCode(classfileBuffer,className,Config.createDummy());
+        classfileBuffer = modifyByteCode(classfileBuffer,className,mConfig);
         return classfileBuffer;
     }
 
@@ -59,24 +62,6 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         m.insertBefore(fieldName+" = System.currentTimeMillis();");
         m.insertAfter("{"+fieldName+" = System.currentTimeMillis() - "+fieldName+";"
                 + "System.out.println(\"Method Executed in ms: \" + "+fieldName+");}");
-    }
-
-    /**
-     * Insert bytecode for monitoring memory usage.
-     * @param cc class to be modified
-     * @param methodName the name of method to be monitored
-     * @throws NotFoundException
-     * @throws CannotCompileException
-     */
-    private void insertMemoryUsage(CtClass cc,String methodName) throws NotFoundException, CannotCompileException {
-        //TODO overloaded method??
-        CtMethod m = cc.getDeclaredMethod(methodName);
-        String fieldName = "memoryUsage_"+methodName;
-        CtField ctField = new CtField(CtClass.longType,fieldName,cc);
-        cc.addField(ctField, CtField.Initializer.constant(5L));
-        m.insertBefore(fieldName+" = Runtime.getRuntime().freeMemory();");
-        m.insertAfter("{"+fieldName+" = "+fieldName+" - Runtime.getRuntime().freeMemory();"
-                + "System.out.println(\"Memory usage is: \" + "+fieldName+");}");
     }
 
     /**
@@ -116,6 +101,24 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Insert bytecode for monitoring memory usage.
+     * @param cc class to be modified
+     * @param methodName the name of method to be monitored
+     * @throws NotFoundException
+     * @throws CannotCompileException
+     */
+    private void insertMemoryUsage(CtClass cc,String methodName) throws NotFoundException, CannotCompileException {
+        //TODO overloaded method??
+        CtMethod m = cc.getDeclaredMethod(methodName);
+        String fieldName = "memoryUsage_"+methodName;
+        CtField ctField = new CtField(CtClass.longType,fieldName,cc);
+        cc.addField(ctField, CtField.Initializer.constant(5L));
+        m.insertBefore(fieldName+" = Runtime.getRuntime().freeMemory();");
+        m.insertAfter("{"+fieldName+" = "+fieldName+" - Runtime.getRuntime().freeMemory();"
+                + "System.out.println(\"Memory usage is: \" + "+fieldName+");}");
     }
 
 

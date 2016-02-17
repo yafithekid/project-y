@@ -1,6 +1,7 @@
 package com.yafithekid.instrumentation.agent;
 
 import com.sun.management.OperatingSystemMXBean;
+import com.yafithekid.instrumentation.agent.configs.Config;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -19,11 +20,11 @@ public class HardwareDaemon extends Thread {
     final String mAppId;
     final String mSystemId;
 
-    public HardwareDaemon(String collectorHost, int collectorPort, String appId, String systemId){
-        mCollectorHost = collectorHost;
-        mCollectorPort = collectorPort;
-        mSystemId = systemId;
-        mAppId = appId;
+    public HardwareDaemon(Config config){
+        mCollectorHost = config.getCollector().getHost();
+        mCollectorPort = config.getCollector().getPort();
+        mSystemId = config.getSystemId();
+        mAppId = config.getAppId();
     }
 
     @Override

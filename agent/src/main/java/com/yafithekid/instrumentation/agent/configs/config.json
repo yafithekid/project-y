@@ -1,0 +1,19 @@
+{
+  "appId" : "1",
+  "systemId" : "1",
+  "classes" : [
+    {
+      "name": "com.yafithekid.instrumentation.example.Sleeping",
+      "methods": [
+        { "name": "randomSleep", "trace": false},
+        { "name": "bigList", "trace": false}
+      ]
+    }
+  ],
+  "collector" : {
+    "host" : "127.0.0.1",
+    "port" : 9000,
+    "useMock" : true
+  },
+  "resourceCollectRateMillis" : 1000000
+}
