@@ -34,8 +34,7 @@ public class ProfilingWriterMockImpl implements ProfilingWriter {
 
     @Override
     public void systemMemoryUsage(SystemMemoryUsage systemMemoryUsage) {
-        System.out.println(String.format("%s: %s %s %d %d %d","[sys memory]",systemMemoryUsage.getSystemId(),
-                new Date(systemMemoryUsage.getTimestamp()).toString(),systemMemoryUsage.getUsed(),
-                systemMemoryUsage.getCommited(),systemMemoryUsage.getMax()));
+        System.out.println(String.format("%s: %s %s %d %d","[sys memory]",systemMemoryUsage.getSystemId(),
+                new Date(systemMemoryUsage.getTimestamp()).toString(),systemMemoryUsage.getUsed(),systemMemoryUsage.getMax()));
     }
 }

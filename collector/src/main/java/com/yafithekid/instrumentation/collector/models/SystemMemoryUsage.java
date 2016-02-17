@@ -14,7 +14,6 @@ public class SystemMemoryUsage {
     private String systemId;
     private long timestamp;
     private long used;
-    private long commited;
     private long max;
 
     /**
@@ -22,7 +21,7 @@ public class SystemMemoryUsage {
      * @param data agent output
      * @return new instance
      */
-    //sme systemId timestamp used commited max
+    //sme systemId timestamp used max
     public static SystemMemoryUsage newInstance(String data){
         SystemMemoryUsage systemMemoryUsage = new SystemMemoryUsage();
         String[] strings = data.split("\\s+");
@@ -30,8 +29,7 @@ public class SystemMemoryUsage {
         systemMemoryUsage.setSystemId(strings[1]);
         systemMemoryUsage.setTimestamp(Long.parseLong(strings[2]));
         systemMemoryUsage.setUsed(Long.parseLong(strings[3]));
-        systemMemoryUsage.setCommited(Long.parseLong(strings[4]));
-        systemMemoryUsage.setMax(Long.parseLong(strings[5]));
+        systemMemoryUsage.setMax(Long.parseLong(strings[4]));
 
         return systemMemoryUsage;
     }
@@ -66,14 +64,6 @@ public class SystemMemoryUsage {
 
     public void setUsed(long used) {
         this.used = used;
-    }
-
-    public long getCommited() {
-        return commited;
-    }
-
-    public void setCommited(long commited) {
-        this.commited = commited;
     }
 
     public long getMax() {
