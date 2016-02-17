@@ -3,15 +3,15 @@ package com.yafithekid.instrumentation.collector.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
-@Entity("methodCall")
+@Entity(value = "methodCall",noClassnameStored = true)
 @Indexes(value={
-    @Index(fields = {@Field("className")}),
+    @Index(fields = {@Field("clazz")}),
     @Index(fields = {@Field("start"),@Field("end")})
 })
 public class MethodCall {
     @Id
     private ObjectId id;
-    private String className;
+    private String clazz;
     private String method;
     private Long start;
     private Long end;
@@ -27,7 +27,7 @@ public class MethodCall {
         MethodCall methodCall = new MethodCall();
         //This will cause any number of consecutive spaces to split
         String[] strings = data.split("\\s+");
-        methodCall.setClassName(strings[1]);
+        methodCall.setClazz(strings[1]);
         methodCall.setMethod(strings[2]);
         methodCall.setStart(Long.parseLong(strings[3]));
         methodCall.setEnd(Long.parseLong(strings[4]));
@@ -58,12 +58,12 @@ public class MethodCall {
         this.method = method;
     }
 
-    public String getClassName() {
-        return className;
+    public String getClazz() {
+        return clazz;
     }
 
-    public void setClassName(String class_name) {
-        this.className = class_name;
+    public void setClazz(String class_name) {
+        this.clazz = class_name;
     }
 
     public ObjectId getId() {

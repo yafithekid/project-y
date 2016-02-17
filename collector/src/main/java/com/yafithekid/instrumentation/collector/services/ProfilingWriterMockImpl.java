@@ -7,7 +7,7 @@ import java.util.Date;
 public class ProfilingWriterMockImpl implements ProfilingWriter {
     @Override
     public void methodCall(MethodCall methodCall) {
-        System.out.println(String.format("%s: %s %s %s %s","[method call]",methodCall.getClassName(),
+        System.out.println(String.format("%s: %s %s %s %s","[method call]",methodCall.getClazz(),
                 methodCall.getMethod(),new Date(methodCall.getStart()).toString(),
                 new Date(methodCall.getEnd()).toString()));
     }

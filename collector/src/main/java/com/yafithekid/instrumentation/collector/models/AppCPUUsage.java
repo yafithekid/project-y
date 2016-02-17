@@ -3,7 +3,7 @@ package com.yafithekid.instrumentation.collector.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
-@Entity(value = "appCpuUsage")
+@Entity(value = "appCpuUsage",noClassnameStored = true)
 @Indexes(value = {
     @Index(fields = {@Field("appId")}),
     @Index(fields = {@Field("systemId")}),
