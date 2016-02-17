@@ -3,6 +3,7 @@ package com.yafithekid.instrumentation.collector;
 
 import com.yafithekid.instrumentation.collector.models.*;
 import com.yafithekid.instrumentation.collector.services.ProfilingWriter;
+import com.yafithekid.instrumentation.config.ProfilingPrefix;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -36,19 +37,19 @@ public class ConnectionHandler extends Thread{
             }
             String data = buffer.toString();
             String code = buffer.substring(0,6);
-            if (code.equalsIgnoreCase("syscpu")){
+            if (code.equalsIgnoreCase(ProfilingPrefix.SYSTEM_CPU)){
                 SystemCPUUsage systemCPUUsage = SystemCPUUsage.newInstance(data);
                 mProfilingWriter.systemCPUUsage(systemCPUUsage);
-            } else if (code.equalsIgnoreCase("sysmem")){
+            } else if (code.equalsIgnoreCase(ProfilingPrefix.SYSTEM_MEMORY)){
                 SystemMemoryUsage systemMemoryUsage = SystemMemoryUsage.newInstance(data);
                 mProfilingWriter.systemMemoryUsage(systemMemoryUsage);
-            } else if (code.equalsIgnoreCase("metinv")){
+            } else if (code.equalsIgnoreCase(ProfilingPrefix.METHOD_INVOCATION)){
                 MethodCall methodCall = MethodCall.newInstance(data);
                 mProfilingWriter.methodCall(methodCall);
-            } else if (code.equalsIgnoreCase("appcpu")){
+            } else if (code.equalsIgnoreCase(ProfilingPrefix.APP_CPU)){
                 AppCPUUsage appCPUUsage = AppCPUUsage.newInstance(data);
                 mProfilingWriter.appCPUUsage(appCPUUsage);
-            } else if (code.equalsIgnoreCase("appmem")){
+            } else if (code.equalsIgnoreCase(ProfilingPrefix.APP_MEMORY)){
                 AppMemoryUsage appMemoryUsage = AppMemoryUsage.newInstance(data);
                 mProfilingWriter.appMemoryUsage(appMemoryUsage);
             }

@@ -16,6 +16,10 @@
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.yafithekid.instrumentation</groupId>
+            <artifactId>config</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

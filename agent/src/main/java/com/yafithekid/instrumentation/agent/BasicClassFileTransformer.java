@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.yafithekid.instrumentation.agent.configs.Config;
-import com.yafithekid.instrumentation.agent.configs.MonitoredClass;
-import com.yafithekid.instrumentation.agent.configs.MonitoredMethod;
+import com.yafithekid.instrumentation.config.Config;
+import com.yafithekid.instrumentation.config.MonitoredClass;
+import com.yafithekid.instrumentation.config.MonitoredMethod;
 import javassist.*;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {

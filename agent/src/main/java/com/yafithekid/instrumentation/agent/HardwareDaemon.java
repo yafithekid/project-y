@@ -1,7 +1,8 @@
 package com.yafithekid.instrumentation.agent;
 
 import com.sun.management.OperatingSystemMXBean;
-import com.yafithekid.instrumentation.agent.configs.Config;
+import com.yafithekid.instrumentation.config.Config;
+import com.yafithekid.instrumentation.config.ProfilingPrefix;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

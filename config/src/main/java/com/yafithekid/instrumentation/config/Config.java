@@ -1,4 +1,4 @@
-package com.yafithekid.instrumentation.agent.configs;
+package com.yafithekid.instrumentation.config;
 
 
 
@@ -15,6 +15,7 @@ import java.util.List;
  * This class represents data in the config file
  */
 public class Config {
+    public static final String DEFAULT_FILE_CONFIG_LOCATION = "C:\\tugas\\ta\\instrumentation\\config\\src\\main\\java\\com\\yafithekid\\instrumentation\\config\\config.json";
     private List<MonitoredClass> classes;
     private CollectorConfig collector;
     private long resourceCollectRateMillis;

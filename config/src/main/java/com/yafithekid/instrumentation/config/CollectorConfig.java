@@ -1,4 +1,4 @@
-package com.yafithekid.instrumentation.agent.configs;
+package com.yafithekid.instrumentation.config;
 
 public class CollectorConfig {
     private String host = "127.0.0.1";

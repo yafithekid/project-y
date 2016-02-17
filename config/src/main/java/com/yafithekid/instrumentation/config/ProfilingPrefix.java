@@ -1,4 +1,4 @@
-package com.yafithekid.instrumentation.agent;
+package com.yafithekid.instrumentation.config;
 
 public class ProfilingPrefix {
     public final static String SYSTEM_MEMORY = "sysmem";

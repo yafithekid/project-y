@@ -18,8 +18,9 @@
             <artifactId>javassist</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>com.yafithekid.instrumentation</groupId>
+            <artifactId>config</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

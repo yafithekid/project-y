@@ -1,4 +1,4 @@
-package com.yafithekid.instrumentation.agent.configs;
+package com.yafithekid.instrumentation.config;
 
 import java.util.ArrayList;
 import java.util.List;
