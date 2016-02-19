@@ -7,12 +7,16 @@ import java.util.Map;
 /**
  * Search map for quick access of method invocation configuration
  */
-public class MethodInvocationSearchMap {
+public class MonitoredMethodSearchMap {
     private Map<String,MonitoredMethod> map;
 
-    public MethodInvocationSearchMap(Config config){
-        List<MonitoredClass> classes = config.getClasses();
+    public MonitoredMethodSearchMap(List<MonitoredClass> classes){
         map = new HashMap<String, MonitoredMethod>();
+        for(MonitoredClass mc:classes){
+            for(MonitoredMethod mm:mc.getMethods()){
+                add(mc.getName(),mm.getName(),mm);
+            }
+        }
     }
 
     public void add(String clazz,String method,MonitoredMethod monitoredMethod){

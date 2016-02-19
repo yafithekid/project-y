@@ -5,14 +5,10 @@ import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.yafithekid.instrumentation.config.Config;
-import com.yafithekid.instrumentation.config.MethodInvocationSearchMap;
-import com.yafithekid.instrumentation.config.MonitoredClass;
-import com.yafithekid.instrumentation.config.MonitoredMethod;
+import com.yafithekid.instrumentation.config.*;
 import javassist.*;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
@@ -35,13 +31,15 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 
     private Config mConfig;
 
-    private MethodInvocationSearchMap mMethodInvocationSearchMap;
+    private MonitoredMethodSearchMap mMethodInvocationSearchMap;
+    private MonitoredClassSearchMap mMonitoredClassSearchMap;
 
     public BasicClassFileTransformer(Config config){
         mConfig = config;
         mCollectorHost = config.getCollector().getHost();
         mCollectorPort = config.getCollector().getPort();
-        mMethodInvocationSearchMap = new MethodInvocationSearchMap(config);
+        mMethodInvocationSearchMap = new MonitoredMethodSearchMap(config.getClasses());
+        mMonitoredClassSearchMap = new MonitoredClassSearchMap(config.getClasses());
     }
 
 //    public static final String COLLECTOR_CLIENT_CLASSNAME = "com.yafithekid.instrumentation.CollectorClient";
@@ -71,20 +69,19 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
     }
 
     /**
-     * modify the content of bytecode
-     * @param bytecode
-     * @param className classname is loaded with "com.yafithekid.instrumentation" not "com/yafithekid/instrumentation"
-     * @param methods
-     * @return
+     * Modify class based on configuration
+     * @param bytecode loaded class bytecode
+     * @param monitoredClass monitored class configuration
+     * @return modified bytecode
      */
-    public byte[] modifyClass(byte[] bytecode, String className, List<MonitoredMethod> methods){
+    public byte[] modifyClass(byte[] bytecode,MonitoredClass monitoredClass){
         ClassPool cp = ClassPool.getDefault();
-        CtClass cc = null;
-        byte ret[] = bytecode;
+        CtClass cc;
+        byte ret[];
         try {
-            cc = cp.get(className);
+            cc = cp.get(monitoredClass.getName());
             createDataCollectMethod(cc);
-            for(MonitoredMethod method:methods){
+            for(MonitoredMethod method:monitoredClass.getMethods()){
                 if (method.isTrace()){
                     insertExpressionEditor(cc,method.getName());
                 }
@@ -135,15 +132,11 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      */
     public byte[] modifyByteCode(byte[] byteCode,String loadedClassName,Config config){
         byte[] modified = byteCode;
-        for (MonitoredClass mc: config.getClasses()){
-            String classname = mc.getName();
-            //replace classname with "." since JVM load class with "/" instead of "."
-            classname = classname.replace(".","/");
-            if (loadedClassName.equals(classname)){
-                System.out.println(loadedClassName+" found");
-
-                return modifyClass(modified,mc.getName(),mc.getMethods());
-            }
+        String replacedLoadadClassName = loadedClassName.replace("/",".");
+        if (mMonitoredClassSearchMap.exist(replacedLoadadClassName)){
+            MonitoredClass mc = mMonitoredClassSearchMap.get(replacedLoadadClassName);
+            System.out.println(replacedLoadadClassName+" found");
+            return modifyClass(modified,mc);
         }
         return modified;
     }
