@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.List;
 import java.util.UUID;
 
 import com.yafithekid.instrumentation.config.*;
@@ -46,7 +45,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
     @Override
     public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        classfileBuffer = modifyByteCode(classfileBuffer,className,mConfig);
+        classfileBuffer = modifyByteCode(classfileBuffer,className);
         return classfileBuffer;
     }
 
@@ -70,11 +69,10 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 
     /**
      * Modify class based on configuration
-     * @param bytecode loaded class bytecode
      * @param monitoredClass monitored class configuration
      * @return modified bytecode
      */
-    public byte[] modifyClass(byte[] bytecode,MonitoredClass monitoredClass){
+    public byte[] modifyClass(MonitoredClass monitoredClass){
         ClassPool cp = ClassPool.getDefault();
         CtClass cc;
         byte ret[];
@@ -125,20 +123,21 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 
     /**
      * Modify bytecode based from classname and config file.
+     * if current class needs to be modified, it will return bytecode of modified class
+     * else, return original bytecode
      * @param byteCode class bytecode
      * @param loadedClassName loaded class from class loader
-     * @param config base configuration
      * @return modified bytecode
      */
-    public byte[] modifyByteCode(byte[] byteCode,String loadedClassName,Config config){
-        byte[] modified = byteCode;
+    public byte[] modifyByteCode(byte[] byteCode, String loadedClassName){
         String replacedLoadadClassName = loadedClassName.replace("/",".");
         if (mMonitoredClassSearchMap.exist(replacedLoadadClassName)){
             MonitoredClass mc = mMonitoredClassSearchMap.get(replacedLoadadClassName);
             System.out.println(replacedLoadadClassName+" found");
-            return modifyClass(modified,mc);
+            return modifyClass(mc);
+        } else {
+            return byteCode;
         }
-        return modified;
     }
 
     /**
