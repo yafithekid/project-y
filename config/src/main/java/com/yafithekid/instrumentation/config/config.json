@@ -6,7 +6,8 @@
       "name": "com.yafithekid.instrumentation.example.Sleeping",
       "methods": [
         { "name": "randomSleep", "trace": false},
-        { "name": "bigList", "trace": false}
+        { "name": "bigList", "trace": false},
+        { "name": "callBC", "trace": true}
       ]
     }
   ],

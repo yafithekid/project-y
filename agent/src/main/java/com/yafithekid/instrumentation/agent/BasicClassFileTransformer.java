@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.yafithekid.instrumentation.config.Config;
+import com.yafithekid.instrumentation.config.MethodInvocationSearchMap;
 import com.yafithekid.instrumentation.config.MonitoredClass;
 import com.yafithekid.instrumentation.config.MonitoredMethod;
 import javassist.*;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {
     /**
@@ -32,10 +35,13 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 
     private Config mConfig;
 
+    private MethodInvocationSearchMap mMethodInvocationSearchMap;
+
     public BasicClassFileTransformer(Config config){
         mConfig = config;
         mCollectorHost = config.getCollector().getHost();
         mCollectorPort = config.getCollector().getPort();
+        mMethodInvocationSearchMap = new MethodInvocationSearchMap(config);
     }
 
 //    public static final String COLLECTOR_CLIENT_CLASSNAME = "com.yafithekid.instrumentation.CollectorClient";
@@ -68,25 +74,23 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      * modify the content of bytecode
      * @param bytecode
      * @param className classname is loaded with "com.yafithekid.instrumentation" not "com/yafithekid/instrumentation"
-     * @param methodNames
+     * @param methods
      * @return
      */
-    public byte[] modifyClass(byte[] bytecode, String className, List<String> methodNames){
+    public byte[] modifyClass(byte[] bytecode, String className, List<MonitoredMethod> methods){
         ClassPool cp = ClassPool.getDefault();
         CtClass cc = null;
         byte ret[] = bytecode;
         try {
             cc = cp.get(className);
             createDataCollectMethod(cc);
-            //TODO erase
-//            CtMethod[] methods = cc.getMethods();
-//            for(CtMethod method:methods){
-//                System.out.println(method.getName());
-//            }
-            for(String methodName:methodNames){
-                insertRunningTime(cc,methodName);
-                insertMemoryUsage(cc,methodName);
-                insertDataCollect(cc,methodName);
+            for(MonitoredMethod method:methods){
+                if (method.isTrace()){
+                    insertExpressionEditor(cc,method.getName());
+                }
+                insertRunningTime(cc,method.getName());
+                insertMemoryUsage(cc,method.getName());
+                insertDataCollect(cc,method.getName());
             }
             ret = cc.toBytecode();
             cc.detach();
@@ -138,12 +142,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             if (loadedClassName.equals(classname)){
                 System.out.println(loadedClassName+" found");
 
-                //TODO change based on monitored method
-                List<String> mboh = new ArrayList<String>();
-                for(MonitoredMethod mm: mc.getMethods()){
-                    mboh.add(mm.getName());
-                }
-                return modifyClass(modified,mc.getName(),mboh);
+                return modifyClass(modified,mc.getName(),mc.getMethods());
             }
         }
         return modified;
@@ -205,6 +204,16 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                 "__endTime = System.currentTimeMillis();" +
                  DATA_COLLECT_METHOD+"(\"metinv "+cc.getName()+" "+methodName+" \"+__startTime+\" \"+__endTime);" +
                 "}");
+    }
+
+    void insertExpressionEditor(CtClass cc,String methodName) throws NotFoundException,CannotCompileException {
+        CtMethod m = cc.getDeclaredMethod(methodName);
+        m.instrument(new ExprEditor(){
+            @Override
+            public void edit(MethodCall m) throws CannotCompileException {
+                m.replace(String.format("{ System.out.println(\"start %s\"); $_ = $proceed($$); System.out.println(\"end %s\"); }",m.getMethodName(),m.getMethodName()));
+            }
+        });
     }
 
 //    TODO should the add-ons of collectorclient is a new class or not?

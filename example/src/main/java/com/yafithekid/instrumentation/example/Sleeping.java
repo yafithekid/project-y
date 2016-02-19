@@ -50,15 +50,29 @@ public class Sleeping {
         System.out.println("hello world");
     }
 
+    public void callBC(){
+        b();
+        c();
+    }
+
+    public int b(){
+        int x = 2;
+        System.out.println("b...");
+        return x;
+    }
+    public void c(){
+        System.out.println("c...");
+    }
     public static void main(String[] args){
         Sleeping sleeping = new Sleeping();
         try {
             sleeping.randomSleep();
             sleeping.bigList();
             sleeping.hello();
-            for(int i = 0; i < 1000; i++){
-                sleeping.mediumList();
-            }
+            sleeping.callBC();
+//            for(int i = 0; i < 1000; i++){
+//                sleeping.mediumList();
+//            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
