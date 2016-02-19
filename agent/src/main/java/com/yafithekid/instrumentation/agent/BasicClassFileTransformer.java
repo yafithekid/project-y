@@ -52,14 +52,13 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
     /**
      * Insert bytecode for monitoring running time.
      * @param cc class to be modified
-     * @param methodName the name of method to be monitored
+     * @param m the method to be altered
      * @throws NotFoundException
      * @throws CannotCompileException
      */
-    private void insertRunningTime(CtClass cc,String methodName) throws NotFoundException, CannotCompileException{
+    private void insertRunningTime(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException{
         //TODO overloaded method??
-        CtMethod m = cc.getDeclaredMethod(methodName);
-        String fieldName = "elapsedTime_"+methodName;
+        String fieldName = "elapsedTime_"+m.getName();
         CtField ctField = new CtField(CtClass.longType,fieldName,cc);
         cc.addField(ctField, CtField.Initializer.constant(5L));
         m.insertBefore(fieldName+" = System.currentTimeMillis();");
@@ -80,12 +79,17 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             cc = cp.get(monitoredClass.getName());
             createDataCollectMethod(cc);
             for(MonitoredMethod method:monitoredClass.getMethods()){
-                if (method.isTrace()){
-                    insertExpressionEditor(cc,method.getName());
+                try {
+                    CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
+                    if (method.isTrace()){
+                        insertExpressionEditor(cc,ctMethod);
+                    }
+                    insertRunningTime(cc,ctMethod);
+                    insertMemoryUsage(cc,ctMethod);
+                    insertDataCollect(cc,ctMethod);
+                } catch (NotFoundException e){
+                    System.out.println(method.getName()+" in class "+monitoredClass.getName()+" not found!");
                 }
-                insertRunningTime(cc,method.getName());
-                insertMemoryUsage(cc,method.getName());
-                insertDataCollect(cc,method.getName());
             }
             ret = cc.toBytecode();
             cc.detach();
@@ -105,14 +109,13 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
     /**
      * Insert bytecode for monitoring memory usage.
      * @param cc class to be modified
-     * @param methodName the name of method to be monitored
+     * @param m the name of method to be monitored
      * @throws NotFoundException
      * @throws CannotCompileException
      */
-    private void insertMemoryUsage(CtClass cc,String methodName) throws NotFoundException, CannotCompileException {
+    private void insertMemoryUsage(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
         //TODO overloaded method??
-        CtMethod m = cc.getDeclaredMethod(methodName);
-        String fieldName = "memoryUsage_"+methodName;
+        String fieldName = "memoryUsage_"+m.getName();
         CtField ctField = new CtField(CtClass.longType,fieldName,cc);
         cc.addField(ctField, CtField.Initializer.constant(5L));
         m.insertBefore(fieldName+" = Runtime.getRuntime().freeMemory();");
@@ -184,8 +187,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         }
     }
 
-    void insertDataCollect(CtClass cc,String methodName) throws NotFoundException, CannotCompileException {
-        CtMethod m = cc.getDeclaredMethod(methodName);
+    void insertDataCollect(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
         //invocation
         //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
         m.addLocalVariable("__startTime",CtClass.longType);
@@ -194,12 +196,11 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         String invocationId = UUID.randomUUID().toString();
         m.insertAfter("{"+
                 "__endTime = System.currentTimeMillis();" +
-                 DATA_COLLECT_METHOD+"(\"metinv "+cc.getName()+" "+methodName+" \"+__startTime+\" \"+__endTime);" +
+                 DATA_COLLECT_METHOD+"(\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime);" +
                 "}");
     }
 
-    void insertExpressionEditor(CtClass cc,String methodName) throws NotFoundException,CannotCompileException {
-        CtMethod m = cc.getDeclaredMethod(methodName);
+    void insertExpressionEditor(CtClass cc,CtMethod m) throws NotFoundException,CannotCompileException {
         m.instrument(new ExprEditor(){
             @Override
             public void edit(MethodCall m) throws CannotCompileException {
