@@ -79,6 +79,14 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         try {
             cc = cp.get(monitoredClass.getName());
             createDataCollectMethod(cc);
+            for(MonitoredMethod method:monitoredClass.getMethods()) {
+                try {
+                    CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
+                    createOverloadMethod(cc, ctMethod);
+                } catch (NotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
             for(MonitoredMethod method:monitoredClass.getMethods()){
                 try {
                     CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
@@ -107,6 +115,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             return null;
         }
     }
+
 
     /**
      * Insert bytecode for monitoring memory usage.
@@ -189,6 +198,22 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         }
     }
 
+    /**
+     * Add method for sending data via socket
+     * the first parameter of method is a string that will be given to socket
+     * to access the parameter, use "$1"
+     */
+    void createOverloadMethod(CtClass ctClass,CtMethod ctMethod){
+        try {
+            String methodBody = String.format("{ System.out.println(\"dummy %s\");}",ctMethod.getName());
+            CtMethod dataCollectMethod = CtNewMethod.make(CtClass.voidType,"__"+ctMethod.getName(),null,null,methodBody,ctClass);
+            ctClass.addMethod(dataCollectMethod);
+        } catch (CannotCompileException e) {
+            //TODO what to do?
+            e.printStackTrace();
+        }
+    }
+
     void insertLocalVariables(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
         m.addLocalVariable("__startTime",CtClass.longType);
         m.addLocalVariable("__endTime",CtClass.longType);
@@ -215,8 +240,8 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                     } catch (NotFoundException e) {
                         e.printStackTrace();
                     }
-                    methodCall.replace(String.format("{ System.out.println(\"start %s\"); $_ = $proceed($$); System.out.println(\"end %s\"); }",
-                            methodCall.getMethodName(),methodCall.getMethodName()));
+                    methodCall.replace(String.format("{ System.out.println(\"start %s\"); $_ = $proceed($$); __%s(); System.out.println(\"end %s\"); }",
+                            methodCall.getMethodName(),methodCall.getMethodName(),methodCall.getMethodName()));
                 }
 
             }
