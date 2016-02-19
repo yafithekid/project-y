@@ -55,6 +55,13 @@ public class Sleeping {
         c();
     }
 
+
+    public int callBCInt(){
+        b();
+        c();
+        return 2;
+    }
+
     public int b(){
         int x = 2;
         System.out.println("b...");
@@ -70,6 +77,9 @@ public class Sleeping {
             sleeping.bigList();
             sleeping.hello();
             sleeping.callBC();
+            sleeping.callBCInt();
+            int x = sleeping.callBCInt();
+            System.out.println(sleeping.callBCInt());
 //            for(int i = 0; i < 1000; i++){
 //                sleeping.mediumList();
 //            }

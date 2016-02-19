@@ -8,6 +8,7 @@
         { "name": "randomSleep", "trace": false},
         { "name": "bigList", "trace": false},
         { "name": "callBC", "trace": true},
+        { "name": "callBCInt", "trace": true},
         { "name": "b", "trace": true},
         { "name": "c", "trace": true}
       ]

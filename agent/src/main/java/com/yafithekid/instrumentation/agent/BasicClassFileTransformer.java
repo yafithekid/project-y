@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 import com.yafithekid.instrumentation.config.*;
 import javassist.*;
@@ -205,11 +204,38 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      */
     void createOverloadMethod(CtClass ctClass,CtMethod ctMethod){
         try {
-            String methodBody = String.format("{ System.out.println(\"dummy %s\");}",ctMethod.getName());
-            CtMethod dataCollectMethod = CtNewMethod.make(CtClass.voidType,"__"+ctMethod.getName(),null,null,methodBody,ctClass);
+            //add string as first parameter
+            CtClass[] parameterTypesArray = ctMethod.getParameterTypes();
+            List<CtClass> parameterTypes = new ArrayList<CtClass>();
+            parameterTypes.add(getClassString());
+            for(int i = 0; i < parameterTypesArray.length; i++){
+                parameterTypes.add(parameterTypesArray[i]);
+            }
+            int nParams = parameterTypes.size();
+            //construct $2...nParams
+            StringBuilder sb = new StringBuilder();
+            for(int i = 2; i <= nParams; i++){
+                if (i > 2) sb.append(",");
+                sb.append("$").append(i);
+            }
+            String methodBody;
+            if (ctMethod.getReturnType().equals(CtClass.voidType)){
+                methodBody = String.format("{%s(%s); System.out.println(\"dummy\");}",ctMethod.getName(),sb.toString());
+            } else {
+                methodBody = String.format("{ %s __ret = this.%s(%s); System.out.println(\"dummy\"); return __ret; }",ctMethod.getReturnType().getName(),
+                        ctMethod.getName(),sb.toString());
+            }
+            CtMethod dataCollectMethod;
+            CtClass[] params = new CtClass[parameterTypes.size()];
+            for(int i = 0; i < params.length; i++){
+                params[i] = parameterTypes.get(i);
+            }
+            dataCollectMethod = CtNewMethod.make(ctMethod.getReturnType(),ctMethod.getName(),
+                    params,ctMethod.getExceptionTypes(),methodBody,ctClass);
             ctClass.addMethod(dataCollectMethod);
-        } catch (CannotCompileException e) {
-            //TODO what to do?
+        } catch (CannotCompileException e){
+            e.printStackTrace();
+        } catch (NotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -240,8 +266,8 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                     } catch (NotFoundException e) {
                         e.printStackTrace();
                     }
-                    methodCall.replace(String.format("{ System.out.println(\"start %s\"); $_ = $proceed($$); __%s(); System.out.println(\"end %s\"); }",
-                            methodCall.getMethodName(),methodCall.getMethodName(),methodCall.getMethodName()));
+//                    methodCall.replace("{ $_ = $proceed($$); System.out.println(\"hore\"); }");
+                    methodCall.replace("{ $_ =  $proceed($$,__invocationId);}");
                 }
 
             }
