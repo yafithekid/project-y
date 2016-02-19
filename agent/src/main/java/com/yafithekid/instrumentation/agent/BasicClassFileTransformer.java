@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import com.yafithekid.instrumentation.config.*;
@@ -81,6 +82,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             for(MonitoredMethod method:monitoredClass.getMethods()){
                 try {
                     CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
+                    insertLocalVariables(cc,ctMethod);
                     if (method.isTrace()){
                         insertExpressionEditor(cc,ctMethod);
                     }
@@ -187,26 +189,47 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         }
     }
 
-    void insertDataCollect(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
-        //invocation
-        //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
+    void insertLocalVariables(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
         m.addLocalVariable("__startTime",CtClass.longType);
         m.addLocalVariable("__endTime",CtClass.longType);
+        m.addLocalVariable("__invocationId",getClassString());
         m.insertBefore("__startTime = System.currentTimeMillis();");
-        String invocationId = UUID.randomUUID().toString();
-        m.insertAfter("{"+
+        m.insertBefore("__invocationId = \""+UUID.randomUUID().toString()+"\";");
+    }
+
+    void insertDataCollect(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
+        //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
+        m.insertAfter("{" +
                 "__endTime = System.currentTimeMillis();" +
-                 DATA_COLLECT_METHOD+"(\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime);" +
+                 DATA_COLLECT_METHOD+"(\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__invocationId);" +
                 "}");
     }
 
     void insertExpressionEditor(CtClass cc,CtMethod m) throws NotFoundException,CannotCompileException {
         m.instrument(new ExprEditor(){
             @Override
-            public void edit(MethodCall m) throws CannotCompileException {
-                m.replace(String.format("{ System.out.println(\"start %s\"); $_ = $proceed($$); System.out.println(\"end %s\"); }",m.getMethodName(),m.getMethodName()));
+            public void edit(MethodCall methodCall) throws CannotCompileException {
+                if (mMethodInvocationSearchMap.exist(methodCall.getClassName(),methodCall.getMethodName())){
+                    try {
+                        methodCall.getMethod();
+                    } catch (NotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    methodCall.replace(String.format("{ System.out.println(\"start %s\"); $_ = $proceed($$); System.out.println(\"end %s\"); }",
+                            methodCall.getMethodName(),methodCall.getMethodName()));
+                }
+
             }
         });
+    }
+
+    CtClass getClassString(){
+        try {
+            return ClassPool.getDefault().get("java.lang.String");
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 //    TODO should the add-ons of collectorclient is a new class or not?

@@ -15,6 +15,7 @@ public class MethodCall {
     private String method;
     private Long start;
     private Long end;
+    private String invocationId;
 
     //met classname methodname start end
 
@@ -31,6 +32,7 @@ public class MethodCall {
         methodCall.setMethod(strings[2]);
         methodCall.setStart(Long.parseLong(strings[3]));
         methodCall.setEnd(Long.parseLong(strings[4]));
+        methodCall.setInvocationId(strings[5]);
         return methodCall;
     }
 
@@ -72,5 +74,13 @@ public class MethodCall {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public String getInvocationId() {
+        return invocationId;
+    }
+
+    public void setInvocationId(String invocationId) {
+        this.invocationId = invocationId;
     }
 }
