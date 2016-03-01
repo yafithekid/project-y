@@ -77,7 +77,6 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         byte ret[];
         try {
             cc = cp.get(monitoredClass.getName());
-            createDataCollectMethod(cc);
             for(MonitoredMethod method:monitoredClass.getMethods()) {
                 try {
                     CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
@@ -158,50 +157,6 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      * the first parameter of method is a string that will be given to socket
      * to access the parameter, use "$1"
      */
-    void createDataCollectMethod(CtClass ctClass){
-        try {
-            //TODO set to async
-            ClassPool cp = ClassPool.getDefault();
-            //construct method body
-            //make the method abstract, insert the method and set to non-abstract.
-            String methodBody = "{" +
-                    "java.net.Socket __client = new java.net.Socket(\""+ mCollectorHost +"\","+ mCollectorPort +");" +
-                    "java.io.OutputStream __outToServer = __client.getOutputStream();" +
-                    "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +
-                    "java.io.DataOutputStream __out = new java.io.DataOutputStream(__outToServer);" +
-                    "System.out.println($1);" +
-                    "__out.writeUTF($1);"+
-                    "__client.close();" +
-                    "}";
-//            String methodBody = "{" + "System.out.println($1);" + "}";
-            CtMethod dataCollectMethod = CtNewMethod.make("public abstract void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
-
-            dataCollectMethod.setBody(methodBody);
-
-            //add socket exception handler
-            //https://jboss-javassist.github.io/javassist/tutorial/tutorial2.html
-            CtClass ioExceptionClass = cp.get("java.io.IOException");
-            String errorMessage = "[ERROR] " +
-                    "Cannot connect to collector " +
-                    mCollectorHost + ":" + mCollectorPort;
-            dataCollectMethod.addCatch("{System.out.println(\""+errorMessage+"\"); ($e).printStackTrace(); return;}",ioExceptionClass);
-            ioExceptionClass.detach();
-
-            dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
-            ctClass.addMethod(dataCollectMethod);
-        } catch (CannotCompileException e) {
-            //TODO what to do?
-            e.printStackTrace();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Add method for sending data via socket
-     * the first parameter of method is a string that will be given to socket
-     * to access the parameter, use "$1"
-     */
     void createOverloadMethod(CtClass ctClass,CtMethod ctMethod){
         try {
             //add string as first parameter
@@ -250,9 +205,10 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 
     void insertDataCollect(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
         //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
+        String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__invocationId";
         m.insertAfter("{" +
                 "__endTime = System.currentTimeMillis();" +
-                 DATA_COLLECT_METHOD+"(\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__invocationId);" +
+                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
                 "}");
     }
 
@@ -283,37 +239,5 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         }
     }
 
-//    TODO should the add-ons of collectorclient is a new class or not?
-//    /**
-//     * create collector client to establish socket connection between target java process and collector process.
-//     * if it is already created, it will not be created again.
-//     */
-//    void createCollectorClient(){
-//        ClassPool cp = ClassPool.getDefault();
-//        try {
-//            cp.get(COLLECTOR_CLIENT_CLASSNAME);
-//            System.out.println("found...");
-//        } catch (NotFoundException e) {
-//            System.out.println("not found...");
-//            String a = COLLECTOR_CLIENT_CLASSNAME;
-//            CtClass ctClass = cp.makeClass(a);
-//            ctClass.setModifiers(ctClass.getModifiers() | Modifier.PUBLIC);
-//            String methodBody = "{System.out.println($1); System.out.println(\"the outsider\");}";
-//            try {
-//                CtMethod dataCollectMethod = CtNewMethod.make("public static abstract void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
-//                dataCollectMethod.setBody(methodBody);
-//                dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
-//                ctClass.addMethod(dataCollectMethod);
-//                ctClass.writeFile();
-//                System.out.println("done");
-//            } catch (CannotCompileException e1) {
-//                e1.printStackTrace();
-//            } catch (NotFoundException e1) {
-//                e1.printStackTrace();
-//            } catch (IOException e1) {
-//                e1.printStackTrace();
-//            }
-//        }
-//    }
 }
 
