@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.yafithekid.instrumentation</groupId>
+        <groupId>com.github.yafithekid.project_y</groupId>
         <artifactId>pom</artifactId>
         <version>1.0.0</version>
     </parent>
@@ -19,7 +19,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.yafithekid.instrumentation.example.Sleeping</mainClass>
+                            <mainClass>com.github.yafithekid.project_y.example.Sleeping</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

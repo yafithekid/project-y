@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Premain-Class: com.yafithekid.instrumentation.agent.Agent
+Premain-Class: com.github.yafithekid.project_y.agent.Agent
 Can-Redefine-Classes: true
 Can-Retransform-Classes: true

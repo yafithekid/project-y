@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.yafithekid.instrumentation</groupId>
+        <groupId>com.github.yafithekid.project_y</groupId>
         <artifactId>pom</artifactId>
         <version>1.0.0</version>
     </parent>
@@ -18,9 +18,8 @@
             <artifactId>javassist</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.yafithekid.instrumentation</groupId>
+            <groupId>com.github.yafithekid.project_y</groupId>
             <artifactId>config</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
@@ -62,7 +61,7 @@
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
                         <manifestEntries>
-                            <Premain-Class>com.yafithekid.instrumentation.agent.Agent</Premain-Class>
+                            <Premain-Class>com.github.yafithekid.project_y.agent.Agent</Premain-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
