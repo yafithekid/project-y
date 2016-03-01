@@ -65,13 +65,7 @@ public class HardwareDaemon extends Thread {
     }
 
     void sendToCollector(String data) throws IOException {
-        //TODO formatting
-        Socket client = new Socket(mCollectorHost,mCollectorPort);
-        OutputStream outToServer = client.getOutputStream();
-        DataOutputStream out = new java.io.DataOutputStream(outToServer);
-        if (!data.endsWith("\n")) data = data + "\n";
-        out.writeUTF(data);
-        client.close();
+        Sender.get().send(data);
     }
 
 
