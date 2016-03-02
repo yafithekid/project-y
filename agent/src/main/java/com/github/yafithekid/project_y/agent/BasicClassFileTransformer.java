@@ -73,6 +73,9 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      */
     public byte[] modifyClass(MonitoredClass monitoredClass){
         ClassPool cp = ClassPool.getDefault();
+                ClassLoader cl
+                = Thread.currentThread().getContextClassLoader(); // or something else
+        cp.insertClassPath(new LoaderClassPath(cl));
         CtClass cc;
         byte ret[];
         try {
@@ -199,14 +202,20 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         m.addLocalVariable("__startTime",CtClass.longType);
         m.addLocalVariable("__endTime",CtClass.longType);
         m.addLocalVariable("__invocationId",getClassString());
+        m.addLocalVariable("__startMem",CtClass.longType);
+        m.addLocalVariable("__endMem",CtClass.longType);
         m.insertBefore("__startTime = System.currentTimeMillis();");
-        m.insertBefore("__invocationId = \""+UUID.randomUUID().toString()+"\";");
+        m.insertBefore("__startMem = Runtime.getRuntime().freeMemory();");
+//        m.insertBefore("__invocationId = \""+UUID.randomUUID().toString()+"\";");
+        m.insertBefore("__invocationId = \"\"+Thread.currentThread().getId();");
+        ;
     }
 
     void insertDataCollect(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
         //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
-        String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__invocationId";
+        String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__startMem+\" \"+__endMem+\" \"+__invocationId";
         m.insertAfter("{" +
+                "__endMem = Runtime.getRuntime().freeMemory();" +
                 "__endTime = System.currentTimeMillis();" +
                 "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
                 "}");

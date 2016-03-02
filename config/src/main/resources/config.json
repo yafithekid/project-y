@@ -12,6 +12,18 @@
         { "name": "b", "trace": true},
         { "name": "c", "trace": true}
       ]
+    },
+    {
+      "name": "org.springframework.web.servlet.DispatcherServlet",
+      "methods": [
+        { "name": "doDispatch", "trace":false}
+      ]
+    },
+    {
+      "name" : "com.mandiriecash.etollapi.controllers.HomeController",
+      "methods": [
+        { "name": "greeting","trace":true }
+      ]
     }
   ],
   "collector" : {

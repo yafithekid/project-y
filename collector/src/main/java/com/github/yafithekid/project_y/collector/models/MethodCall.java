@@ -15,6 +15,8 @@ public class MethodCall {
     private String method;
     private Long start;
     private Long end;
+    private Long freeMemStart;
+    private Long freeMemEnd;
     private String invocationId;
 
     //met classname methodname start end
@@ -32,7 +34,9 @@ public class MethodCall {
         methodCall.setMethod(strings[2]);
         methodCall.setStart(Long.parseLong(strings[3]));
         methodCall.setEnd(Long.parseLong(strings[4]));
-        methodCall.setInvocationId(strings[5]);
+        methodCall.setFreeMemStart(Long.parseLong(strings[5]));
+        methodCall.setFreeMemEnd(Long.parseLong(strings[6]));
+        methodCall.setInvocationId(strings[7]);
         return methodCall;
     }
 
@@ -82,5 +86,21 @@ public class MethodCall {
 
     public void setInvocationId(String invocationId) {
         this.invocationId = invocationId;
+    }
+
+    public Long getFreeMemStart() {
+        return freeMemStart;
+    }
+
+    public void setFreeMemStart(Long freeMemStart) {
+        this.freeMemStart = freeMemStart;
+    }
+
+    public Long getFreeMemEnd() {
+        return freeMemEnd;
+    }
+
+    public void setFreeMemEnd(Long freeMemEnd) {
+        this.freeMemEnd = freeMemEnd;
     }
 }
