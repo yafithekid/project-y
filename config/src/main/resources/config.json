@@ -20,9 +20,15 @@
       ]
     },
     {
-      "name" : "com.mandiriecash.etollapi.controllers.HomeController",
+      "name" : "sun.net.www.protocol.http.HttpURLConnection",
       "methods": [
-        { "name": "greeting","trace":true }
+        { "name": "getInputStream","trace":true}
+      ]
+    },
+    {
+      "name" : "com.mysql.jdbc.PreparedStatement",
+      "methods": [
+        { "name": "executeQuery", "trace":true }
       ]
     }
   ],

@@ -1,5 +1,6 @@
 package com.github.yafithekid.project_y.example_spring.controllers;
 
+import com.github.yafithekid.project_y.example_spring.services.BaconIpsumRestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,4 +53,14 @@ public class DefaultController {
         return retval;
     }
 
+    @RequestMapping("/http")
+    public String testHttp() throws IOException {
+        BaconIpsumRestClient client = new BaconIpsumRestClient();
+        return client.getAllMeat();
+    }
+
+    public static void main(String[] args) throws IOException {
+        BaconIpsumRestClient client = new BaconIpsumRestClient();
+        System.out.println(client.getAllMeat());
+    }
 }
