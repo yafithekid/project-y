@@ -14,4 +14,9 @@
 
     <context:component-scan base-package="com.github.yafithekid.project_y.example_spring" />
 
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/etoll"/>
+        <property name="username" value="etoll"/>
+        <property name="password" value="etoll"/>
+    </bean>
 </beans>
