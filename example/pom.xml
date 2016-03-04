@@ -19,7 +19,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.yafithekid.project_y.example.Sleeping</mainClass>
+                            <mainClass>com.github.yafithekid.project_y.example.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

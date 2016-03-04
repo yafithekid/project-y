@@ -3,6 +3,21 @@
   "systemId" : "1",
   "classes" : [
     {
+      "name": "com.github.yafithekid.project_y.example.TReturn",
+      "methods": [
+        { "name": "returnVoid", "trace": true},
+        { "name": "returnInt", "trace": true},
+        { "name": "returnString", "trace": true}
+      ]
+    },
+    {
+      "name": "com.github.yafithekid.project_y.example.TResource",
+      "methods": [
+        { "name": "testTime", "trace": true},
+        { "name": "testMemory", "trace": true}
+      ]
+    },
+    {
       "name": "com.github.yafithekid.project_y.example.Sleeping",
       "methods": [
         { "name": "randomSleep", "trace": false},
