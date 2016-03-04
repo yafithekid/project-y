@@ -80,6 +80,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         byte ret[];
         try {
             cc = cp.get(monitoredClass.getName());
+            createDataCollectMethod(cc);
             for(MonitoredMethod method:monitoredClass.getMethods()) {
                 try {
                     CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
@@ -95,8 +96,8 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                     if (method.isTrace()){
                         insertExpressionEditor(cc,ctMethod);
                     }
-                    insertRunningTime(cc,ctMethod);
-                    insertMemoryUsage(cc,ctMethod);
+//                    insertRunningTime(cc,ctMethod);
+//                    insertMemoryUsage(cc,ctMethod);
                     insertDataCollect(cc,ctMethod);
                 } catch (NotFoundException e){
                     System.out.println(method.getName()+" in class "+monitoredClass.getName()+" not found!");
@@ -217,7 +218,8 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         m.insertAfter("{" +
                 "__endMem = Runtime.getRuntime().freeMemory();" +
                 "__endTime = System.currentTimeMillis();" +
-                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
+                DATA_COLLECT_METHOD+"("+data+");" +
+//                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
                 "}");
     }
 
@@ -248,5 +250,42 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         }
     }
 
+    void createDataCollectMethod(CtClass ctClass){
+        try {
+            //TODO set to async
+            ClassPool cp = ClassPool.getDefault();
+            //construct method body
+            //make the method abstract, insert the method and set to non-abstract.
+            String methodBody = "{" +
+            "java.net.Socket __client = new java.net.Socket(\""+ mCollectorHost +"\","+ mCollectorPort +");" +
+            "java.io.OutputStream __outToServer = __client.getOutputStream();" +
+            "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +
+            "java.io.DataOutputStream __out = new java.io.DataOutputStream(__outToServer);" +
+            "System.out.println($1);" +
+            "__out.writeUTF($1);"+
+            "__client.close();" +
+            "}";
+//            String methodBody = "{" + "System.out.println($1);" + "}";
+            CtMethod dataCollectMethod = CtNewMethod.make("public abstract void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
+
+            dataCollectMethod.setBody(methodBody);
+
+            //add socket exception handler
+            //https://jboss-javassist.github.io/javassist/tutorial/tutorial2.html
+            CtClass ioExceptionClass = cp.get("java.io.IOException");
+            String errorMessage = "[ERROR] " +
+                    "Cannot connect to collector " +
+                mCollectorHost + ":" + mCollectorPort;
+            dataCollectMethod.addCatch("{System.out.println(\""+errorMessage+"\"); ($e).printStackTrace(); return;}",ioExceptionClass);
+            ioExceptionClass.detach();
+            dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
+            ctClass.addMethod(dataCollectMethod);
+        } catch (CannotCompileException e) {
+            //TODO what to do?
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }
 

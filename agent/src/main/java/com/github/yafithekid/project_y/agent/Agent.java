@@ -11,7 +11,7 @@ public class Agent {
     public static void premain(String agentArgs, Instrumentation inst) throws FileNotFoundException {
         Config config = Config.readFromFile(Config.DEFAULT_FILE_CONFIG_LOCATION);
 
-        Sender.initialize(config.getCollector());
+//        Sender.initialize(config.getCollector());
         inst.addTransformer(new BasicClassFileTransformer(config));
         Thread t = new HardwareDaemon(config);
         t.start();
