@@ -31,6 +31,7 @@
         <module>example</module>
         <module>collector</module>
         <module>example-spring</module>
+        <module>visualizer</module>
     </modules>
 
     <dependencyManagement>
