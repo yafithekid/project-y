@@ -23,5 +23,10 @@ public class IfaceServiceImpl implements Service {
         System.out.println(cname + "#overrideWithSuper");
     }
 
+    @Override
+    public void foo() {
+        System.out.println(cname+"#foo");
+    }
+
 
 }

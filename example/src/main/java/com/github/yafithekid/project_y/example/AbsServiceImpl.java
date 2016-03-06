@@ -1,7 +1,7 @@
 package com.github.yafithekid.project_y.example;
 
 public class AbsServiceImpl extends AbsService {
-    final String cname = "AbsServiceImpl";
+    final static String cname = "AbsServiceImpl";
 
     @Override
     public void overload() {
@@ -22,5 +22,19 @@ public class AbsServiceImpl extends AbsService {
     public void overrideWithSuper() {
         super.overrideWithSuper();
         System.out.println(cname+"#overrideWithSuper");
+    }
+
+    @Override
+    public void bar() {
+        System.out.println(cname+"#bar");
+    }
+
+    public static void staticVoid(){
+        System.out.println(cname+"staticVoid");
+    }
+
+    public static int staticInt(){
+        System.out.println(cname+"staticInt");
+        return 1;
     }
 }

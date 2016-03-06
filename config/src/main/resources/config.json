@@ -3,31 +3,59 @@
   "systemId" : "1",
   "classes" : [
     {
-      "name": "com.github.yafithekid.project_y.example.TReturn",
+      "name": "com.github.yafithekid.project_y.example.Service",
       "methods": [
-        { "name": "returnVoid", "trace": true},
-        { "name": "returnInt", "trace": true},
-        { "name": "returnString", "trace": true}
+        { "name": "overrideNoSuper","trace":true}
       ]
     },
     {
-      "name": "com.github.yafithekid.project_y.example.TResource",
+      "name": "com.github.yafithekid.project_y.example.AbsService",
       "methods": [
-        { "name": "testTime", "trace": true},
-        { "name": "testMemory", "trace": true}
+        { "name": "overrideWithSuper","trace":true},
+        { "name": "overrideNoSuper", "trace":true},
+        { "name": "foo", "trace": true },
+        { "name": "bar", "trace": true },
+        { "name": "staticVoid", "trace": true},
+        { "name": "staticInt", "trace":true}
       ]
     },
     {
-      "name": "com.github.yafithekid.project_y.example.Sleeping",
+      "name": "com.github.yafithekid.project_y.example.AbsServiceImpl",
       "methods": [
-        { "name": "randomSleep", "trace": false},
-        { "name": "bigList", "trace": false},
-        { "name": "callBC", "trace": true},
-        { "name": "callBCInt", "trace": true},
-        { "name": "b", "trace": true},
-        { "name": "c", "trace": true}
+        { "name": "overrideWithSuper","trace":true},
+        { "name": "overrideNoSuper", "trace":true},
+        { "name": "foo", "trace": true },
+        { "name": "bar", "trace": true },
+        { "name": "staticVoid", "trace": true},
+        { "name": "staticInt", "trace":true}
       ]
     },
+//    {
+//      "name": "com.github.yafithekid.project_y.example.TReturn",
+//      "methods": [
+//        { "name": "returnVoid", "trace": true},
+//        { "name": "returnInt", "trace": true},
+//        { "name": "returnString", "trace": true}
+//      ]
+//    },
+//    {
+//      "name": "com.github.yafithekid.project_y.example.TResource",
+//      "methods": [
+//        { "name": "testTime", "trace": true},
+//        { "name": "testMemory", "trace": true}
+//      ]
+//    },
+//    {
+//      "name": "com.github.yafithekid.project_y.example.Sleeping",
+//      "methods": [
+//        { "name": "randomSleep", "trace": false},
+//        { "name": "bigList", "trace": false},
+//        { "name": "callBC", "trace": true},
+//        { "name": "callBCInt", "trace": true},
+//        { "name": "b", "trace": true},
+//        { "name": "c", "trace": true}
+//      ]
+//    },
     {
       "name": "org.springframework.web.servlet.DispatcherServlet",
       "methods": [

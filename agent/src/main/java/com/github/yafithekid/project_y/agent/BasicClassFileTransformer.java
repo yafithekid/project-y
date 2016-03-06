@@ -7,6 +7,10 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.*;
 
+import com.github.yafithekid.project_y.agent.exceptions.ClassNotExistException;
+import com.github.yafithekid.project_y.agent.exceptions.IsAbstractMethodException;
+import com.github.yafithekid.project_y.agent.exceptions.IsInterfaceException;
+import com.github.yafithekid.project_y.agent.exceptions.MethodNotExistException;
 import com.github.yafithekid.project_y.config.*;
 import javassist.*;
 import javassist.expr.ExprEditor;
@@ -71,7 +75,8 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      * @param monitoredClass monitored class configuration
      * @return modified bytecode
      */
-    public byte[] modifyClass(MonitoredClass monitoredClass){
+    public byte[] modifyClass(MonitoredClass monitoredClass)
+            throws IsInterfaceException,ClassNotExistException {
         ClassPool cp = ClassPool.getDefault();
                 ClassLoader cl
                 = Thread.currentThread().getContextClassLoader(); // or something else
@@ -80,35 +85,40 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         byte ret[];
         try {
             cc = cp.get(monitoredClass.getName());
+            if (cc.isInterface()){
+                throw new IsInterfaceException(monitoredClass.getName());
+            }
+//            System.out.println("modify class " + monitoredClass.getName());
             createDataCollectMethod(cc);
             for(MonitoredMethod method:monitoredClass.getMethods()) {
                 try {
                     CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
-                    createOverloadMethod(cc, ctMethod);
-                } catch (NotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            for(MonitoredMethod method:monitoredClass.getMethods()){
-                try {
-                    CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
-                    insertLocalVariables(cc,ctMethod);
-                    if (method.isTrace()){
-                        insertExpressionEditor(cc,ctMethod);
-                    }
+//                    System.out.println("trying to modify: "+monitoredClass.getName()+"#"+method.getName());
+                    if (!isAbstract(ctMethod)){
+//                        System.out.println("modifying "+monitoredClass.getName()+"#"+method.getName());
+//                        createOverloadMethod(cc, ctMethod);
+                        insertLocalVariables(cc,ctMethod);
+//                        if (method.isTrace()){
+//                            insertExpressionEditor(cc,ctMethod);
+//                        }
 //                    insertRunningTime(cc,ctMethod);
 //                    insertMemoryUsage(cc,ctMethod);
-                    insertDataCollect(cc,ctMethod);
-                } catch (NotFoundException e){
-                    System.out.println(method.getName()+" in class "+monitoredClass.getName()+" not found!");
+                        insertDataCollect(cc,ctMethod);
+                    } else {
+                        throw new IsAbstractMethodException(monitoredClass.getName(),method.getName());
+                    }
+                } catch (NotFoundException e) {
+                    System.out.println(monitoredClass.getName()+"#"+method.getName()+" does not exists");
+                } catch (IsAbstractMethodException e) {
+                    System.out.println(e.getMessage());
                 }
             }
             ret = cc.toBytecode();
             cc.detach();
+//            System.out.println("modify class completed");
             return ret;
         } catch (NotFoundException e) {
-            e.printStackTrace();
-            return null;
+            throw new ClassNotExistException(monitoredClass.getName());
         } catch (CannotCompileException e) {
             e.printStackTrace();
             return null;
@@ -149,8 +159,16 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         String replacedLoadadClassName = loadedClassName.replace("/",".");
         if (mMonitoredClassSearchMap.exist(replacedLoadadClassName)){
             MonitoredClass mc = mMonitoredClassSearchMap.get(replacedLoadadClassName);
-            System.out.println(replacedLoadadClassName+" found");
-            return modifyClass(mc);
+//            System.out.println(replacedLoadadClassName+" found");
+            try {
+                return modifyClass(mc);
+            } catch (IsInterfaceException e) {
+                System.out.println(e.getMessage());
+                return byteCode;
+            } catch (ClassNotExistException e) {
+                System.out.println(e.getMessage());
+                return byteCode;
+            }
         } else {
             return byteCode;
         }
@@ -209,7 +227,6 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         m.insertBefore("__startMem = Runtime.getRuntime().freeMemory();");
 //        m.insertBefore("__invocationId = \""+UUID.randomUUID().toString()+"\";");
         m.insertBefore("__invocationId = \"\"+Thread.currentThread().getId();");
-        ;
     }
 
     void insertDataCollect(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
@@ -266,7 +283,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             "__client.close();" +
             "}";
 //            String methodBody = "{" + "System.out.println($1);" + "}";
-            CtMethod dataCollectMethod = CtNewMethod.make("public abstract void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
+            CtMethod dataCollectMethod = CtNewMethod.make("public abstract static void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
 
             dataCollectMethod.setBody(methodBody);
 
@@ -286,6 +303,10 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         } catch (NotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    boolean isAbstract(CtMethod method){
+        return (method.getModifiers() & Modifier.ABSTRACT) != 0;
     }
 }
 
