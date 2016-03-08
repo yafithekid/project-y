@@ -1,21 +1,14 @@
 package com.github.yafithekid.project_y.collector.services;
 
 import com.github.yafithekid.project_y.commons.dbs.models.*;
-import com.mongodb.MongoClient;
+import com.github.yafithekid.project_y.commons.dbs.services.MorphiaFactory;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
 
 public class ProfilingWriterMongoImpl implements ProfilingWriter {
-    final Morphia morphia;
     final Datastore datastore;
-    //TODO change database name to file config
-    static final String DB_NAME = "profiling";
 
-    public ProfilingWriterMongoImpl(String host,int port){
-        morphia = new Morphia();
-        morphia.mapPackage("com.yafithekid.instrumentation.collector.models");
-        datastore = morphia.createDatastore(new MongoClient(host,port),DB_NAME);
-        datastore.ensureIndexes();
+    public ProfilingWriterMongoImpl(MorphiaFactory morphiaFactory){
+        datastore = morphiaFactory.createDatastore();
     }
 
     @Override

@@ -15,12 +15,13 @@ import java.util.List;
  * This class represents data in the config file
  */
 public class Config {
-    public static final String DEFAULT_FILE_CONFIG_LOCATION = "C:\\tugas\\ta\\instrumentation\\config\\src\\main\\resources\\config.json";
+    public static final String DEFAULT_FILE_CONFIG_LOCATION = "C:\\tugas\\ta\\instrumentation\\commons\\src\\main\\resources\\config.json";
     private List<MonitoredClass> classes;
     private CollectorConfig collector;
     private long resourceCollectRateMillis;
     private String appId;
     private String systemId;
+    private boolean enableResourceCollect;
 
     public static Config readFromFile(String location) throws FileNotFoundException {
         Gson gson = new Gson();
@@ -80,5 +81,13 @@ public class Config {
 
     public void setSystemId(String systemId) {
         this.systemId = systemId;
+    }
+
+    public boolean isEnableResourceCollect() {
+        return enableResourceCollect;
+    }
+
+    public void setEnableResourceCollect(boolean enableResourceCollect) {
+        this.enableResourceCollect = enableResourceCollect;
     }
 }

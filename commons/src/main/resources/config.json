@@ -78,7 +78,15 @@
   "collector" : {
     "host" : "127.0.0.1",
     "port" : 9000,
-    "useMock" : true
+    //uncomment  line below if you want to use mongodb when collector collects the data
+    /*
+    "mongoHandler": {
+      "host" : "127.0.0.1",
+      "port" : 27017
+    },*/
+    "debug": true
   },
+  //enabling the resource collect will create a thread that will fetch resource usage (CPU, memory) within resourceCollectRateMillis
+  "enableResourceCollect": false,
   "resourceCollectRateMillis" : 1000000
 }

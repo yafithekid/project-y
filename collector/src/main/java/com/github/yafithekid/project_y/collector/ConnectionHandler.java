@@ -8,14 +8,15 @@ import com.github.yafithekid.project_y.commons.dbs.models.*;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 public class ConnectionHandler extends Thread{
     private Socket mSocket;
-    private ProfilingWriter mProfilingWriter;
+    private List<ProfilingWriter> mProfilingWriters;
 
-    public ConnectionHandler(Socket socket, ProfilingWriter profilingWriter){
+    public ConnectionHandler(Socket socket, List<ProfilingWriter> profilingWriters){
         this.mSocket = socket;
-        this.mProfilingWriter = profilingWriter;
+        this.mProfilingWriters = profilingWriters;
     }
 
     @Override
@@ -36,19 +37,29 @@ public class ConnectionHandler extends Thread{
             String code = buffer.substring(0,6);
             if (code.equalsIgnoreCase(ProfilingPrefix.SYSTEM_CPU)){
                 SystemCPUUsage systemCPUUsage = SystemCPUUsage.newInstance(data);
-                mProfilingWriter.systemCPUUsage(systemCPUUsage);
+                for(ProfilingWriter profilingWriter: mProfilingWriters){
+                    profilingWriter.systemCPUUsage(systemCPUUsage);
+                }
             } else if (code.equalsIgnoreCase(ProfilingPrefix.SYSTEM_MEMORY)){
                 SystemMemoryUsage systemMemoryUsage = SystemMemoryUsage.newInstance(data);
-                mProfilingWriter.systemMemoryUsage(systemMemoryUsage);
+                for(ProfilingWriter profilingWriter: mProfilingWriters) {
+                    profilingWriter.systemMemoryUsage(systemMemoryUsage);
+                }
             } else if (code.equalsIgnoreCase(ProfilingPrefix.METHOD_INVOCATION)){
                 MethodCall methodCall = MethodCall.newInstance(data);
-                mProfilingWriter.methodCall(methodCall);
+                for(ProfilingWriter profilingWriter: mProfilingWriters){
+                    profilingWriter.methodCall(methodCall);
+                }
             } else if (code.equalsIgnoreCase(ProfilingPrefix.APP_CPU)){
                 AppCPUUsage appCPUUsage = AppCPUUsage.newInstance(data);
-                mProfilingWriter.appCPUUsage(appCPUUsage);
+                for(ProfilingWriter profilingWriter: mProfilingWriters){
+                    profilingWriter.appCPUUsage(appCPUUsage);
+                }
             } else if (code.equalsIgnoreCase(ProfilingPrefix.APP_MEMORY)){
                 AppMemoryUsage appMemoryUsage = AppMemoryUsage.newInstance(data);
-                mProfilingWriter.appMemoryUsage(appMemoryUsage);
+                for(ProfilingWriter profilingWriter: mProfilingWriters){
+                    profilingWriter.appMemoryUsage(appMemoryUsage);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,9 +1,14 @@
 package com.github.yafithekid.project_y.commons.config;
 
 public class CollectorConfig {
+    private MongoHandler mongoHandler;
     private String host = "127.0.0.1";
     private int port = 27017;
-    private boolean useMock = true;
+    private boolean debug = true;
+
+    public MongoHandler getMongoHandler() {
+        return mongoHandler;
+    }
 
     public String getHost() {
         return host;
@@ -21,11 +26,11 @@ public class CollectorConfig {
         this.port = port;
     }
 
-    public boolean isUseMock() {
-        return useMock;
+    public boolean isDebug() {
+        return debug;
     }
 
-    public void setUseMock(boolean useMock) {
-        this.useMock = useMock;
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

@@ -1,23 +1,22 @@
 package com.github.yafithekid.project_y.collector;
 
 import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
+import org.mongodb.morphia.mapping.lazy.proxy.CollectionObjectReference;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.List;
 
 public class Collector {
     ServerSocket mServerSocket;
-    ProfilingWriter mProfilingWriter;
+    List<ProfilingWriter> mProfilingWriters;
     public static final int DEFAULT_PORT = 9000;
 
-    public Collector(int port,ProfilingWriter profilingWriter) throws IOException {
+    public Collector(int port,List<ProfilingWriter> profilingWriters) throws IOException {
         mServerSocket = new ServerSocket(port);
-        mProfilingWriter = profilingWriter;
-        //TODO still need to hardcoded?
-        //TODO need to specify timeout?
-//        mServerSocket.setSoTimeout(10000);
+        mProfilingWriters = profilingWriters;
     }
 
     public void run(){
@@ -30,7 +29,7 @@ public class Collector {
                 Socket server = mServerSocket.accept();
                 System.out.println("Just connected to "
                         + server.getRemoteSocketAddress());
-                Thread t = new ConnectionHandler(server,mProfilingWriter);
+                Thread t = new ConnectionHandler(server,mProfilingWriters);
                 t.start();
             } catch(SocketTimeoutException s)
             {

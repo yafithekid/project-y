@@ -13,8 +13,10 @@ public class Agent {
 
 //        Sender.initialize(config.getCollector());
         inst.addTransformer(new BasicClassFileTransformer(config));
-        Thread t = new HardwareDaemon(config);
+        if (config.isEnableResourceCollect()){
+            Thread t = new HardwareDaemon(config);
         t.start();
+        }
     }
 
 
