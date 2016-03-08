@@ -1,6 +1,6 @@
 package com.github.yafithekid.project_y.agent;
 
-import com.github.yafithekid.project_y.config.CollectorConfig;
+import com.github.yafithekid.project_y.commons.config.CollectorConfig;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package com.github.yafithekid.project_y.collector.services;
 
-import com.github.yafithekid.project_y.collector.models.*;
+import com.github.yafithekid.project_y.commons.dbs.models.*;
 import com.mongodb.MongoClient;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;

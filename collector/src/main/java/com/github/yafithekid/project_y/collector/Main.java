@@ -3,7 +3,7 @@ package com.github.yafithekid.project_y.collector;
 import com.github.yafithekid.project_y.collector.services.ProfilingWriterMongoImpl;
 import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
 import com.github.yafithekid.project_y.collector.services.ProfilingWriterMockImpl;
-import com.github.yafithekid.project_y.config.Config;
+import com.github.yafithekid.project_y.commons.config.Config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

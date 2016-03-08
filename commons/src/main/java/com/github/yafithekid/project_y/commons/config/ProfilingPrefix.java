@@ -1,4 +1,4 @@
-package com.github.yafithekid.project_y.config;
+package com.github.yafithekid.project_y.commons.config;
 
 public class ProfilingPrefix {
     public final static String SYSTEM_MEMORY = "sysmem";

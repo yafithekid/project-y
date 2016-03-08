@@ -1,4 +1,4 @@
-package com.github.yafithekid.project_y.collector.models;
+package com.github.yafithekid.project_y.commons.dbs.models;
 
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;

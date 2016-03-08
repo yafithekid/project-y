@@ -26,7 +26,7 @@
         <maven-compiler-plugin.version>3.5</maven-compiler-plugin.version>
     </properties>
     <modules>
-        <module>config</module>
+        <module>commons</module>
         <module>agent</module>
         <module>example</module>
         <module>collector</module>
@@ -58,7 +58,7 @@
             </dependency>
             <dependency>
                 <groupId>com.github.yafithekid.project_y</groupId>
-                <artifactId>config</artifactId>
+                <artifactId>commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

@@ -1,16 +1,13 @@
 package com.github.yafithekid.project_y.agent;
 
 import com.sun.management.OperatingSystemMXBean;
-import com.github.yafithekid.project_y.config.Config;
-import com.github.yafithekid.project_y.config.ProfilingPrefix;
+import com.github.yafithekid.project_y.commons.config.Config;
+import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
-import java.net.Socket;
 
 /**
  * Class for monitoring CPU and memory of current JVM

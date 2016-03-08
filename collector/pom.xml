@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.yafithekid.project_y</groupId>
-            <artifactId>config</artifactId>
+            <artifactId>commons</artifactId>
         </dependency>
     </dependencies>
 

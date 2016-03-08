@@ -1,4 +1,4 @@
-package com.github.yafithekid.project_y.config;
+package com.github.yafithekid.project_y.commons.config;
 
 public class CollectorConfig {
     private String host = "127.0.0.1";

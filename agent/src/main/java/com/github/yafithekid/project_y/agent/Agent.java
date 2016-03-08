@@ -1,7 +1,7 @@
 package com.github.yafithekid.project_y.agent;
 
 
-import com.github.yafithekid.project_y.config.Config;
+import com.github.yafithekid.project_y.commons.config.Config;
 
 import java.io.FileNotFoundException;
 import java.lang.instrument.Instrumentation;
