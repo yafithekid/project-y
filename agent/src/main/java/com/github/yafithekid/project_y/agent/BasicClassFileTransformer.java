@@ -138,7 +138,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__startMem+\" \"+__endMem+\" \"+__invocationId";
         if (mm.isRequestHandler()){
 //            m.insertBefore("System.out.println(($1).getRequestURI());");
-            data += "+\" \"+(($1).getRequestURI())";
+            data += "+\" \"+(($1).getMethod())+\" \"+(($1).getRequestURI())";
         }
         m.insertAfter("{" +
                 "__endMem = Runtime.getRuntime().freeMemory();" +

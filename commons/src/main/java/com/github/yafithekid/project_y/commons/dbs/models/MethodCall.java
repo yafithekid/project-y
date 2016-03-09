@@ -18,6 +18,7 @@ public class MethodCall {
     private Long freeMemStart;
     private Long freeMemEnd;
     private String invocationId;
+    private String reqMethod;
     private String url;
     private boolean isReqHandler;
 
@@ -38,15 +39,24 @@ public class MethodCall {
         methodCall.setFreeMemEnd(Long.parseLong(strings[6]));
         methodCall.setInvocationId(strings[7]);
         try {
-            methodCall.setUrl(strings[8]);
+            methodCall.setUrl(strings[9]);
+            methodCall.setReqMethod(strings[8]);
             methodCall.setReqHandler(true);
         } catch(ArrayIndexOutOfBoundsException e){
             methodCall.setUrl(null);
+            methodCall.setReqMethod(null);
             methodCall.setReqHandler(false);
         }
         return methodCall;
     }
 
+    public String getReqMethod() {
+        return reqMethod;
+    }
+
+    public void setReqMethod(String reqMethod) {
+        this.reqMethod = reqMethod;
+    }
 
     public Long getEnd() {
         return end;
