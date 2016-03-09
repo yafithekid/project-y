@@ -6,7 +6,9 @@ import org.mongodb.morphia.annotations.*;
 @Entity(value = "methodCall",noClassnameStored = true)
 @Indexes(value={
     @Index(fields = {@Field("clazz")}),
-    @Index(fields = {@Field("start"),@Field("end")})
+    @Index(fields = {@Field("start"),@Field("end")}),
+    @Index(fields = {@Field("invocationId")}),
+    @Index(fields = {@Field("isReqHandler")})
 })
 public class MethodCall {
     @Id

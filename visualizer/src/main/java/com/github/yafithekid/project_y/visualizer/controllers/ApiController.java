@@ -8,6 +8,7 @@ import org.mongodb.morphia.Datastore;
 import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
@@ -27,6 +28,29 @@ public class ApiController {
         MorphiaFactory morphiaFactory = new MorphiaFactory(
                 mongoHandler.getHost(),mongoHandler.getPort(),mongoHandler.getDbName());
         datastore = morphiaFactory.createDatastore();
+    }
+
+    @RequestMapping("/urls")
+    public List<MethodCall> getUrls() {
+        return datastore.find(MethodCall.class)
+                .field("isReqHandler").equal(true)
+                .order("-start")
+                .limit(10)
+                .asList();
+    }
+
+    @RequestMapping("/methods")
+    public List<MethodCall> getMethods(
+            @RequestParam(name = "invocationId") String invocationId,
+            @RequestParam(name = "start") long start,
+            @RequestParam(name = "end") long end
+    ) {
+        return datastore.find(MethodCall.class)
+                .field("invocationId").equal(invocationId)
+                .field("start").greaterThanOrEq(start)
+                .field("end").lessThanOrEq(end)
+                .order("start")
+                .asList();
     }
 
 

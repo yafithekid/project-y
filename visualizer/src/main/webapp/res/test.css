@@ -1,3 +1,9 @@
+table {
+    font-size: small;
+}
+table tr th{
+    text-align: center;
+}
 h1 {
     color: red;
 }
