@@ -1,0 +1,10 @@
+apply plugin: 'war'
+dependencies {
+    compile 'org.springframework:spring-context:4.2.4.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.2.4.RELEASE'
+    compile 'org.springframework:spring-tx:4.2.4.RELEASE'
+    compile 'org.springframework:spring-orm:4.2.4.RELEASE'
+    compile 'org.springframework:spring-jdbc:4.2.4.RELEASE'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
+    compile 'mysql:mysql-connector-java:5.1.38'
+}

@@ -1,0 +1,33 @@
+apply plugin: 'war'
+apply plugin: 'com.bmuschko.tomcat'
+
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.bmuschko:gradle-tomcat-plugin:2.2.4"
+    }
+}
+
+tomcat {
+    dependencies {
+        def tomcatVersion = '7.0.59'
+        tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+                "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+                "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+    }
+}
+
+dependencies {
+    compile project(':commons')
+    compile 'org.springframework:spring-context:4.2.4.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.2.4.RELEASE'
+    compile 'org.springframework:spring-tx:4.2.4.RELEASE'
+    compile 'org.springframework:spring-orm:4.2.4.RELEASE'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
+}
+
