@@ -6,6 +6,7 @@ import java.util.List;
 public class MonitoredMethod {
     private String name;
     private boolean trace;
+    private boolean requestHandler;
 
     public String getName() {
         return name;
@@ -21,5 +22,13 @@ public class MonitoredMethod {
 
     public void setTrace(boolean trace) {
         this.trace = trace;
+    }
+
+    public boolean isRequestHandler() {
+        return requestHandler;
+    }
+
+    public void setRequestHandler(boolean requestHandler) {
+        this.requestHandler = requestHandler;
     }
 }

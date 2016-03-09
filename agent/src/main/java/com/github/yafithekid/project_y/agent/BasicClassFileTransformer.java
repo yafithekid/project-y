@@ -69,8 +69,8 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                 try {
                     CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
                     if (!isAbstract(ctMethod)){
-                        insertLocalVariables(cc,ctMethod);
-                        insertDataCollect(cc,ctMethod);
+                        insertLocalVariables(cc,ctMethod,method);
+                        insertDataCollect(cc,ctMethod,method);
                     } else {
                         throw new IsAbstractMethodException(monitoredClass.getName(),method.getName());
                     }
@@ -121,7 +121,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         }
     }
 
-    void insertLocalVariables(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
+    void insertLocalVariables(CtClass cc,CtMethod m,MonitoredMethod mm) throws NotFoundException, CannotCompileException {
         m.addLocalVariable("__startTime",CtClass.longType);
         m.addLocalVariable("__endTime",CtClass.longType);
         m.addLocalVariable("__invocationId",getClassString());
@@ -133,9 +133,13 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         m.insertBefore("__invocationId = \"\"+Thread.currentThread().getId();");
     }
 
-    void insertDataCollect(CtClass cc,CtMethod m) throws NotFoundException, CannotCompileException {
+    void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
         //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
         String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__startMem+\" \"+__endMem+\" \"+__invocationId";
+        if (mm.isRequestHandler()){
+//            m.insertBefore("System.out.println(($1).getRequestURI());");
+            data += "+\" \"+(($1).getRequestURI())";
+        }
         m.insertAfter("{" +
                 "__endMem = Runtime.getRuntime().freeMemory();" +
                 "__endTime = System.currentTimeMillis();" +

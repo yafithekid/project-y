@@ -59,7 +59,7 @@
     {
       "name": "org.springframework.web.servlet.DispatcherServlet",
       "methods": [
-        { "name": "doDispatch", "trace":false}
+        { "name": "doDispatch", "trace":false,"requestHandler": true}
       ]
     },
     {

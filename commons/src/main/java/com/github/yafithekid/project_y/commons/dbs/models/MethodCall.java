@@ -18,8 +18,8 @@ public class MethodCall {
     private Long freeMemStart;
     private Long freeMemEnd;
     private String invocationId;
-
-    //met classname methodname start end
+    private String url;
+    private boolean isReqHandler;
 
     /**
      * Create new instance based from agent output
@@ -37,8 +37,16 @@ public class MethodCall {
         methodCall.setFreeMemStart(Long.parseLong(strings[5]));
         methodCall.setFreeMemEnd(Long.parseLong(strings[6]));
         methodCall.setInvocationId(strings[7]);
+        try {
+            methodCall.setUrl(strings[8]);
+            methodCall.setReqHandler(true);
+        } catch(ArrayIndexOutOfBoundsException e){
+            methodCall.setUrl(null);
+            methodCall.setReqHandler(false);
+        }
         return methodCall;
     }
+
 
     public Long getEnd() {
         return end;
@@ -102,5 +110,21 @@ public class MethodCall {
 
     public void setFreeMemEnd(Long freeMemEnd) {
         this.freeMemEnd = freeMemEnd;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public boolean isReqHandler() {
+        return isReqHandler;
+    }
+
+    public void setReqHandler(boolean reqHandler) {
+        isReqHandler = reqHandler;
     }
 }
