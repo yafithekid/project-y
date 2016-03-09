@@ -25,7 +25,7 @@ public class ApiController {
         }
         MongoHandler mongoHandler = config.getCollector().getMongoHandler();
         MorphiaFactory morphiaFactory = new MorphiaFactory(
-                mongoHandler.getHost(),mongoHandler.getPort());
+                mongoHandler.getHost(),mongoHandler.getPort(),mongoHandler.getDbName());
         datastore = morphiaFactory.createDatastore();
     }
 

@@ -2,8 +2,17 @@ package com.github.yafithekid.project_y.commons.config;
 
 public class MongoHandler {
     String host;
+    String dbName;
     int port;
     boolean active;
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
 
     public String getHost() {
         return host;

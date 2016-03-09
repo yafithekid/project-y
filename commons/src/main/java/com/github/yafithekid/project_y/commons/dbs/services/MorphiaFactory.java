@@ -8,18 +8,18 @@ public class MorphiaFactory {
     final String host;
     final int port;
     final Morphia morphia;
-    //TODO change database name to file config
-    static final String DB_NAME = "profiling";
+    final String dbName;
 
-    public MorphiaFactory(String host,int port){
+    public MorphiaFactory(String host,int port,String dbName){
         morphia = new Morphia();
         morphia.mapPackage("com.yafithekid.instrumentation.collector.models");
         this.host = host;
         this.port = port;
+        this.dbName = dbName;
     }
 
     public Datastore createDatastore(){
-        Datastore datastore = morphia.createDatastore(new MongoClient(host,port),DB_NAME);
+        Datastore datastore = morphia.createDatastore(new MongoClient(host,port), dbName);
         datastore.ensureIndexes();
         return datastore;
     }
