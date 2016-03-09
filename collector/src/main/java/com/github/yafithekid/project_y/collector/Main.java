@@ -4,6 +4,7 @@ import com.github.yafithekid.project_y.collector.services.ProfilingWriterMongoIm
 import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
 import com.github.yafithekid.project_y.collector.services.ProfilingWriterMockImpl;
 import com.github.yafithekid.project_y.commons.config.Config;
+import com.github.yafithekid.project_y.commons.config.MongoHandler;
 import com.github.yafithekid.project_y.commons.dbs.services.MorphiaFactory;
 
 import java.io.FileNotFoundException;
@@ -20,8 +21,10 @@ public class Main {
         if (config.getCollector().isDebug()){
             profilingWriters.add(new ProfilingWriterMockImpl());
         }
-        if (config.getCollector().getMongoHandler() != null){
-            MorphiaFactory morphiaFactory = new MorphiaFactory("127.0.0.1",27017);
+        MongoHandler mongoHandler = config.getCollector().getMongoHandler();
+        if (config.getCollector().getMongoHandler().isActive()){
+            MorphiaFactory morphiaFactory = new MorphiaFactory(mongoHandler.getHost()
+                    ,mongoHandler.getPort());
             profilingWriters.add(new ProfilingWriterMongoImpl(morphiaFactory));
         }
 

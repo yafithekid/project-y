@@ -1,3 +1,6 @@
+# Ignore bower components
+/visualizer/src/main/webapp/res/bower_components
+
 ### Maven template
 target/
 pom.xml.tag

@@ -90,4 +90,5 @@ public class Config {
     public void setEnableResourceCollect(boolean enableResourceCollect) {
         this.enableResourceCollect = enableResourceCollect;
     }
+
 }
