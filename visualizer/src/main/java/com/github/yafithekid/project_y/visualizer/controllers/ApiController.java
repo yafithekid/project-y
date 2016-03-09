@@ -2,13 +2,19 @@ package com.github.yafithekid.project_y.visualizer.controllers;
 
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
+import com.github.yafithekid.project_y.commons.dbs.models.MethodCall;
 import com.github.yafithekid.project_y.commons.dbs.services.MorphiaFactory;
 import org.mongodb.morphia.Datastore;
+import org.springframework.http.HttpRequest;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 @RestController
+@RequestMapping(value="/api")
 public class ApiController {
     static Config config;
     static Datastore datastore;
