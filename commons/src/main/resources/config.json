@@ -86,7 +86,11 @@
     },
     "debug": true
   },
+  "resourceMonitor" : {
+    "active": true,
+    "sendToCollector": false,
+    "collectRateMillis": 5000,
+    "debug": true
+  }
   //enabling the resource collect will create a thread that will fetch resource usage (CPU, memory) within resourceCollectRateMillis
-  "enableResourceCollect": false,
-  "resourceCollectRateMillis" : 1000000
 }

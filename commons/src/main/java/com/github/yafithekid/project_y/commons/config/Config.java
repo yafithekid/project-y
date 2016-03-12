@@ -18,10 +18,9 @@ public class Config {
     public static final String DEFAULT_FILE_CONFIG_LOCATION = "C:\\tugas\\ta\\instrumentation\\commons\\src\\main\\resources\\config.json";
     private List<MonitoredClass> classes;
     private CollectorConfig collector;
-    private long resourceCollectRateMillis;
     private String appId;
     private String systemId;
-    private boolean enableResourceCollect;
+    private ResourceMonitor resourceMonitor;
 
     public static Config readFromFile(String location) throws FileNotFoundException {
         Gson gson = new Gson();
@@ -59,14 +58,6 @@ public class Config {
         this.collector = collector;
     }
 
-    public long getResourceCollectRateMillis() {
-        return resourceCollectRateMillis;
-    }
-
-    public void setResourceCollectRateMillis(long resourceCollectRateMillis) {
-        this.resourceCollectRateMillis = resourceCollectRateMillis;
-    }
-
     public String getAppId() {
         return appId;
     }
@@ -83,12 +74,11 @@ public class Config {
         this.systemId = systemId;
     }
 
-    public boolean isEnableResourceCollect() {
-        return enableResourceCollect;
+    public ResourceMonitor getResourceMonitor() {
+        return resourceMonitor;
     }
 
-    public void setEnableResourceCollect(boolean enableResourceCollect) {
-        this.enableResourceCollect = enableResourceCollect;
+    public void setResourceMonitor(ResourceMonitor resourceMonitor) {
+        this.resourceMonitor = resourceMonitor;
     }
-
 }

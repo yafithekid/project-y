@@ -24,19 +24,19 @@ public class Sender {
 
     public static Sender get(){ return instance; }
 
-    public void send(String data){
-        try {
-            Socket client = new Socket(mCollectorHost,mCollectorPort);
-            OutputStream outToServer = client.getOutputStream();
-            if (!(data).endsWith("\n")) { data += "\n"; }
-            DataOutputStream out = new java.io.DataOutputStream(outToServer);
-            System.out.println(data);
-            out.writeUTF(data);
-            client.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void send(String data){
+//        try {
+//            Socket client = new Socket(mCollectorHost,mCollectorPort);
+//            OutputStream outToServer = client.getOutputStream();
+//            if (!(data).endsWith("\n")) { data += "\n"; }
+//            DataOutputStream out = new java.io.DataOutputStream(outToServer);
+//            System.out.println(data);
+//            out.writeUTF(data);
+//            client.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 }
