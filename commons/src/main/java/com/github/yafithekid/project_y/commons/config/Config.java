@@ -2,7 +2,7 @@ package com.github.yafithekid.project_y.commons.config;
 
 
 
-import com.google.gson.Gson;
+import com.github.yafithekid.project_y.commons.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

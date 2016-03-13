@@ -1,9 +1,5 @@
 apply plugin: 'java'
 
-dependencies {
-    compile 'com.google.code.gson:gson:2.5'
-}
-
 jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }

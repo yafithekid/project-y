@@ -1,5 +1,7 @@
 package com.github.yafithekid.project_y.example;
 
+import com.google.gson.Gson;
+
 public class Main {
     public static void main(String[] args){
 //        TResource resource = new TResource();
@@ -9,6 +11,7 @@ public class Main {
 //        int x = tReturn.returnInt();
 //        System.out.println(tReturn.returnString());
 //        tReturn.returnVoid();
+        Gson gson = new Gson();
 
         AbsService absService = new AbsServiceImpl();
         AbsServiceImpl absServiceImpl = new AbsServiceImpl();
