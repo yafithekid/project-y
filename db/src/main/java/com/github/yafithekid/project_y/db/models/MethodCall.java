@@ -3,6 +3,8 @@ package com.github.yafithekid.project_y.db.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
+import java.util.Map;
+
 @Entity(value = "methodCall",noClassnameStored = true)
 @Indexes(value={
     @Index(fields = {@Field("clazz")}),
@@ -23,6 +25,23 @@ public class MethodCall {
     private String reqMethod;
     private String url;
     private boolean isReqHandler;
+
+    public static MethodCall newInstance(Map<String,String> map){
+        MethodCall mc = new MethodCall();
+        mc.setClazz(map.get("clazz"));
+        mc.setMethod(map.get("method"));
+        mc.setStart(Long.parseLong(map.get("start")));
+        mc.setEnd(Long.parseLong(map.get("end")));
+        mc.setFreeMemStart(Long.parseLong(map.get("freeMemStart")));
+        mc.setFreeMemEnd(Long.parseLong(map.get("freeMemEnd")));
+        mc.setInvocationId(map.get("invocationId"));
+        if (map.containsKey("reqMethod") && map.containsKey("url")){
+            mc.setReqHandler(true);
+            mc.setReqMethod(map.get("reqMethod"));
+            mc.setUrl(map.get("url"));
+        }
+        return mc;
+    }
 
     /**
      * Create new instance based from agent output

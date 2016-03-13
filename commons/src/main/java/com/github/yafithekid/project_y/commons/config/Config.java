@@ -18,8 +18,6 @@ public class Config {
     public static final String DEFAULT_FILE_CONFIG_LOCATION = "C:\\tugas\\ta\\instrumentation\\commons\\src\\main\\resources\\config.json";
     private List<MonitoredClass> classes;
     private CollectorConfig collector;
-    private String appId;
-    private String systemId;
     private ResourceMonitor resourceMonitor;
 
     public static Config readFromFile(String location) throws FileNotFoundException {
@@ -56,22 +54,6 @@ public class Config {
 
     public void setCollector(CollectorConfig collector) {
         this.collector = collector;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
     }
 
     public ResourceMonitor getResourceMonitor() {

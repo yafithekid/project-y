@@ -3,6 +3,8 @@ package com.github.yafithekid.project_y.db.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
+import java.util.Map;
+
 @Entity(value = "appMemoryUsage",noClassnameStored = true)
 @Indexes({
     @Index(fields = {@Field("timestamp")}),
@@ -19,6 +21,15 @@ public class AppMemoryUsage {
     private long commited;
     private long max;
 
+    public static AppMemoryUsage newInstance(Map<String,String> map){
+        AppMemoryUsage amu = new AppMemoryUsage();
+        amu.setTimestamp(Long.parseLong(map.get("timestamp")));
+        amu.setUsed(Long.parseLong(map.get("used")));
+        amu.setCommited(Long.parseLong(map.get("commited")));
+        amu.setMax(Long.parseLong(map.get("max")));
+        return amu;
+    }
+
     /**
      * Create new instance based from agent output
      * @param data agent output
@@ -28,8 +39,6 @@ public class AppMemoryUsage {
         AppMemoryUsage appMemoryUsage = new AppMemoryUsage();
         //This will cause any number of consecutive spaces to split
         String[] strings = data.split("\\s+");
-        appMemoryUsage.setAppId(strings[1]);
-        appMemoryUsage.setSystemId(strings[2]);
         appMemoryUsage.setTimestamp(Long.parseLong(strings[3]));
         appMemoryUsage.setUsed(Long.parseLong(strings[4]));
         appMemoryUsage.setCommited(Long.parseLong(strings[5]));
@@ -43,14 +52,6 @@ public class AppMemoryUsage {
 
     public void setId(ObjectId id) {
         this.id = id;
-    }
-
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public void setSystemId(String machine_id) {
-        this.systemId = machine_id;
     }
 
     public Long getTimestamp() {
@@ -67,14 +68,6 @@ public class AppMemoryUsage {
 
     public void setUsed(Long used) {
         this.used = used;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
     }
 
     public void setTimestamp(long timestamp) {

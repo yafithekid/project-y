@@ -1,6 +1,8 @@
 package com.github.yafithekid.project_y.agent.daemons;
 
+import com.github.yafithekid.project_y.commons.JsonConstruct;
 import com.github.yafithekid.project_y.commons.config.ResourceMonitor;
+import com.github.yafithekid.project_y.commons.gson.Gson;
 import com.sun.management.OperatingSystemMXBean;
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
@@ -8,8 +10,11 @@ import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class for monitoring CPU and memory of current JVM
@@ -17,16 +22,13 @@ import java.util.List;
 public class HardwareDaemon extends Thread {
     final String mCollectorHost;
     final int mCollectorPort;
-    final String mAppId;
-    final String mSystemId;
     final long mResourceRateCollect;
+    JsonConstruct jsonConstruct = new JsonConstruct();
     List<HardwareDaemonWriter> mHardwareWriters;
 
     public HardwareDaemon(Config config,List<HardwareDaemonWriter> hardwareDaemonWriters){
         mCollectorHost = config.getCollector().getHost();
         mCollectorPort = config.getCollector().getPort();
-        mSystemId = config.getSystemId();
-        mAppId = config.getAppId();
         ResourceMonitor rm = config.getResourceMonitor();
         mResourceRateCollect = rm.getCollectRateMillis();
 
@@ -41,23 +43,26 @@ public class HardwareDaemon extends Thread {
         //noinspection InfiniteLoopStatement
         while(true){
             long currTime = System.currentTimeMillis();
-            MemoryUsage sysMemU = memoryMXBean.getHeapMemoryUsage();
+            List<MemoryPoolMXBean> memoryMXBeans = ManagementFactory.getMemoryPoolMXBeans();
             for (HardwareDaemonWriter writer : mHardwareWriters) {
-                //TODO extract format
-                writer.write((sysMemU.getMax() - sysMemU.getUsed())+"");
-                writer.write(String.format("%s %s %s %d %d %d %d",
-                        ProfilingPrefix.APP_MEMORY, mAppId, mSystemId, currTime,
+                for (MemoryPoolMXBean mxBean : memoryMXBeans) {
+                    MemoryUsage usage = mxBean.getUsage();
+                    if (usage != null){
+                        writer.write(jsonConstruct.constructMemoryPool(currTime,mxBean.getName(),
+                                usage.getUsed(),usage.getCommitted(),usage.getMax()));
+                    }
+                }
+                MemoryUsage sysMemU = memoryMXBean.getHeapMemoryUsage();
+                writer.write(jsonConstruct.constructAppMemoryUsage(currTime,
                         sysMemU.getUsed(), sysMemU.getCommitted(), sysMemU.getMax()));
-                writer.write(String.format("%s %s %s %d %f",
-                        ProfilingPrefix.APP_CPU, mAppId, mSystemId, currTime,
+                writer.write(jsonConstruct.constructAppCpuUsage(currTime,
                         operatingSystemMXBean.getProcessCpuLoad()));
-                writer.write(String.format("%s %s %d %f",
-                        ProfilingPrefix.SYSTEM_CPU, mSystemId, currTime,
-                        operatingSystemMXBean.getSystemCpuLoad()));
+
+                operatingSystemMXBean.getCommittedVirtualMemorySize();
                 long used = operatingSystemMXBean.getTotalPhysicalMemorySize() - operatingSystemMXBean.getFreePhysicalMemorySize();
-                writer.write(String.format("%s %s %d %d %d",
-                        ProfilingPrefix.SYSTEM_MEMORY, mSystemId, currTime,
-                        used, operatingSystemMXBean.getTotalPhysicalMemorySize()));
+                writer.write(jsonConstruct.constructSystemMemoryUsage(currTime,used,operatingSystemMXBean.getTotalPhysicalMemorySize()));
+                writer.write(jsonConstruct.constructSystemCpuUsage(currTime,
+                        operatingSystemMXBean.getSystemCpuLoad()));
             }
 
             try {

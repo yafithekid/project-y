@@ -1,6 +1,4 @@
 {
-  "appId" : "1",
-  "systemId" : "1",
   "classes" : [
     {
       "name": "com.github.yafithekid.project_y.example.Service",
@@ -88,9 +86,8 @@
   },
   "resourceMonitor" : {
     "active": false,
-    "sendToCollector": false,
+    "sendToCollector": true,
     "collectRateMillis": 5000,
     "debug": true
   }
-  //enabling the resource collect will create a thread that will fetch resource usage (CPU, memory) within resourceCollectRateMillis
 }

@@ -7,6 +7,7 @@ import com.github.yafithekid.project_y.db.models.*;
  */
 public interface ProfilingWriter {
     void methodCall(MethodCall methodCall);
+    void memoryPool(MemoryPool memoryPool);
     void appCPUUsage(AppCPUUsage appCPUUsage);
     void systemCPUUsage(SystemCPUUsage systemCPUUsage);
     void appMemoryUsage(AppMemoryUsage appMemoryUsage);

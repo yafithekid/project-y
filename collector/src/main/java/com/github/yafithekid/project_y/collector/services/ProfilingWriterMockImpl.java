@@ -18,28 +18,32 @@ public class ProfilingWriterMockImpl implements ProfilingWriter {
     }
 
     @Override
+    public void memoryPool(MemoryPool memoryPool) {
+        System.out.println(String.format("[%s]: %d %s %d %d %d","mem pool",memoryPool.getTimestamp(),memoryPool.getName(),
+                memoryPool.getUsed(),memoryPool.getCommited(),memoryPool.getMax()));
+    }
+
+    @Override
     public void appCPUUsage(AppCPUUsage appCPUUsage) {
-        System.out.println(String.format("%s: %s %s %s %.2f","[app cpu]",appCPUUsage.getAppId(),
-                appCPUUsage.getSystemId(),new Date(appCPUUsage.getTimestamp()).toString(),
+        System.out.println(String.format("%s: %s %.2f","[app cpu]",new Date(appCPUUsage.getTimestamp()).toString(),
                 appCPUUsage.getLoad()));
     }
 
     @Override
     public void systemCPUUsage(SystemCPUUsage systemCPUUsage) {
-        System.out.println(String.format("%s: %s %s %.2f","[system cpu]",systemCPUUsage.getSystemId(),
+        System.out.println(String.format("%s: %s %.2f","[system cpu]",
                 new Date(systemCPUUsage.getTimestamp()).toString(),systemCPUUsage.getLoad()));
     }
 
     @Override
     public void appMemoryUsage(AppMemoryUsage appMemoryUsage) {
-        System.out.println(String.format("%s: %s %s %s %d %d %d","[app memory]",appMemoryUsage.getAppId(),
-                appMemoryUsage.getSystemId(),new Date(appMemoryUsage.getTimestamp()).toString(),appMemoryUsage.getUsed(),
+        System.out.println(String.format("%s: %s %d %d %d","[app memory]",new Date(appMemoryUsage.getTimestamp()).toString(),appMemoryUsage.getUsed(),
                 appMemoryUsage.getCommited(),appMemoryUsage.getMax()));
     }
 
     @Override
     public void systemMemoryUsage(SystemMemoryUsage systemMemoryUsage) {
-        System.out.println(String.format("%s: %s %s %d %d","[sys memory]",systemMemoryUsage.getSystemId(),
+        System.out.println(String.format("%s: %s %d %d","[sys memory]",
                 new Date(systemMemoryUsage.getTimestamp()).toString(),systemMemoryUsage.getUsed(),systemMemoryUsage.getMax()));
     }
 }

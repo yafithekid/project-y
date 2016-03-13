@@ -3,6 +3,8 @@ package com.github.yafithekid.project_y.db.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
+import java.util.Map;
+
 @Entity(value = "appMemoryUsage",noClassnameStored = true)
 @Indexes({
         @Index(fields = {@Field("timestamp")}),
@@ -11,27 +13,16 @@ import org.mongodb.morphia.annotations.*;
 public class SystemMemoryUsage {
     @Id
     private ObjectId id;
-    private String systemId;
     private long timestamp;
     private long used;
     private long max;
 
-    /**
-     * Create new instance based from agent output
-     * @param data agent output
-     * @return new instance
-     */
-    //sme systemId timestamp used max
-    public static SystemMemoryUsage newInstance(String data){
-        SystemMemoryUsage systemMemoryUsage = new SystemMemoryUsage();
-        String[] strings = data.split("\\s+");
-
-        systemMemoryUsage.setSystemId(strings[1]);
-        systemMemoryUsage.setTimestamp(Long.parseLong(strings[2]));
-        systemMemoryUsage.setUsed(Long.parseLong(strings[3]));
-        systemMemoryUsage.setMax(Long.parseLong(strings[4]));
-
-        return systemMemoryUsage;
+    public static SystemMemoryUsage newInstance(Map<String,String> map){
+        SystemMemoryUsage sysMemUsage = new SystemMemoryUsage();
+        sysMemUsage.setTimestamp(Long.parseLong(map.get("timestamp")));
+        sysMemUsage.setUsed(Long.parseLong(map.get("used")));
+        sysMemUsage.setMax(Long.parseLong(map.get("max")));
+        return sysMemUsage;
     }
 
     public ObjectId getId() {
@@ -40,14 +31,6 @@ public class SystemMemoryUsage {
 
     public void setId(ObjectId id) {
         this.id = id;
-    }
-
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
     }
 
     public long getTimestamp() {

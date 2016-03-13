@@ -3,6 +3,8 @@ package com.github.yafithekid.project_y.db.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
+import java.util.Map;
+
 @Entity(value = "systemCpuUsage",noClassnameStored = true)
 @Indexes(value = {
     @Index(fields = {@Field("systemId")}),
@@ -11,23 +13,13 @@ import org.mongodb.morphia.annotations.*;
 public class SystemCPUUsage {
     @Id
     private ObjectId id;
-    private String systemId;
     private double load;
     private long timestamp;
 
-    /**
-     * Create new instance based from agent output
-     * @param data agent output
-     * @return new instance
-     */
-    public static SystemCPUUsage newInstance(String data){
-        String[] strings = data.split("\\s+");
-
+    public static SystemCPUUsage newInstance(Map<String,String> map){
         SystemCPUUsage systemCPUUsage = new SystemCPUUsage();
-        systemCPUUsage.setSystemId(strings[1]);
-        systemCPUUsage.setTimestamp(Long.parseLong(strings[2]));
-        systemCPUUsage.setLoad(Double.parseDouble(strings[3]));
-
+        systemCPUUsage.setTimestamp(Long.parseLong(map.get("timestamp")));
+        systemCPUUsage.setLoad(Double.parseDouble(map.get("load")));
         return systemCPUUsage;
     }
 
@@ -37,14 +29,6 @@ public class SystemCPUUsage {
 
     public void setId(ObjectId id) {
         this.id = id;
-    }
-
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
     }
 
     public double getLoad() {

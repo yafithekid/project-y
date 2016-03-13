@@ -3,20 +3,26 @@ package com.github.yafithekid.project_y.collector;
 
 import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
 import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
+import com.github.yafithekid.project_y.commons.gson.Gson;
+import com.github.yafithekid.project_y.commons.gson.reflect.TypeToken;
 import com.github.yafithekid.project_y.db.models.*;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 
 public class ConnectionHandler extends Thread{
     private Socket mSocket;
     private List<ProfilingWriter> mProfilingWriters;
+    private Gson mGson;
 
     public ConnectionHandler(Socket socket, List<ProfilingWriter> profilingWriters){
         this.mSocket = socket;
         this.mProfilingWriters = profilingWriters;
+        mGson = new Gson();
     }
 
     @Override
@@ -33,34 +39,49 @@ public class ConnectionHandler extends Thread{
                     stop = true;
                 }
             }
-            String data = buffer.toString();
-            String code = buffer.substring(0,6);
-            if (code.equalsIgnoreCase(ProfilingPrefix.SYSTEM_CPU)){
-                SystemCPUUsage systemCPUUsage = SystemCPUUsage.newInstance(data);
-                for(ProfilingWriter profilingWriter: mProfilingWriters){
-                    profilingWriter.systemCPUUsage(systemCPUUsage);
+            try {
+                String data = buffer.toString();
+                Type type = new TypeToken<Map<String,String>>(){}.getType();
+                Map<String,String> map = mGson.fromJson(data,type);
+                String prefix = map.get("_prefix");
+                if (prefix == null) prefix = "";
+                if (prefix.equalsIgnoreCase(ProfilingPrefix.MEMORY_SPACE)){
+                    MemoryPool memoryPool = MemoryPool.newInstance(map);
+                    for(ProfilingWriter profilingWriter: mProfilingWriters){
+                        profilingWriter.memoryPool(memoryPool);
+                    }
+                } else if (prefix.equalsIgnoreCase(ProfilingPrefix.SYSTEM_CPU)){
+                    SystemCPUUsage systemCPUUsage = SystemCPUUsage.newInstance(map);
+                    for(ProfilingWriter profilingWriter: mProfilingWriters){
+                        profilingWriter.systemCPUUsage(systemCPUUsage);
+                    }
+                } else if (prefix.equalsIgnoreCase(ProfilingPrefix.SYSTEM_MEMORY)){
+                    SystemMemoryUsage systemMemoryUsage = SystemMemoryUsage.newInstance(map);
+                    for(ProfilingWriter profilingWriter: mProfilingWriters) {
+                        profilingWriter.systemMemoryUsage(systemMemoryUsage);
+                    }
+                } else if (prefix.equalsIgnoreCase(ProfilingPrefix.METHOD_INVOCATION)){
+                    MethodCall methodCall = MethodCall.newInstance(map);
+                    for(ProfilingWriter profilingWriter: mProfilingWriters){
+                        profilingWriter.methodCall(methodCall);
+                    }
+                } else if (prefix.equalsIgnoreCase(ProfilingPrefix.APP_CPU)){
+                    AppCPUUsage appCPUUsage = AppCPUUsage.newInstance(map);
+                    for(ProfilingWriter profilingWriter: mProfilingWriters){
+                        profilingWriter.appCPUUsage(appCPUUsage);
+                    }
+                } else if (prefix.equalsIgnoreCase(ProfilingPrefix.APP_MEMORY)){
+                    AppMemoryUsage appMemoryUsage = AppMemoryUsage.newInstance(map);
+                    for(ProfilingWriter profilingWriter: mProfilingWriters){
+                        profilingWriter.appMemoryUsage(appMemoryUsage);
+                    }
+                } else {
+                    System.out.println("unknown: "+data);
                 }
-            } else if (code.equalsIgnoreCase(ProfilingPrefix.SYSTEM_MEMORY)){
-                SystemMemoryUsage systemMemoryUsage = SystemMemoryUsage.newInstance(data);
-                for(ProfilingWriter profilingWriter: mProfilingWriters) {
-                    profilingWriter.systemMemoryUsage(systemMemoryUsage);
-                }
-            } else if (code.equalsIgnoreCase(ProfilingPrefix.METHOD_INVOCATION)){
-                MethodCall methodCall = MethodCall.newInstance(data);
-                for(ProfilingWriter profilingWriter: mProfilingWriters){
-                    profilingWriter.methodCall(methodCall);
-                }
-            } else if (code.equalsIgnoreCase(ProfilingPrefix.APP_CPU)){
-                AppCPUUsage appCPUUsage = AppCPUUsage.newInstance(data);
-                for(ProfilingWriter profilingWriter: mProfilingWriters){
-                    profilingWriter.appCPUUsage(appCPUUsage);
-                }
-            } else if (code.equalsIgnoreCase(ProfilingPrefix.APP_MEMORY)){
-                AppMemoryUsage appMemoryUsage = AppMemoryUsage.newInstance(data);
-                for(ProfilingWriter profilingWriter: mProfilingWriters){
-                    profilingWriter.appMemoryUsage(appMemoryUsage);
-                }
+            } catch (Exception e){
+                e.printStackTrace();
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

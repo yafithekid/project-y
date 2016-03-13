@@ -1,5 +1,6 @@
 package com.github.yafithekid.project_y.agent;
 
+import com.github.yafithekid.project_y.commons.JsonConstruct;
 import com.github.yafithekid.project_y.commons.config.CollectorConfig;
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
@@ -15,13 +16,16 @@ public class Sender implements SendToCollector {
 
     public final String mCollectorHost;
     public final int mCollectorPort;
+    JsonConstruct jsonConstruct;
 
     private Sender(Config config){
         this.mCollectorHost = config.getCollector().getHost();
         this.mCollectorPort = config.getCollector().getPort();
+        jsonConstruct = new JsonConstruct();
     }
 
     public static Sender getInstance() throws FileNotFoundException {
+        System.out.println("get instance");
         if (instance == null) {
             Config config = Config.readFromFile(Config.DEFAULT_FILE_CONFIG_LOCATION);
             instance = new Sender(config);
@@ -30,17 +34,19 @@ public class Sender implements SendToCollector {
     }
 
     @Override
-    public void methodCall(String className, String methodName, long startTime, long endTime, long startMem, long endMem,String threadId) {
-        String data = String.format("%s %s %s %d %d %d %d %s",
-                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId);
+    public void methodCall(String className, String methodName,String startTime, String endTime, String startMem,String endMem,String threadId) {
+        String data = jsonConstruct.constructMethodCall(className,methodName,Long.parseLong(startTime),Long.parseLong(endTime),Long.parseLong(startMem),Long.parseLong(endMem),threadId);
+//        String data = String.format("%s %s %s %d %d %d %d %s",
+//                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId);
         sendToCollector(data);
     }
 
     @Override
     public void reqHandlerMethodCall(String className, String methodName, long startTime, long endTime, long startMem, long endMem,String threadId, String httpVerb, String url) {
-        String data = String.format("%s %s %s %d %d %d %d %s %s %s",
-                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId,
-                httpVerb,url);
+        String data = jsonConstruct.constructReqHandlerMethodCall(className,methodName,startTime,endTime,startMem,endMem,threadId,httpVerb,url);
+//        String data = String.format("%s %s %s %d %d %d %d %s %s %s",
+//                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId,
+//                httpVerb,url);
         sendToCollector(data);
     }
 

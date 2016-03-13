@@ -6,4 +6,5 @@ public class ProfilingPrefix {
     public final static String SYSTEM_CPU = "syscpu";
     public final static String APP_CPU = "appcpu";
     public final static String METHOD_INVOCATION = "metinv";
+    public final static String MEMORY_SPACE = "memspc";
 }

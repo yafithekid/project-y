@@ -17,6 +17,11 @@ public class ProfilingWriterMongoImpl implements ProfilingWriter {
     }
 
     @Override
+    public void memoryPool(MemoryPool memoryPool) {
+        datastore.save(memoryPool);
+    }
+
+    @Override
     public void appCPUUsage(AppCPUUsage appCPUUsage) {
         datastore.save(appCPUUsage);
     }

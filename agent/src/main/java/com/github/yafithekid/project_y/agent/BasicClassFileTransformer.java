@@ -4,6 +4,8 @@ package com.github.yafithekid.project_y.agent;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.*;
 
@@ -65,6 +67,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                 throw new IsInterfaceException(monitoredClass.getName());
             }
             createDataCollectMethod(cc);
+//            createSenderMethodCall(cc);
             for(MonitoredMethod method:monitoredClass.getMethods()) {
                 try {
                     CtMethod ctMethod = cc.getDeclaredMethod(method.getName());
@@ -133,37 +136,69 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         m.insertBefore("__invocationId = \"\"+Thread.currentThread().getId();");
     }
 
-//    void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
-//        //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
+    void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
+        //send data as json
+        String data = String.format("\"{" +
+                "\\\"_prefix\\\":\\\"%s\\\","+
+                "\\\"clazz\\\":\\\"%s\\\","+
+                "\\\"method\\\":\\\"%s\\\","+
+                "\\\"start\\\":\"+%s+\","+
+                "\\\"end\\\":\"+%s+\","+
+                "\\\"freeMemStart\\\":\"+%s+\","+
+                "\\\"freeMemEnd\\\":\"+%s+\","+
+                "\\\"invocationId\\\":\\\"\"+%s+\"\\\"",ProfilingPrefix.METHOD_INVOCATION,cc.getName(),m.getName(),"__startTime","__endTime","__startMem","__endMem","__invocationId");
 //        String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__startMem+\" \"+__endMem+\" \"+__invocationId";
-//        if (mm.isRequestHandler()){
-////            m.insertBefore("System.out.println(($1).getRequestURI());");
+        if (mm.isRequestHandler()){
+            data += String.format("," +
+                    "\\\"reqMethod\\\":\\\"\"+%s+\"\\\","+
+                    "\\\"url\\\":\\\"\"+%s+\"\\\"}\"","($1).getMethod()","($1).getRequestURI()");
+//            m.insertBefore("System.out.println(($1).getRequestURI());");
 //            data += "+\" \"+(($1).getMethod())+\" \"+(($1).getRequestURI())";
-//        }
-//        m.insertAfter("{" +
+        } else {
+            data +="}\"";
+        }
+        m.insertAfter("{" +
+                "__endMem = Runtime.getRuntime().freeMemory();" +
+                "__endTime = System.currentTimeMillis();" +
+                DATA_COLLECT_METHOD+"("+data+");" +
+//                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
+                "}");
+    }
+
+//    void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
+//        String append = "{" +
 //                "__endMem = Runtime.getRuntime().freeMemory();" +
 //                "__endTime = System.currentTimeMillis();" +
-//                DATA_COLLECT_METHOD+"("+data+");" +
-////                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
-//                "}");
+//                "try {" +
+//                " Class clazz = Thread.currentThread().getContextClassLoader().loadClass(\"com.github.yafithekid.project_y.agent.Sender\");" +
+//                " java.lang.reflect.Method getInstance = clazz.getDeclaredMethod(\"getInstance\",null);" +
+////                " java.lang.reflect.Method[] methods = clazz.getDeclaredMethods();" +
+////                " java.lang.reflect.Method getInstance;" +
+////                " java.lang.reflect.Method methodCall;" +
+////                " for(int i = 0; i < methods.length; i++){" +
+////                "  java.lang.reflect.Method method = methods[i];"+
+////                "  if (method.getName().equals(\"getInstance\")) getInstance = method; "+
+//////                "  if (method.getName().equals(\"methodCall\")) methodCall = method; " +
+////                " };" +
+//                " Object o = getInstance.invoke(null,null);" +
+//                " java.lang.reflect.Method methodCall = clazz.getDeclaredMethod(\"methodCall\",new Class[]{String.class,String.class,String.class,String.class,String.class,String.class,String.class});" +
+//                " methodCall.invoke(o,(Object) new String[]{\""+cc.getName()+"\",\""+m.getName()+"\",\"\"+__startTime,\"\"+__endTime,\"\"+__startMem,\"\"+__endMem,__invocationId});" +
+//                "} catch (Exception e) {" +
+//                " e.printStackTrace();" +
+//                "}";
+////                + "}";
+//        if (mm.isRequestHandler()){
+//            m.insertAfter(
+//                    append +
+////                    "com.github.yafithekid.project_y.agent.Sender.getInstance().reqHandlerMethodCall(\""+cc.getName()+"\",\""+m.getName()+"\",__startTime,__endTime,__startMem,__endMem,__invocationId,($1).getMethod(),($1).getRequestURI());" +
+//                    "}");
+//        } else {
+//            m.insertAfter(
+//                    append +
+////                    "com.github.yafithekid.project_y.agent.Sender.getInstance().methodCall(\""+cc.getName()+"\",\""+m.getName()+"\",__startTime,__endTime,__startMem,__endMem,__invocationId);" +
+//                    "}");
+//        }
 //    }
-
-    void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
-        String append = "{" +
-                "__endMem = Runtime.getRuntime().freeMemory();" +
-                "__endTime = System.currentTimeMillis();";
-        if (mm.isRequestHandler()){
-            m.insertAfter(
-                    append +
-                    "com.github.yafithekid.project_y.agent.Sender.getInstance().reqHandlerMethodCall(\""+cc.getName()+"\",\""+m.getName()+"\",__startTime,__endTime,__startMem,__endMem,__invocationId,($1).getMethod(),($1).getRequestURI());" +
-                    "}");
-        } else {
-            m.insertAfter(
-                    append +
-                    "com.github.yafithekid.project_y.agent.Sender.getInstance().methodCall(\""+cc.getName()+"\",\""+m.getName()+"\",__startTime,__endTime,__startMem,__endMem,__invocationId);" +
-                    "}");
-        }
-    }
 
     CtClass getClassString(){
         try {
@@ -173,6 +208,28 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             return null;
         }
     }
+
+//    void createSenderMethodCall(CtClass ctClass){
+//        String methodBody = "{" +
+//                " try {" +
+//                "  Class clazz = Thread.currentThread().getContextClassLoader().loadClass(\""+Sender.class.getName()+"\");" +
+//                "  java.lang.reflect.Method m = clazz.getMethod(\"getInstance\",null);" +
+//                "  Object o = m.invoke(null);" +
+//                "  System.out.println(o.getClass().getName());" +
+//                " } catch (Exception e){" +
+//                "  e.printStackTrace();" +
+//                " }" + "}";
+//        try {
+//            CtMethod dataCollectMethod = CtNewMethod.make("public abstract static void __a();",ctClass);
+//            dataCollectMethod.setBody(methodBody);
+//            dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
+//            ctClass.addMethod(dataCollectMethod);
+//        } catch (CannotCompileException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//    }
 
     void createDataCollectMethod(CtClass ctClass){
         try {

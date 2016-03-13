@@ -3,6 +3,8 @@ package com.github.yafithekid.project_y.db.models;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
+import java.util.Map;
+
 @Entity(value = "appCpuUsage",noClassnameStored = true)
 @Indexes(value = {
     @Index(fields = {@Field("appId")}),
@@ -12,23 +14,13 @@ import org.mongodb.morphia.annotations.*;
 public class AppCPUUsage {
     @Id
     private ObjectId id;
-    private String appId;
-    private String systemId;
     private double load;
     private long timestamp;
 
-    /**
-     * Create new instance based from agent output
-     * @param data agent output
-     * @return new instance
-     */
-    public static AppCPUUsage newInstance(String data){
+    public static AppCPUUsage newInstance(Map<String,String> map){
         AppCPUUsage appCPUUsage = new AppCPUUsage();
-        String[] strings = data.split("\\s+");
-        appCPUUsage.setAppId(strings[1]);
-        appCPUUsage.setSystemId(strings[2]);
-        appCPUUsage.setTimestamp(Long.parseLong(strings[3]));
-        appCPUUsage.setLoad(Double.parseDouble(strings[4]));
+        appCPUUsage.setTimestamp(Long.parseLong(map.get("timestamp")));
+        appCPUUsage.setLoad(Double.parseDouble(map.get("load")));
         return appCPUUsage;
     }
 
@@ -38,14 +30,6 @@ public class AppCPUUsage {
 
     public void setId(ObjectId id) {
         this.id = id;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
     }
 
     public long getTimestamp() {
@@ -64,11 +48,4 @@ public class AppCPUUsage {
         this.load = load;
     }
 
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
-    }
 }
