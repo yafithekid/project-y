@@ -133,19 +133,36 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
         m.insertBefore("__invocationId = \"\"+Thread.currentThread().getId();");
     }
 
+//    void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
+//        //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
+//        String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__startMem+\" \"+__endMem+\" \"+__invocationId";
+//        if (mm.isRequestHandler()){
+////            m.insertBefore("System.out.println(($1).getRequestURI());");
+//            data += "+\" \"+(($1).getMethod())+\" \"+(($1).getRequestURI())";
+//        }
+//        m.insertAfter("{" +
+//                "__endMem = Runtime.getRuntime().freeMemory();" +
+//                "__endTime = System.currentTimeMillis();" +
+//                DATA_COLLECT_METHOD+"("+data+");" +
+////                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
+//                "}");
+//    }
+
     void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
-        //TODO dilema between adding JSON library to instrumented JAR, or just hardcoding like this
-        String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__startMem+\" \"+__endMem+\" \"+__invocationId";
-        if (mm.isRequestHandler()){
-//            m.insertBefore("System.out.println(($1).getRequestURI());");
-            data += "+\" \"+(($1).getMethod())+\" \"+(($1).getRequestURI())";
-        }
-        m.insertAfter("{" +
+        String append = "{" +
                 "__endMem = Runtime.getRuntime().freeMemory();" +
-                "__endTime = System.currentTimeMillis();" +
-                DATA_COLLECT_METHOD+"("+data+");" +
-//                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
-                "}");
+                "__endTime = System.currentTimeMillis();";
+        if (mm.isRequestHandler()){
+            m.insertAfter(
+                    append +
+                    "com.github.yafithekid.project_y.agent.Sender.getInstance().reqHandlerMethodCall(\""+cc.getName()+"\",\""+m.getName()+"\",__startTime,__endTime,__startMem,__endMem,__invocationId,($1).getMethod(),($1).getRequestURI());" +
+                    "}");
+        } else {
+            m.insertAfter(
+                    append +
+                    "com.github.yafithekid.project_y.agent.Sender.getInstance().methodCall(\""+cc.getName()+"\",\""+m.getName()+"\",__startTime,__endTime,__startMem,__endMem,__invocationId);" +
+                    "}");
+        }
     }
 
     CtClass getClassString(){
