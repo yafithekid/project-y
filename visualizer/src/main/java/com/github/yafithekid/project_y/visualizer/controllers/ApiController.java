@@ -2,12 +2,10 @@ package com.github.yafithekid.project_y.visualizer.controllers;
 
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
-import com.github.yafithekid.project_y.commons.dbs.models.MethodCall;
-import com.github.yafithekid.project_y.commons.dbs.services.MorphiaFactory;
+import com.github.yafithekid.project_y.db.models.MethodCall;
+import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 import org.mongodb.morphia.Datastore;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 

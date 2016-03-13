@@ -1,6 +1,6 @@
 package com.github.yafithekid.project_y.collector.services;
 
-import com.github.yafithekid.project_y.commons.dbs.models.*;
+import com.github.yafithekid.project_y.db.models.*;
 
 import java.util.Date;
 

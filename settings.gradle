@@ -1,1 +1,1 @@
-include ':commons',':example',':agent',':collector', ':example-spring', ':visualizer'
+include ':commons',':example',':agent',':collector', ':example-spring', ':visualizer', ':db'

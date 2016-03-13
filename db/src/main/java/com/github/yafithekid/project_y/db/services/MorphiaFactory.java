@@ -1,4 +1,4 @@
-package com.github.yafithekid.project_y.commons.dbs.services;
+package com.github.yafithekid.project_y.db.services;
 
 import com.mongodb.MongoClient;
 import org.mongodb.morphia.Datastore;

@@ -5,7 +5,7 @@ import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
 import com.github.yafithekid.project_y.collector.services.ProfilingWriterMockImpl;
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
-import com.github.yafithekid.project_y.commons.dbs.services.MorphiaFactory;
+import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

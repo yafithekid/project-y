@@ -1,7 +1,7 @@
 package com.github.yafithekid.project_y.collector.services;
 
-import com.github.yafithekid.project_y.commons.dbs.models.*;
-import com.github.yafithekid.project_y.commons.dbs.services.MorphiaFactory;
+import com.github.yafithekid.project_y.db.models.*;
+import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 import org.mongodb.morphia.Datastore;
 
 public class ProfilingWriterMongoImpl implements ProfilingWriter {

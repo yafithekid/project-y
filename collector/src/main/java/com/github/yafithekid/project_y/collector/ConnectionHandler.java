@@ -3,7 +3,7 @@ package com.github.yafithekid.project_y.collector;
 
 import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
 import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
-import com.github.yafithekid.project_y.commons.dbs.models.*;
+import com.github.yafithekid.project_y.db.models.*;
 
 import java.io.DataInputStream;
 import java.io.IOException;
