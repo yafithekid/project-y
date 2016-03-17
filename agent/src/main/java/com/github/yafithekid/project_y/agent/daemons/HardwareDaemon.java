@@ -1,6 +1,7 @@
 package com.github.yafithekid.project_y.agent.daemons;
 
 import com.github.yafithekid.project_y.commons.JsonConstruct;
+import com.github.yafithekid.project_y.commons.MemType;
 import com.github.yafithekid.project_y.commons.config.ResourceMonitor;
 import com.github.yafithekid.project_y.commons.gson.Gson;
 import com.sun.management.OperatingSystemMXBean;
@@ -8,10 +9,7 @@ import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryUsage;
+import java.lang.management.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,14 +45,21 @@ public class HardwareDaemon extends Thread {
             for (HardwareDaemonWriter writer : mHardwareWriters) {
                 for (MemoryPoolMXBean mxBean : memoryMXBeans) {
                     MemoryUsage usage = mxBean.getUsage();
+                    String type = (mxBean.getType().equals(MemoryType.HEAP))?MemType.HEAP:MemType.NON_HEAP;
                     if (usage != null){
                         writer.write(jsonConstruct.constructMemoryPool(currTime,mxBean.getName(),
-                                usage.getUsed(),usage.getCommitted(),usage.getMax()));
+                                usage.getUsed(),usage.getCommitted(),usage.getMax(),type));
                     }
                 }
-                MemoryUsage sysMemU = memoryMXBean.getHeapMemoryUsage();
+                //get heap memory usage
+                MemoryUsage memoryUsage = memoryMXBean.getHeapMemoryUsage();
                 writer.write(jsonConstruct.constructAppMemoryUsage(currTime,
-                        sysMemU.getUsed(), sysMemU.getCommitted(), sysMemU.getMax()));
+                        memoryUsage.getUsed(), memoryUsage.getCommitted(), memoryUsage.getMax(), MemType.HEAP));
+                //get non-heap memory usage
+                memoryUsage = memoryMXBean.getNonHeapMemoryUsage();
+                writer.write(jsonConstruct.constructAppMemoryUsage(currTime,
+                        memoryUsage.getUsed(),memoryUsage.getCommitted(),memoryUsage.getMax(),MemType.NON_HEAP));
+
                 writer.write(jsonConstruct.constructAppCpuUsage(currTime,
                         operatingSystemMXBean.getProcessCpuLoad()));
 

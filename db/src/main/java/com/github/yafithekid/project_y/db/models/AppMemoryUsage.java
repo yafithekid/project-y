@@ -7,19 +7,16 @@ import java.util.Map;
 
 @Entity(value = "appMemoryUsage",noClassnameStored = true)
 @Indexes({
-    @Index(fields = {@Field("timestamp")}),
-    @Index(fields = {@Field("systemId")}),
-    @Index(fields = {@Field("appId")})
+    @Index(fields = {@Field("timestamp")})
 })
 public class AppMemoryUsage {
     @Id
     private ObjectId id;
-    private String systemId;
-    private String appId;
     private long timestamp;
     private long used;
     private long commited;
     private long max;
+    private String type;
 
     public static AppMemoryUsage newInstance(Map<String,String> map){
         AppMemoryUsage amu = new AppMemoryUsage();
@@ -27,6 +24,7 @@ public class AppMemoryUsage {
         amu.setUsed(Long.parseLong(map.get("used")));
         amu.setCommited(Long.parseLong(map.get("commited")));
         amu.setMax(Long.parseLong(map.get("max")));
+        amu.setType(map.get("type"));
         return amu;
     }
 
@@ -92,5 +90,13 @@ public class AppMemoryUsage {
 
     public void setMax(long max) {
         this.max = max;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

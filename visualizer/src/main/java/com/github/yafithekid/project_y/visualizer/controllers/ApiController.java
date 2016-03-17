@@ -3,6 +3,7 @@ package com.github.yafithekid.project_y.visualizer.controllers;
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
 import com.github.yafithekid.project_y.db.models.AppCPUUsage;
+import com.github.yafithekid.project_y.db.models.AppMemoryUsage;
 import com.github.yafithekid.project_y.db.models.MethodCall;
 import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 import org.mongodb.morphia.Datastore;
@@ -55,6 +56,14 @@ public class ApiController {
     @RequestMapping("/cpus/app")
     public List<AppCPUUsage> getAppCPUUsage(){
         return datastore.find(AppCPUUsage.class)
+                .order("-timestamp")
+                .limit(20)
+                .asList();
+    }
+
+    @RequestMapping("/memories/app")
+    public List<AppMemoryUsage> getAppMemoryUsage(){
+        return datastore.find(AppMemoryUsage.class)
                 .order("-timestamp")
                 .limit(20)
                 .asList();

@@ -85,7 +85,7 @@
     "debug": true
   },
   "resourceMonitor" : {
-    "active": false,
+    "active": true,
     "sendToCollector": true,
     "collectRateMillis": 5000,
     "debug": true

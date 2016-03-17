@@ -37,17 +37,18 @@ public class JsonConstruct {
         return gson.toJson(map);
     }
 
-    public String constructAppMemoryUsage(long timestamp,long used,long commited,long max){
+    public String constructAppMemoryUsage(long timestamp,long used,long commited,long max,String type){
         Map<String,String> map = new HashMap<String, String>();
         map.put("_prefix",ProfilingPrefix.APP_MEMORY);
         map.put("timestamp",timestamp+"");
         map.put("used",used+"");
         map.put("commited",commited+"");
         map.put("max",max+"");
+        map.put("type",type);
         return gson.toJson(map);
     }
 
-    public String constructMemoryPool(long timestamp,String name,long used,long commited,long max){
+    public String constructMemoryPool(long timestamp,String name,long used,long commited,long max,String type){
         Map<String,String> map = new HashMap<String,String>();
         map.put("_prefix",ProfilingPrefix.MEMORY_SPACE);
         map.put("timestamp",""+timestamp);
@@ -55,6 +56,7 @@ public class JsonConstruct {
         map.put("used",""+used);
         map.put("commited",""+commited);
         map.put("max",""+max);
+        map.put("type",type);
         return gson.toJson(map);
     }
 

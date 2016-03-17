@@ -16,6 +16,7 @@ public class MemoryPool {
     private long used;
     private long commited;
     private long max;
+    private String type;
 
     public static MemoryPool newInstance(Map<String,String> map){
         MemoryPool mp = new MemoryPool();
@@ -24,6 +25,7 @@ public class MemoryPool {
         mp.setUsed(Long.parseLong(map.get("used")));
         mp.setCommited(Long.parseLong(map.get("commited")));
         mp.setMax(Long.parseLong(map.get("max")));
+        mp.setType(map.get("type"));
         return mp;
     }
 
@@ -37,6 +39,14 @@ public class MemoryPool {
         mp.setCommited(Long.parseLong(strings[4]));
         mp.setMax(Long.parseLong(strings[5]));
         return mp;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public ObjectId getId() {
