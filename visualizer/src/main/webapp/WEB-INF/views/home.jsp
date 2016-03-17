@@ -15,6 +15,8 @@
 <spring:url value="/res/js/app.js" var="appJs"/>
 <spring:url value="/res/js/controllers.js" var="controllersJs"/>
 <spring:url value="/res/js/services.js" var="servicesJs"/>
+<spring:url value="/res/bower_components/d3/d3.js" var="d3Js"/>
+<!DOCTYPE html>
 <html>
 <head>
     <script>var VISUALIZER_BASE_URL = "${pageContext.request.contextPath}"; console.log(VISUALIZER_BASE_URL);</script>
@@ -23,6 +25,7 @@
     <link href="${testCss}" rel="stylesheet"/>
     <link href="${ripplesCss}" rel="stylesheet"/>
     <script src="${jqueryJs}"></script>
+    <script src="${d3Js}" charset="UTF8"></script>
     <script src="${angularJs}"></script>
     <script src="${angularRouteJs}"></script>
     <script src="${materialJs}"></script>

@@ -9,5 +9,9 @@ app.config(['$routeProvider','$locationProvider',function($routeProvider,$locati
             templateUrl: 'views/partials/home.html',
             controller: 'homeCtrl'
         })
+        .when('/cpu',{
+            templateUrl: 'views/partials/cpu.html',
+            controller: 'cpuCtrl'
+        })
         .otherwise('/')
 }]);
