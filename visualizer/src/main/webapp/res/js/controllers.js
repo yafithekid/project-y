@@ -71,36 +71,20 @@ controllers.controller('memoryCtrl',['restApiClient','canvasJsService','$scope',
 
     $.material.init();
 }]);
-controllers.controller('cpuCtrl',['graphService','restApiClient',function(graphService,restApiClient){
-    var margin = {top: 20, right: 20, bottom: 30, left: 70},
-        size = {
-            width: 560 - margin.left - margin.right,
-            height: 500 - margin.top - margin.bottom
-        },
-        domain = {
-            y: {min:0.0,max:1.0}
-        };
-
-    restApiClient.cpuApps()
+controllers.controller('cpuCtrl',['restApiClient','canvasJsService',function(restApiClient,canvasJsService){
+    var endTimestamp = new Date().getTime();
+    var startTimestamp = 0;
+    var par = {startTimestamp:startTimestamp,endTimestamp:endTimestamp};
+    restApiClient.cpuApps(par)
         .success(function(data){
+            //scale to 100%
             for(var i = 0; i < data.length; i++){
                 if (data[i].load < 0.0){
                     data[i].load = 0.0;
                 }
+                data[i].load *= 100.0;
             }
-            component = {
-                data : data,
-                x : {
-                    index: "timestamp",
-                    label: "timestamp"
-                },
-                y : {
-                    index: "load",
-                    label: "%CPU"
-                }
-
-            };
-            graphService.lineChart("#graph",margin,size,component,domain);
+            canvasJsService.drawCpuUsage("cpuUsageGraph",data);
         })
         .error(function(message){
             alert(message);

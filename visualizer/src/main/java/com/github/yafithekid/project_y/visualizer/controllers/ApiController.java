@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value="/api")
 public class ApiController {
-    static int MEMORY_DATA_FETCH_LIMIT = 20;
 
     static Config config;
     static Datastore datastore;
@@ -58,10 +57,14 @@ public class ApiController {
     }
 
     @RequestMapping("/cpus/app")
-    public List<AppCPUUsage> getAppCPUUsage(){
+    public List<AppCPUUsage> getAppCPUUsage(
+            @RequestParam(name = "startTimestamp") long startTimestamp,
+            @RequestParam(name = "endTimestamp") long endTimestamp
+    ){
         return datastore.find(AppCPUUsage.class)
+                .field("timestamp").lessThanOrEq(endTimestamp)
+                .field("timestamp").greaterThanOrEq(startTimestamp)
                 .order("-timestamp")
-                .limit(20)
                 .asList();
     }
 

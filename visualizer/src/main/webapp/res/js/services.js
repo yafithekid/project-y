@@ -45,8 +45,8 @@ app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactor
         return $http.get(apiUrlFactory.methods(invocationId,start,end));
     };
 
-    this.cpuApps = function(){
-        return $http.get(apiUrlFactory.cpuApps());
+    this.cpuApps = function(data){
+        return $http.get(apiUrlFactory.cpuApps(),{params:data});
     };
 
     this.currentTime = function(){
@@ -66,6 +66,42 @@ app.factory('mockData',function(){
 
 });
 app.service('canvasJsService',['dataParser',function(dataParser){
+    this.drawCpuUsage = function(htmlId,cpuData){
+        var dataPointsContainer = dataParser.parseCPUUsage(cpuData);
+        console.log(dataPointsContainer.cpu);
+        var chart = new CanvasJS.Chart(htmlId,
+            {
+                animationEnabled: false,
+                axisX:{
+                    valueFormatString: "HH:mm:ss",
+                    labelAngle: -40
+                    //minimum: 0,
+                    //maximum: 100
+                },
+                axisY:{
+                    title: "Load (%)"
+                },
+                legend: {
+                    verticalAlign: "bottom",
+                    horizontalAlign: "center",
+                    cursor:"pointer"
+                },
+
+                data: [
+                    {
+                        name: "cpu",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(211,19,14,.8)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.cpu
+                    }
+                ]
+            });
+
+        chart.render();
+    };
 
     this.drawMemoryPoolUsage = function(htmlId,memPoolData,memSpaceKeys){
         //per 1024 KB
@@ -248,6 +284,15 @@ app.service('dataParser',[function(){
         return dataPointsContainer;
     };
 
+    var parseCPUUsage = function(cpuData){
+        var dataPointsContainer = {"cpu":[]};
+        cpuData.forEach(function(datum){
+            dataPointsContainer.cpu.push({x: new Date(datum.timestamp), y: datum.load})
+        });
+        return dataPointsContainer;
+    };
+
     this.groupByMemorySpaceName = groupByMemorySpaceName;
     this.groupByHeapAndNonHeap = groupByHeapAndNonHeap;
+    this.parseCPUUsage = parseCPUUsage;
 }]);
