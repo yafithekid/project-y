@@ -4,7 +4,6 @@ app.factory('apiUrlFactory',['$location',function($location) {
     var BASE_URL = VISUALIZER_BASE_URL+"/api";
 
     var urls = function(){
-        console.log(BASE_URL+"/urls");
         return BASE_URL+"/urls";
     };
 
@@ -16,10 +15,25 @@ app.factory('apiUrlFactory',['$location',function($location) {
         return BASE_URL+"/cpus/app";
     };
 
+    var currentTime = function(){
+        return BASE_URL+"/timestamp";
+    };
+
+    var memoryApps = function(){
+        return BASE_URL+"/memories/app";
+    };
+
+    var memoryPools = function(){
+        return BASE_URL+"/memories/pools";
+    };
+
     return {
         urls: urls,
         methods: methods,
-        cpuApps: cpuApps
+        cpuApps: cpuApps,
+        currentTime: currentTime,
+        memoryPools: memoryPools,
+        memoryApps: memoryApps
     }
 }]);
 app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactory){
@@ -33,76 +47,207 @@ app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactor
 
     this.cpuApps = function(){
         return $http.get(apiUrlFactory.cpuApps());
-    }
-}]);
-app.service('graphService',function(){
-    /**
-     *
-     * @param targetid html id
-     * @param margin margin in json
-     * @param size {width,height}
-     * @param component json {data,x,y}
-     * @param domain json {x: {min,max}, y:{min,max}}
-     */
-    this.lineChart = function(targetid,margin,size,component,domain){
-        var width = size.width;
-        var height = size.height;
-        var data = component.data;
-
-        var x = d3.scale.linear()
-            .range([0, width]);
-
-        var y = d3.scale.linear()
-            .range([height, 0]);
-
-
-        if (domain.hasOwnProperty('x')){
-            x.domain([domain.x.min,domain.x.max]);
-        } else {
-            x.domain(d3.extent(data,function(d){ return d[component.x.index]}));
-        }
-        if (domain.hasOwnProperty('y')){
-            y.domain([domain.y.min,domain.y.max]);
-        } else {
-            y.domain(d3.extent(data,function(d){ return d[component.y.index];}));
-        }
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
-        var line = d3.svg.line()
-            .x(function(d){ return x(d[component.x.index]); })
-            .y(function(d){ return y(d[component.y.index]); });
-        var svg = d3.select(targetid).append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        svg.append("g")
-            .attr('class','x axis')
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("transform","translate("+width+",0)")
-            .style("text-anchor","end")
-            .text(component.x.label);
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(component.y.label);
-        svg.append("path")
-            .datum(data)
-            .attr("class", "line")
-            .attr("d", line);
     };
 
+    this.currentTime = function(){
+        return $http.get(apiUrlFactory.currentTime());
+    };
+
+    this.memoryPools = function(data){
+        return $http.get(apiUrlFactory.memoryPools(),{params:data});
+    };
+
+    this.memoryApps = function(data){
+        return $http.get(apiUrlFactory.memoryApps(),{params:data});
+    };
+}]);
+app.factory('mockData',function(){
+    return {};
+
 });
+app.service('canvasJsService',['dataParser',function(dataParser){
+
+    this.drawMemoryPoolUsage = function(htmlId,memPoolData,memSpaceKeys){
+        //per 1024 KB
+        var dataPointsContainer = dataParser.groupByMemorySpaceName(memPoolData,memSpaceKeys);
+
+        var chartData = [];
+        var insertToChartData = function(name,color,dataPoints){
+            chartData.push({
+                name: name, showInLegend: true, legendMarkerType: "square", type: "stackedArea",
+                color : color, markerSize: 0, dataPoints: dataPoints
+            });
+        };
+        var gradation = 1.0;
+        memSpaceKeys.forEach(function(memSpaceKey){
+            if (memSpaceKey.type == "heap"){
+                var dataPoints = dataPointsContainer[memSpaceKey.name];
+                insertToChartData(memSpaceKey.name, "rgba(230,124,121,"+gradation+")",dataPoints);
+                gradation -= 0.2;
+            }
+        });
+        gradation = 1.0;
+        memSpaceKeys.forEach(function(memSpaceKey){
+            if (memSpaceKey.type == "non_heap"){
+                var dataPoints = dataPointsContainer[memSpaceKey.name];
+                insertToChartData(memSpaceKey.name, "rgba(22,115,211,"+gradation+")",dataPoints);
+                gradation -= 0.2;
+            }
+        });
+
+        var chart = new CanvasJS.Chart(htmlId,
+            {
+                animationEnabled: false,
+                axisX:{
+                    valueFormatString: "HH:mm:ss",
+                    labelAngle: -40
+                },
+                axisY:{
+                    title: "Usage (KB)"
+                },
+                legend: {
+                    verticalAlign: "bottom",
+                    horizontalAlign: "center",
+                    cursor:"pointer"
+                    //disable to prevent misleading graph
+                    //itemclick : function(e){
+                    //    if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible){
+                    //        e.dataSeries.visible = false;
+                    //    }
+                    //    else{
+                    //        e.dataSeries.visible = true;
+                    //    }
+                    //    chart.render();
+                    //}
+                },
+                data: chartData
+            });
+
+        chart.render();
+    };
+    /**
+     *
+     * @param htmlId html id
+     * @param data data
+     */
+    this.drawAppMemoryUsage = function(htmlId, data){
+        //per 1024 KB
+        var dataPointsContainer = dataParser.groupByHeapAndNonHeap(data);
+        var chart = new CanvasJS.Chart(htmlId,
+            {
+                animationEnabled: false,
+                axisX:{
+                    valueFormatString: "HH:mm:ss",
+                    labelAngle: -40
+                },
+                axisY:{
+                    title: "Usage (KB)"
+                },
+                legend: {
+                    verticalAlign: "bottom",
+                    horizontalAlign: "center",
+                    cursor:"pointer"
+                    //disable to prevent misleading
+                    //itemclick : function(e){
+                    //    if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible){
+                    //        e.dataSeries.visible = false;
+                    //    }
+                    //    else{
+                    //        e.dataSeries.visible = true;
+                    //    }
+                    //    chart.render();
+                    //}
+                },
+                //toolTip: {
+                //    content: function(e){
+                //        //var weekday =["Sun","Mon", "Tue", "Wed", "Thu","Fri","Sat"];
+                //        //var  str1 = weekday[e.entries[0].dataPoint.x.getDay()] + "<br/>  <span style =' color:" + e.entries[0].dataSeries.color + "';>" +  e.entries[0].dataSeries.name + "</span>: <strong>"+ e.entries[0].dataPoint.y + " hrs</strong> <br/>" ;
+                //        //return str1
+                //    }
+                //},
+
+                data: [
+                    {
+                        name: "heap",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(211,19,14,.8)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.heap
+                    },
+                    {
+                        name: "non heap",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(211,19,14,.8)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.non_heap
+                    }
+                ]
+            });
+
+        chart.render();
+    };
+}]);
+app.service('dataParser',[function(){
+    var groupByHeapAndNonHeap = function(memPoolData){
+        var heaps = {}; //timestamp,y
+        var nonHeaps = {};
+        var dataPointsContainer = {"heap":[],"non_heap":[]};
+        memPoolData.forEach(function(datum){
+            var memType;
+            if (datum.type == "heap"){
+                memType = heaps;
+            } else if (datum.type == "non_heap"){
+                memType = nonHeaps;
+            } else {
+                console.log("unknown type: "+datum.type);
+            }
+            if (memType !== undefined){
+                if (!memType.hasOwnProperty(datum.timestamp)){
+                    memType[datum.timestamp] = datum.used;
+                } else {
+                    memType[datum.timestamp] += datum.used;
+                }
+            }
+        });
+        var addToContainer = function(memType,type){
+            for(var timestamp in memType){
+                var obj = { x:new Date(parseInt(timestamp)),y: memType[timestamp]};
+                if (type == 'heap'){
+                    dataPointsContainer.heap.push(obj);
+                } else if (type == 'non_heap'){
+                    dataPointsContainer.non_heap.push(obj);
+                }
+
+            }
+        };
+        addToContainer(heaps,'heap'); addToContainer(nonHeaps,'non_heap');
+        return dataPointsContainer;
+    };
+
+    var groupByMemorySpaceName = function(memPoolData, memSpaceKeys){
+        var dataPointsContainer = {};
+        //create data points
+        var i,j;
+        memSpaceKeys.forEach(function(spaceKey){
+            dataPointsContainer[spaceKey.name] = [];
+        });
+        memPoolData.forEach(function(datum){
+            memSpaceKeys.forEach(function(spaceKey){
+                if (spaceKey.name == datum.name){
+                    //per 1024KB
+                    dataPointsContainer[spaceKey.name].push({
+                        x: new Date(datum.timestamp), y: datum.used
+                    });
+                }
+            })
+        });
+        return dataPointsContainer;
+    };
+
+    this.groupByMemorySpaceName = groupByMemorySpaceName;
+    this.groupByHeapAndNonHeap = groupByHeapAndNonHeap;
+}]);

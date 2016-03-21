@@ -30,7 +30,47 @@ controllers.controller('homeCtrl',['restApiClient','$scope','$location',function
         $location.path("/cpu");
     }
 }]);
+controllers.controller('memoryCtrl',['restApiClient','canvasJsService','$scope',
+    function(restApiClient,canvasJsService,$scope){
+    $scope.showMemoryUsage= true;
+    $scope.showMemoryPool = true;
 
+    var handleShowDetail = function(showDetail){
+        $scope.showMemoryPool = showDetail;
+        $scope.showMemoryUsage = !showDetail;
+    };
+
+
+    restApiClient.currentTime()
+        .success(function(endTimestamp){
+            endTimestamp = new Date().getTime();
+            var startTimestamp = 0;
+            var par = {startTimestamp:startTimestamp,endTimestamp:endTimestamp,type:""};
+            restApiClient.memoryPools(par).success(function(data){
+                var memSpaceKeys = [
+                    {name : "PS Eden Space", type : "heap"},
+                    {name : "PS Survivor Space", type : "heap"},
+                    {name : "PS Old Gen", type: "heap"},
+                    {name : "Code Cache", type: "non_heap"},
+                    {name : "Metaspace", type: "non_heap"},
+                    {name : "Compressed Class Space", type: "non_heap"}
+                ];
+                //per 1024KB
+                for(var i = 0; i < data.length; i++){
+                    data[i].used /= 1024;
+                }
+                canvasJsService.drawAppMemoryUsage("graphAppMemUsage",data);
+                canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
+                $scope.$watch('showDetail',handleShowDetail);
+            });
+        })
+        .error(function(message){
+            alert(message);
+            console.log(message);
+        });
+
+    $.material.init();
+}]);
 controllers.controller('cpuCtrl',['graphService','restApiClient',function(graphService,restApiClient){
     var margin = {top: 20, right: 20, bottom: 30, left: 70},
         size = {

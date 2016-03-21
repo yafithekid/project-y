@@ -16,6 +16,7 @@
 <spring:url value="/res/js/controllers.js" var="controllersJs"/>
 <spring:url value="/res/js/services.js" var="servicesJs"/>
 <spring:url value="/res/bower_components/d3/d3.js" var="d3Js"/>
+<spring:url value="/res/canvasjs-1.8.0/source/canvasjs.js" var="canvasJs"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,6 +31,7 @@
     <script src="${angularRouteJs}"></script>
     <script src="${materialJs}"></script>
     <script src="${ripplesJs}"></script>
+    <script src="${canvasJs}"></script>
     <script src="${servicesJs}"></script>
     <script src="${controllersJs}"></script>
     <script src="${appJs}"></script>
