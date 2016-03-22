@@ -70,7 +70,6 @@ controllers.controller('memoryCtrl',['restApiClient','canvasJsService','$scope',
             console.log(message);
         });
 
-    $.material.init();
 }]);
 controllers.controller('cpuCtrl',['restApiClient','canvasJsService',function(restApiClient,canvasJsService){
     var endTimestamp = new Date().getTime();

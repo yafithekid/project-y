@@ -1,6 +1,7 @@
 var app = angular.module('visualizerApp',[
     'ngRoute',
-    'visualizerCtrls'
+    'visualizerCtrls',
+    'ui.bootstrap.datetimepicker'
 ]);
 
 app.config(['$routeProvider','$locationProvider',function($routeProvider,$locationProvider){

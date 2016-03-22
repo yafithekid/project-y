@@ -217,7 +217,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
                         showInLegend: true,
                         legendMarkerType: "square",
                         type: "stackedArea",
-                        color :"rgba(211,19,14,.8)",
+                        color :"rgba(22,115,211,.8)",
                         markerSize: 0,
                         dataPoints: dataPointsContainer.non_heap
                     }
