@@ -7,8 +7,8 @@ app.factory('apiUrlFactory',['$location',function($location) {
         return BASE_URL+"/urls";
     };
 
-    var methods = function(invocationId,start,end){
-        return BASE_URL+"/methods?invocationId="+invocationId+"&start="+start+"&end="+end;
+    var methods = function(){
+        return BASE_URL+"/methods";
     };
 
     var cpuApps = function(){
@@ -41,8 +41,8 @@ app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactor
         return $http.get(apiUrlFactory.urls());
     };
 
-    this.methods = function(invocationId,start,end){
-        return $http.get(apiUrlFactory.methods(invocationId,start,end));
+    this.methods = function(data){
+        return $http.get(apiUrlFactory.methods(),{params:data});
     };
 
     this.cpuApps = function(data){

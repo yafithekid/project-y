@@ -15,7 +15,8 @@ controllers.controller('homeCtrl',['restApiClient','$scope','$location',function
     $scope.showDetail = function(index){
         $scope.isShowDetail = false;
         var request = $scope.requests[index];
-        restApiClient.methods(request.invocationId,request.start,request.end)
+        var params = {invocationId:request.invocationId,start: request.start,end: request.end};
+        restApiClient.methods(params)
             .success(function(data){
                 $scope.methods = data;
                 $scope.isShowDetail = true;
