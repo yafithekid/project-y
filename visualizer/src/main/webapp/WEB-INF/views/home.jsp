@@ -1,5 +1,5 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<spring:url value="/res/test.css" var="testCss"/>
+<spring:url value="/res/css/main.css" var="mainCss"/>
 <spring:url value="/res/bower_components/angular/angular.js" var="angularJs"/>
 <spring:url value="/res/bower_components/angular-route/angular-route.js" var="angularRouteJs"/>
 <spring:url value="/res/bower_components/jquery/dist/jquery.js" var="jqueryJs"/>
@@ -19,7 +19,7 @@
 <head>
     <script>var VISUALIZER_BASE_URL = "${pageContext.request.contextPath}"; console.log(VISUALIZER_BASE_URL);</script>
     <link href="${bootstrapCss}" rel="stylesheet"/>
-    <link href="${testCss}" rel="stylesheet"/>
+    <link href="${mainCss}" rel="stylesheet"/>
     <link href="${dateTimePickerCss}" rel="stylesheet"/>
     <script src="${jqueryJs}"></script>
     <script src="${bootstrapJs}"></script>
@@ -34,6 +34,7 @@
     <script src="${appJs}"></script>
 </head>
 <body ng-app="visualizerApp">
+    <script>moment.locale('id');</script>
     <div class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">

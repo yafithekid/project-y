@@ -71,9 +71,12 @@ app.service('canvasJsService',['dataParser',function(dataParser){
         console.log(dataPointsContainer.cpu);
         var chart = new CanvasJS.Chart(htmlId,
             {
+                title :{
+                    text: "CPU"
+                },
                 animationEnabled: false,
                 axisX:{
-                    valueFormatString: "HH:mm:ss",
+                    valueFormatString: "MM-DD HH:mm:ss",
                     labelAngle: -40
                     //minimum: 0,
                     //maximum: 100
@@ -133,9 +136,12 @@ app.service('canvasJsService',['dataParser',function(dataParser){
 
         var chart = new CanvasJS.Chart(htmlId,
             {
+                title :{
+                    text: "Memory Pool"
+                },
                 animationEnabled: false,
                 axisX:{
-                    valueFormatString: "HH:mm:ss",
+                    valueFormatString: "MM-DD HH:mm:ss",
                     labelAngle: -40
                 },
                 axisY:{
@@ -171,9 +177,12 @@ app.service('canvasJsService',['dataParser',function(dataParser){
         var dataPointsContainer = dataParser.groupByHeapAndNonHeap(data);
         var chart = new CanvasJS.Chart(htmlId,
             {
+                title :{
+                    text: "JVM Memory"
+                },
                 animationEnabled: false,
                 axisX:{
-                    valueFormatString: "HH:mm:ss",
+                    valueFormatString: "MM-DD HH:mm:ss",
                     labelAngle: -40
                 },
                 axisY:{

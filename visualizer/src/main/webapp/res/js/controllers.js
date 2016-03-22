@@ -35,11 +35,8 @@ controllers.controller('memoryCtrl',['restApiClient','canvasJsService','$scope',
     function(restApiClient,canvasJsService,$scope){
     $scope.showMemoryUsage= true;
     $scope.showMemoryPool = true;
+    $scope.showCpuUsage = true;
 
-    var handleShowDetail = function(showDetail){
-        $scope.showMemoryPool = showDetail;
-        $scope.showMemoryUsage = !showDetail;
-    };
 
 
     restApiClient.currentTime()
@@ -47,6 +44,8 @@ controllers.controller('memoryCtrl',['restApiClient','canvasJsService','$scope',
             endTimestamp = new Date().getTime();
             var startTimestamp = 0;
             var par = {startTimestamp:startTimestamp,endTimestamp:endTimestamp,type:""};
+
+            //draw memory
             restApiClient.memoryPools(par).success(function(data){
                 var memSpaceKeys = [
                     {name : "PS Eden Space", type : "heap"},
@@ -60,10 +59,24 @@ controllers.controller('memoryCtrl',['restApiClient','canvasJsService','$scope',
                 for(var i = 0; i < data.length; i++){
                     data[i].used /= 1024;
                 }
-                canvasJsService.drawAppMemoryUsage("graphAppMemUsage",data);
+                // canvasJsService.drawAppMemoryUsage("graphAppMemUsage",data);
                 canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
-                $scope.$watch('showDetail',handleShowDetail);
             });
+            //draw cpu
+            restApiClient.cpuApps(par)
+                .success(function(data){
+                    //scale to 100%
+                    for(var i = 0; i < data.length; i++){
+                        if (data[i].load < 0.0){
+                            data[i].load = 0.0;
+                        }
+                        data[i].load *= 100.0;
+                    }
+                    canvasJsService.drawCpuUsage("graphCpuUsage",data);
+                })
+                .error(function(message){
+                    alert(message);
+                });
         })
         .error(function(message){
             alert(message);
