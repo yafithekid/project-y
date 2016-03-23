@@ -14,6 +14,10 @@ buildscript {
 }
 
 tomcat {
+    httpPort = 9080
+    httpsPort = 9443
+    ajpPort = 9009
+    stopPort = 9081
     dependencies {
         def tomcatVersion = '7.0.59'
         tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",

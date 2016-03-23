@@ -21,6 +21,7 @@ public class HardwareDaemon extends Thread {
     final String mCollectorHost;
     final int mCollectorPort;
     final long mResourceRateCollect;
+    final Config mConfig;
     JsonConstruct jsonConstruct = new JsonConstruct();
     List<HardwareDaemonWriter> mHardwareWriters;
 
@@ -31,6 +32,7 @@ public class HardwareDaemon extends Thread {
         mResourceRateCollect = rm.getCollectRateMillis();
 
         mHardwareWriters = hardwareDaemonWriters;
+        mConfig = config;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class HardwareDaemon extends Thread {
         OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         //noinspection InfiniteLoopStatement
         while(true){
-            long currTime = System.currentTimeMillis();
+            long currTime = mConfig.getCurrentTimestampRounded();
             List<MemoryPoolMXBean> memoryMXBeans = ManagementFactory.getMemoryPoolMXBeans();
             for (HardwareDaemonWriter writer : mHardwareWriters) {
                 for (MemoryPoolMXBean mxBean : memoryMXBeans) {

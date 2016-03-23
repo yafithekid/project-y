@@ -1,68 +1,83 @@
 <div class="col-sm-12">
     <div class="col-sm-4">
         <div class="row">
-            <div class="well">
-                <legend>Memory Usage</legend>
-                <form>
-                    <!--<div class="form-group">-->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <legend>Memory Usage</legend>
+                    <form>
+                        <!--<div class="form-group">-->
                         <!--<div class="row">-->
-                            <!--<div class="col-sm-4">-->
-                                <!--<input type="checkbox" ng-model="showDetail"/> Show Memory Pool-->
-                            <!--</div>-->
-                            <!--<div class="col-sm-4">-->
-                                <!--<input type="checkbox" ng-model="showMemoryPool"/> MemPool-->
-                            <!--</div>-->
-                            <!--<div class="col-sm-4">-->
-                                <!--<input type="checkbox" ng-model="showCpuUsage"/> CPU-->
-                            <!--</div>-->
+                        <!--<div class="col-sm-4">-->
+                        <!--<input type="checkbox" ng-model="showDetail"/> Show Memory Pool-->
                         <!--</div>-->
-                    <!--</div>-->
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-6">
+                        <!--<div class="col-sm-4">-->
+                        <!--<input type="checkbox" ng-model="showMemoryPool"/> MemPool-->
+                        <!--</div>-->
+                        <!--<div class="col-sm-4">-->
+                        <!--<input type="checkbox" ng-model="showCpuUsage"/> CPU-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <div class="form-group">
+                            <div class="col-sm-12" style="padding-bottom:10px;">
                                 <div class="dropdown">
+                                    <label>Start</label>
                                     <a class="dropdown-toggle btn btn-primary" id="dropdown1" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0)">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </a>
-                                    <label>Start</label>
-                                    <span style="padding-left:10px;">{{startTime | date : 'yyyy-MM-dd HH:mm'}}</span>
+                                    <span style="padding-left:10px;">{{startTimestamp | date : 'yyyy-MM-dd HH:mm'}}</span>
                                     <ul class="dropdown-menu" role="menu">
-                                        <datetimepicker data-ng-model="startTime" data-datetimepicker-config="{ dropdownSelector: '#dropdown1','minuteStep':2 }"/>
+                                        <datetimepicker data-ng-model="startTimestamp" data-datetimepicker-config="{ dropdownSelector: '#dropdown1','minuteStep':2 }"/>
                                     </ul>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-12">
                                 <div class="dropdown">
+                                    <label>End&nbsp;</label>
                                     <a class="dropdown-toggle btn btn-primary" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0)">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </a>
-                                    <label>End</label>
-                                    <span style="padding-left:10px;">{{endTime | date : 'yyyy-MM-dd HH:mm'}}</span>
+                                    <span style="padding-left:10px;">{{endTimestamp | date : 'yyyy-MM-dd HH:mm'}}</span>
                                     <ul class="dropdown-menu" role="menu">
-                                        <datetimepicker data-ng-model="endTime" data-datetimepicker-config="{ dropdownSelector: '#dropdown2','minuteStep':2 }"/>
+                                        <datetimepicker data-ng-model="endTimestamp" data-datetimepicker-config="{ dropdownSelector: '#dropdown2','minuteStep':2 }"/>
                                     </ul>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                        <div class="form-group">
+                            <div class="pull-right">
+                                <button class="btn btn-primary" ng-click="drawGraph()">Refresh</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+
             </div>
         </div>
     </div>
-    <div class="col-sm-8">
-        <!--<div class="row" ng-show="showMemoryUsage">-->
-            <!--<div class="well">-->
-                <!--<div id="graphAppMemUsage" class="graph"></div>-->
-            <!--</div>-->
-        <!--</div>-->
-        <div class="row" ng-show="showMemoryPool">
+    <div class="col-sm-8" style="padding-left:40px;">
+        <div class="row">
             <div class="well">
-                <div id="graphMemPoolUsage" class="graph"></div>
+                <div id="graphAppMemUsage" class="graph"></div>
+            </div>
+        </div>
+        <div class="row" ng-show="showMemoryPool">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="graphMemPoolUsage" class="graph"></div>
+                </div>
             </div>
         </div>
         <div class="row" ng-show="showCpuUsage">
-            <div class="well">
-                <div id="graphCpuUsage" class="graph"></div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="graphCpuUsage" class="graph"></div>
+                </div>
             </div>
         </div>
     </div>

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 @RestController
@@ -40,7 +41,7 @@ public class ApiController {
     @RequestMapping("/urls")
     public List<MethodCall> getUrls() {
         return datastore.find(MethodCall.class)
-                .field("isReqHandler").equal(true)
+                .field("url").exists()
                 .order("-start")
                 .limit(10)
                 .asList();
@@ -51,14 +52,11 @@ public class ApiController {
         @RequestParam(name="startTimestamp") long startTimestamp,
         @RequestParam(name="endTimestamp") long endTimestamp
     ){
-        DBCollection coll = datastore.getCollection(MethodCall.class);
-        //get method that runs between start and end Timestamp
-        DBObject query = new BasicDBObject()
-                .append("url",new BasicDBObject().append("$exists",true))
-                .append("start",new BasicDBObject()
-                        .append("$gte",startTimestamp).append("$lte",endTimestamp));
-        List<DBObject> dbObjects = coll.find(query).toArray();
-        List<MethodCall> methodCalls = new ArrayList<MethodCall>();
+        List<MethodCall> methodCalls = datastore.find(MethodCall.class)
+                .field("url").exists()
+                .field("start").greaterThanOrEq(startTimestamp)
+                .field("end").lessThanOrEq(endTimestamp).asList();
+
         Comparator<MethodCall> comparator = new Comparator<MethodCall>() {
             @Override
             public int compare(MethodCall o1, MethodCall o2) {
@@ -70,16 +68,6 @@ public class ApiController {
             }
         };
 
-        for (Object _dbObject : dbObjects) {
-            DBObject dbObject = (DBObject) _dbObject;
-            MethodCall mc = new MethodCall();
-            mc.setClazz((String) dbObject.get("clazz"));
-            mc.setMethod((String) dbObject.get("method"));
-            mc.setStart((Long) dbObject.get("start"));
-            mc.setEnd((Long) dbObject.get("end"));
-            mc.setUrl((String) dbObject.get("url"));
-            methodCalls.add(mc);
-        }
         //create unique url
         Map<String,MethodCall> mapUniqueResult = new HashMap<String, MethodCall>();
         for (MethodCall newMC: methodCalls) {

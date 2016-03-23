@@ -68,7 +68,6 @@ app.factory('mockData',function(){
 app.service('canvasJsService',['dataParser',function(dataParser){
     this.drawCpuUsage = function(htmlId,cpuData){
         var dataPointsContainer = dataParser.parseCPUUsage(cpuData);
-        console.log(dataPointsContainer.cpu);
         var chart = new CanvasJS.Chart(htmlId,
             {
                 title :{
@@ -109,7 +108,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
     this.drawMemoryPoolUsage = function(htmlId,memPoolData,memSpaceKeys){
         //per 1024 KB
         var dataPointsContainer = dataParser.groupByMemorySpaceName(memPoolData,memSpaceKeys);
-
+        console.log(dataPointsContainer);
         var chartData = [];
         var insertToChartData = function(name,color,dataPoints){
             chartData.push({
@@ -118,10 +117,16 @@ app.service('canvasJsService',['dataParser',function(dataParser){
             });
         };
         var gradation = 1.0;
+        var sumY = {};
         memSpaceKeys.forEach(function(memSpaceKey){
             if (memSpaceKey.type == "heap"){
                 var dataPoints = dataPointsContainer[memSpaceKey.name];
                 insertToChartData(memSpaceKey.name, "rgba(230,124,121,"+gradation+")",dataPoints);
+                dataPoints.forEach(function(datum){
+                    if (!sumY.hasOwnProperty(datum.x))
+                        sumY[datum.x] = 0;
+                    sumY[datum.x] += datum.y;
+                });
                 gradation -= 0.2;
             }
         });
@@ -130,9 +135,18 @@ app.service('canvasJsService',['dataParser',function(dataParser){
             if (memSpaceKey.type == "non_heap"){
                 var dataPoints = dataPointsContainer[memSpaceKey.name];
                 insertToChartData(memSpaceKey.name, "rgba(22,115,211,"+gradation+")",dataPoints);
+                dataPoints.forEach(function(datum){
+                    if (!sumY.hasOwnProperty(datum.x))
+                        sumY[datum.x] = 0;
+                    sumY[datum.x] += datum.y;
+                });
                 gradation -= 0.2;
             }
         });
+        var yMax = 0;
+        for(var key in sumY){
+            yMax = Math.max(yMax,sumY[key]);
+        }
 
         var chart = new CanvasJS.Chart(htmlId,
             {
@@ -146,25 +160,104 @@ app.service('canvasJsService',['dataParser',function(dataParser){
                 },
                 axisY:{
                     title: "Usage (KB)"
+                    // maximum: yMax
                 },
                 legend: {
                     verticalAlign: "bottom",
                     horizontalAlign: "center",
-                    cursor:"pointer"
+                    cursor:"pointer",
                     //disable to prevent misleading graph
-                    //itemclick : function(e){
-                    //    if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible){
-                    //        e.dataSeries.visible = false;
-                    //    }
-                    //    else{
-                    //        e.dataSeries.visible = true;
-                    //    }
-                    //    chart.render();
-                    //}
+                    itemclick : function(e){
+                       if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible){
+                           e.dataSeries.visible = false;
+                       }
+                       else{
+                           e.dataSeries.visible = true;
+                       }
+                       chart.render();
+                    }
                 },
                 data: chartData
             });
 
+        chart.render();
+    };
+    /**
+     * Draw application memory usage, with commited and max
+     * @param htmlId
+     * @param data
+     */
+    this.drawAppMemoryUsageDetail = function(htmlId,data){
+        var dataPointsContainer = dataParser.groupHeapNonHeapByUsedCommitedAndMax(data);
+        console.log(dataPointsContainer);
+        var chart = new CanvasJS.Chart(htmlId,
+            {
+                title :{
+                    text: "JVM Memory"
+                },
+                animationEnabled: false,
+                axisX:{
+                    valueFormatString: "MM-DD HH:mm:ss",
+                    labelAngle: -40
+                },
+                axisY:{
+                    title: "Usage (KB)"
+                },
+                legend: {
+                    verticalAlign: "bottom",
+                    horizontalAlign: "center",
+                    cursor:"pointer",
+                    //disable to prevent misleading
+                    itemclick : function(e){
+                       if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible){
+                           e.dataSeries.visible = false;
+                       }
+                       else{
+                           e.dataSeries.visible = true;
+                       }
+                       chart.render();
+                    }
+                },
+                data: [
+                    {
+                        name: "heap used",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(211,19,14,.8)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.heap_used
+                    },
+                    {
+                        name: "commited heap left",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(22,115,211,.8)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.non_heap_used
+                    },
+                    {
+                        name: "non heap used",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(211,19,14,.4)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.heap_commited_left
+                    },
+
+                    {
+                        name: "non heap commited left",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(22,115,211,.4)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.non_heap_commited_left
+                    }
+                ]
+            });
         chart.render();
     };
     /**
@@ -173,7 +266,6 @@ app.service('canvasJsService',['dataParser',function(dataParser){
      * @param data data
      */
     this.drawAppMemoryUsage = function(htmlId, data){
-        //per 1024 KB
         var dataPointsContainer = dataParser.groupByHeapAndNonHeap(data);
         var chart = new CanvasJS.Chart(htmlId,
             {
@@ -237,6 +329,57 @@ app.service('canvasJsService',['dataParser',function(dataParser){
     };
 }]);
 app.service('dataParser',[function(){
+    /**
+     *
+     * @param memPoolData
+     * @returns {{heap_used: Array, heap_commited_left: Array, heap_uncommited_left: Array, non_heap_used: Array, non_heap_commited_left: Array}}
+     */
+    var groupHeapNonHeapByUsedCommitedAndMax = function(memPoolData){
+        var dataPointsContainer = {
+            "heap_used":[],
+            "heap_commited_left":[],
+            "heap_uncommited_left":[],
+            "non_heap_used":[],
+            "non_heap_commited_left":[]
+        };
+        var memories = {};
+        memPoolData.forEach(function(datum){
+            if (!memories.hasOwnProperty(datum.timestamp)){
+                memories[datum.timestamp] ={
+                    heap_used : 0, heap_commited_left : 0, heap_uncommited_left: 0,
+                    non_heap_used: 0, non_heap_commited_left: 0
+                }
+            }
+            var ref = memories[datum.timestamp]; //just lazy to write
+            //sum because there are eden, survivor, old, etc.
+            if (datum.type == "heap"){
+                ref.heap_used += datum.used;
+                ref.heap_commited_left += datum.commited - datum.used;
+                ref.heap_uncommited_left += datum.max - datum.commited;
+            } else if(datum.type == "non_heap"){
+                console.log(datum.timestamp + " " + datum.used);
+                ref.non_heap_used += datum.used;
+                ref.non_heap_commited_left += datum.commited - datum.used;
+            }
+        });
+        for(var _timestamp in memories){
+            var datum = memories[_timestamp];
+            var timestamp = new Date(parseInt(_timestamp));
+            dataPointsContainer.heap_used.push({x:timestamp,y:datum.heap_used});
+            dataPointsContainer.heap_commited_left.push({x:timestamp,y:datum.heap_commited_left});
+            dataPointsContainer.heap_uncommited_left.push({x:timestamp,y:datum.heap_uncommited_left});
+            dataPointsContainer.non_heap_used.push({x:timestamp,y:datum.non_heap_used});
+            console.log(datum.non_heap_used);
+            dataPointsContainer.non_heap_commited_left.push({x:timestamp,y:datum.non_heap_commited_left});
+        }
+        console.log(dataPointsContainer);
+        return dataPointsContainer;
+    };
+    /**
+     * Group memory pool data based on heap and no heap usage
+     * @param memPoolData
+     * @returns {{heap: Array, non_heap: Array}}
+     */
     var groupByHeapAndNonHeap = function(memPoolData){
         var heaps = {}; //timestamp,y
         var nonHeaps = {};
@@ -304,4 +447,5 @@ app.service('dataParser',[function(){
     this.groupByMemorySpaceName = groupByMemorySpaceName;
     this.groupByHeapAndNonHeap = groupByHeapAndNonHeap;
     this.parseCPUUsage = parseCPUUsage;
+    this.groupHeapNonHeapByUsedCommitedAndMax = groupHeapNonHeapByUsedCommitedAndMax;
 }]);

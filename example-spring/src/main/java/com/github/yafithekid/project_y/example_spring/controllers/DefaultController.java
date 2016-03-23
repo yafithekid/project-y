@@ -27,6 +27,20 @@ public class DefaultController {
         return "hello world!";
     }
 
+
+    @RequestMapping("/memories")
+    public String testMemories(
+            //default size 50MB = 50
+            @RequestParam(name="size",defaultValue = "52428800") long size
+    ){
+        List<Integer> shorts = new ArrayList<Integer>();
+        for(long i = 0; i < size / Integer.SIZE; i++){
+            shorts.add(1);
+        }
+        long memExhausted = shorts.size() * Integer.SIZE;
+        return String.valueOf(memExhausted);
+    }
+
     //this request will be displayed in about 5 seconds
     @RequestMapping("/long")
     public String testLong(

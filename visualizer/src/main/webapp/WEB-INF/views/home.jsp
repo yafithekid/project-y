@@ -7,6 +7,7 @@
 <spring:url value="/res/js/app.js" var="appJs"/>
 <spring:url value="/res/js/controllers.js" var="controllersJs"/>
 <spring:url value="/res/js/services.js" var="servicesJs"/>
+<spring:url value="/res/js/example-spring-services.js" var="exampleSpringServicesJs"/>
 <spring:url value="/res/bower_components/d3/d3.js" var="d3Js"/>
 <spring:url value="/res/canvasjs-1.8.0/source/canvasjs.js" var="canvasJs"/>
 <spring:url value="/res/bower_components/moment/moment.js" var="momentJs"/>
@@ -17,6 +18,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script>
+        var EXAMPLE_SPRING_BASE_URL="${pageContext.request.getServerName()}:${pageContext.request.getServerPort()}/example-spring";
+        console.log(EXAMPLE_SPRING_BASE_URL);
+    </script>
     <script>var VISUALIZER_BASE_URL = "${pageContext.request.contextPath}"; console.log(VISUALIZER_BASE_URL);</script>
     <link href="${bootstrapCss}" rel="stylesheet"/>
     <link href="${mainCss}" rel="stylesheet"/>
@@ -30,6 +35,7 @@
     <script src="${dateTimePickerJs}"></script>
     <script src="${dateTimePickerTemplatesJs}"></script>
     <script src="${servicesJs}"></script>
+    <script src="${exampleSpringServicesJs}"></script>
     <script src="${controllersJs}"></script>
     <script src="${appJs}"></script>
 </head>

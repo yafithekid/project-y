@@ -25,7 +25,7 @@ public class Main {
         if (config.getCollector().getMongoHandler().isActive()){
             MorphiaFactory morphiaFactory = new MorphiaFactory(mongoHandler.getHost()
                     ,mongoHandler.getPort(),mongoHandler.getDbName());
-            profilingWriters.add(new ProfilingWriterMongoImpl(morphiaFactory));
+            profilingWriters.add(new ProfilingWriterMongoImpl(morphiaFactory,config));
         }
 
         try {

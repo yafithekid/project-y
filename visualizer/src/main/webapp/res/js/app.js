@@ -18,5 +18,9 @@ app.config(['$routeProvider','$locationProvider',function($routeProvider,$locati
             templateUrl: 'views/partials/memory.html',
             controller: 'memoryCtrl'
         })
+        .when('/test',{
+            templateUrl: 'views/partials/test.html',
+            controller: 'testCtrl'
+        })
         .otherwise('/')
 }]);

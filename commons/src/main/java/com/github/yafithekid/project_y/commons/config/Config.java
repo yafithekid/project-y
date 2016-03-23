@@ -30,6 +30,15 @@ public class Config {
         this.classes = new ArrayList<MonitoredClass>();
     }
 
+    /**
+     * get current timestamp rounded down based on resource monitor collect rate
+     * @return long
+     */
+    public long getCurrentTimestampRounded(){
+        long currentTime = System.currentTimeMillis();
+        return currentTime - (currentTime % resourceMonitor.getCollectRateMillis());
+    }
+
     public static void main(String []args) throws IOException {
 //        String file = Thread.currentThread().getContextClassLoader().getResource("com/github/yafithekid/project_y/config/config.json").getPath();
 //        String file = "C:\\tugas\\ta\\instrumentation\\agent\\src\\main\\java\\com\\yafithekid\\instrumentation\\agent\\configs\\config.json";
