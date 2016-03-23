@@ -7,6 +7,10 @@ import com.github.yafithekid.project_y.db.models.AppMemoryUsage;
 import com.github.yafithekid.project_y.db.models.MemoryPool;
 import com.github.yafithekid.project_y.db.models.MethodCall;
 import com.github.yafithekid.project_y.db.services.MorphiaFactory;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping(value="/api")
@@ -39,6 +43,83 @@ public class ApiController {
                 .field("isReqHandler").equal(true)
                 .order("-start")
                 .limit(10)
+                .asList();
+    }
+
+    @RequestMapping("/urls/longest")
+    public List<MethodCall> getLongestRuntimeMethod(
+        @RequestParam(name="startTimestamp") long startTimestamp,
+        @RequestParam(name="endTimestamp") long endTimestamp
+    ){
+        DBCollection coll = datastore.getCollection(MethodCall.class);
+        //get method that runs between start and end Timestamp
+        DBObject query = new BasicDBObject()
+                .append("url",new BasicDBObject().append("$exists",true))
+                .append("start",new BasicDBObject()
+                        .append("$gte",startTimestamp).append("$lte",endTimestamp));
+        List<DBObject> dbObjects = coll.find(query).toArray();
+        List<MethodCall> methodCalls = new ArrayList<MethodCall>();
+        Comparator<MethodCall> comparator = new Comparator<MethodCall>() {
+            @Override
+            public int compare(MethodCall o1, MethodCall o2) {
+                long o1diff = o1.getEnd() - o1.getStart();
+                long o2diff = o2.getEnd() - o2.getStart();
+                if (o1diff < o2diff) return -1;
+                else if (o1diff > o2diff) return 1;
+                else return 0;
+            }
+        };
+
+        for (Object _dbObject : dbObjects) {
+            DBObject dbObject = (DBObject) _dbObject;
+            MethodCall mc = new MethodCall();
+            mc.setClazz((String) dbObject.get("clazz"));
+            mc.setMethod((String) dbObject.get("method"));
+            mc.setStart((Long) dbObject.get("start"));
+            mc.setEnd((Long) dbObject.get("end"));
+            mc.setUrl((String) dbObject.get("url"));
+            methodCalls.add(mc);
+        }
+        //create unique url
+        Map<String,MethodCall> mapUniqueResult = new HashMap<String, MethodCall>();
+        for (MethodCall newMC: methodCalls) {
+            MethodCall oldMC = mapUniqueResult.get(newMC.getUrl());
+            if (oldMC == null){
+                mapUniqueResult.put(newMC.getUrl(),newMC);
+            } else {
+                //if newMC is longer
+                if (comparator.compare(oldMC,newMC) <= 0){
+                    mapUniqueResult.put(newMC.getUrl(),newMC);
+                }
+            }
+        }
+        //send unique url to result
+        methodCalls.clear();
+        Set<String> keys = mapUniqueResult.keySet();
+        for (String key : keys) {
+            methodCalls.add(mapUniqueResult.get(key));
+        }
+        Collections.sort(methodCalls,comparator);
+        return methodCalls;
+    }
+
+    /**
+     * get all http request that invoked within start and end
+     * @param url the invoked url
+     * @param startTimestamp start timestamp
+     * @param endTimestamp end timestamp
+     * @return list of method call
+     */
+    @RequestMapping("/urls/specific")
+    public List<MethodCall> getUrlsSpecific(
+            @RequestParam(name="url") String url,
+            @RequestParam(name="startTimestamp") long startTimestamp,
+            @RequestParam(name="endTimestamp") long endTimestamp
+    ){
+        return datastore.find(MethodCall.class)
+                .field("url").equal(url)
+                .field("start").greaterThanOrEq(startTimestamp)
+                .field("start").lessThanOrEq(endTimestamp)
                 .asList();
     }
 
