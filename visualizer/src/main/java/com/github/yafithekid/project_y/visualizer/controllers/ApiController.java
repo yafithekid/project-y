@@ -2,17 +2,16 @@ package com.github.yafithekid.project_y.visualizer.controllers;
 
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
-import com.github.yafithekid.project_y.db.models.AppCPUUsage;
-import com.github.yafithekid.project_y.db.models.AppMemoryUsage;
-import com.github.yafithekid.project_y.db.models.MemoryPool;
-import com.github.yafithekid.project_y.db.models.MethodCall;
+import com.github.yafithekid.project_y.db.models.*;
 import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -75,7 +74,7 @@ public class ApiController {
             if (oldMC == null){
                 mapUniqueResult.put(newMC.getUrl(),newMC);
             } else {
-                //if newMC is longer
+                //if newMC is longer, change the data value
                 if (comparator.compare(oldMC,newMC) <= 0){
                     mapUniqueResult.put(newMC.getUrl(),newMC);
                 }
@@ -88,6 +87,7 @@ public class ApiController {
             methodCalls.add(mapUniqueResult.get(key));
         }
         Collections.sort(methodCalls,comparator);
+        Collections.reverse(methodCalls);
         return methodCalls;
     }
 
@@ -109,6 +109,13 @@ public class ApiController {
                 .field("start").greaterThanOrEq(startTimestamp)
                 .field("start").lessThanOrEq(endTimestamp)
                 .asList();
+    }
+
+    @RequestMapping("/methods/{id}")
+    public MethodCall getMethodById(
+            @PathVariable("id") String id){
+        return datastore.find(MethodCall.class)
+                .field("id").equal(new ObjectId(id)).get();
     }
 
     @RequestMapping("/methods")
@@ -175,6 +182,18 @@ public class ApiController {
     @RequestMapping("/timestamp")
     public long getCurrentTimestamp(){
         return System.currentTimeMillis();
+    }
+
+    @RequestMapping("/reqtime")
+    public List<RequestTime> getRequestTime(
+            @RequestParam(name = "startTimestamp") long startTimestamp,
+            @RequestParam(name = "endTimestamp") long endTimestamp
+    ){
+        return datastore.find(RequestTime.class)
+                .field("timestamp").greaterThanOrEq(startTimestamp)
+                .field("timestamp").lessThanOrEq(endTimestamp)
+                .asList();
+
     }
 
 }

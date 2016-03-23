@@ -1,0 +1,43 @@
+<div class="col-sm-12">
+    <div class="col-sm-6">
+        <legend>HTTP Request</legend>
+        <table class="table table-condensed table-unbordered-row">
+            <tbody>
+            <tr>
+                <td>HTTP Request Id</td>
+                <td>{{httpRequestMethodCall.id}}</td>
+            </tr>
+            <tr>
+                <td>URL</td>
+                <td>{{httpRequestMethodCall.reqMethod}} {{httpRequestMethodCall.url}}</td>
+            </tr>
+            <tr>
+                <td>Duration (ms)</td>
+                <td>{{httpRequestMethodCall.end - httpRequestMethodCall.start}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <legend>Method Invoked By This Request</legend>
+        <table class="table table-condensed">
+            <tbody>
+            <tr>
+                <th>Class</th>
+                <th>Method</th>
+                <th>Duration (ms)</th>
+                <th>Memory</th>
+                <th>CPU</th>
+            </tr>
+            <tr ng-repeat="method in methods">
+                <td>{{method.clazz}}</td>
+                <td>{{method.method}}</td>
+                <td>{{method.end - method.start}}</td>
+                <td>{{method.freeMemEnd - method.freeMemStart}}</td>
+                <td>CPU</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-6">
+
+    </div>
+</div>

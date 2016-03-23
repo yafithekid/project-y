@@ -55,7 +55,7 @@
                 <ul class="nav navbar-nav">
                     <li><a ng-href="#/">Home</a></li>
                     <li><a ng-href="#/resources">Resources</a></li>
-                    <li><a ng-href="#/cpu">Cpu</a></li>
+                    <li><a ng-href="#/request-time">Request Time</a></li>
                 </ul>
             </div>
         </div>

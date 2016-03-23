@@ -1,3 +1,6 @@
 .graph {
     height:250px;
 }
+.table-unbordered-row tr td{
+    border: 0 !important;
+}

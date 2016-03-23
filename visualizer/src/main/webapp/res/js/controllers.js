@@ -4,6 +4,73 @@ var controllers = angular.module('visualizerCtrls',[
 controllers.controller('testCtrl',['',function(){
 
 }]);
+controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams',function($scope,restApiClient,$routeParams){
+    $scope.startTimestamp = parseInt($routeParams.startTimestamp);
+    $scope.endTimestamp = parseInt($routeParams.startTimestamp);
+    $scope.id = $routeParams.id;
+    $scope.httpRequestMethodCall = null;
+    $scope.methods = [];
+
+    var drawGraph = function(id,params){
+
+        restApiClient.methodById(id,{})
+            .success(function(httpRequest){
+                $scope.httpRequestMethodCall = httpRequest;
+                restApiClient.methods({start:httpRequest.start,end:httpRequest.end,invocationId:httpRequest.invocationId})
+                    .success(function(methods){
+                        $scope.methods = methods;
+                    })
+                    .error(function(message){
+                        alert(message);
+                        console.log(message);
+                    })
+            })
+            .error(function(data){
+                alert(message);
+            });
+    };
+
+
+    $scope.drawGraph = drawGraph;
+    drawGraph($scope.id,{});
+
+}]);
+controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerConfig','canvasJsService', '$location',function($scope,restApiClient,visualizerConfig,canvasJsService,$location){
+        //
+    $scope.endTimestamp = new Date();
+    $scope.startTimestamp = new Date($scope.endTimestamp.getTime() - visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 *1000);
+    $scope.data = [];
+
+    var drawGraph = function(params){
+        restApiClient.requestTimes(params)
+            .success(function(data){
+                canvasJsService.drawRequestTime("graph",data);
+            })
+            .error(function(message){
+                alert(message);
+            });
+        restApiClient.urlLongest(params)
+            .success(function(data){
+                $scope.methods = data;
+            })
+            .error(function(message){
+                alert(message);
+            })
+    };
+
+    $scope.drawGraph = drawGraph;
+
+    var params = {startTimestamp:$scope.startTimestamp.getTime(),endTimestamp:$scope.endTimestamp.getTime()};
+    drawGraph(params);
+
+    $scope.redirectToUrlDetail = function(index){
+        console.log($scope.methods[index].url);
+        $location.path("/url-detail/"+$scope.methods[index].id).search({
+            startTimestamp: $scope.startTimestamp.getTime(),
+            endTimestamp : $scope.endTimestamp.getTime()
+        });
+    };
+}]);
 controllers.controller('homeCtrl',['restApiClient','$scope','$location',function(restApiClient,$scope,$location){
     restApiClient.urls()
         .success(function(data){
@@ -33,15 +100,15 @@ controllers.controller('homeCtrl',['restApiClient','$scope','$location',function
         $location.path("/cpu");
     }
 }]);
-controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope',
-    function(restApiClient,canvasJsService,$scope){
+controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope','visualizerConfig',
+    function(restApiClient,canvasJsService,$scope,visualizerConfig){
     $scope.showMemoryUsage= true;
     $scope.showMemoryPool = true;
     $scope.showCpuUsage = true;
 
     //take 2 hours earlier, should be enough for thesis defense
     $scope.endTimestamp = new Date();
-    $scope.startTimestamp = new Date($scope.endTimestamp - (120 * 60 * 1000));
+    $scope.startTimestamp = new Date($scope.endTimestamp - (visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 * 1000));
 
     var drawGraph = function(par){
         //draw memory

@@ -1,10 +1,25 @@
 var app = angular.module('visualizerServices',[]);
+app.factory('visualizerConfig',function(){
+    /**
+     * default time to fetch data from last timestamp
+     * @type {number}
+     */
+    var visualizerMinutesInterval = 1200;
+
+    return {
+        VISUALIZER_MINUTES_INTERVAL: visualizerMinutesInterval
+    };
+});
 app.factory('apiUrlFactory',['$location',function($location) {
     //VISUALIZER_BASE_URL get from home.jsp
     var BASE_URL = VISUALIZER_BASE_URL+"/api";
 
     var urls = function(){
         return BASE_URL+"/urls";
+    };
+
+    var urlMethods = function(methodCallId){
+        return BASE_URL+"/methods/"+methodCallId;
     };
 
     var methods = function(){
@@ -27,13 +42,28 @@ app.factory('apiUrlFactory',['$location',function($location) {
         return BASE_URL+"/memories/pools";
     };
 
+    var requestTimes = function(){
+        return BASE_URL+"/reqtime";
+    };
+
+    var urlLongest = function(){
+        return BASE_URL+"/urls/longest";
+    };
+
+    var methodById = function(id){
+        return BASE_URL+"/methods/"+id;
+    };
+
     return {
         urls: urls,
         methods: methods,
         cpuApps: cpuApps,
         currentTime: currentTime,
         memoryPools: memoryPools,
-        memoryApps: memoryApps
+        memoryApps: memoryApps,
+        requestTimes: requestTimes,
+        urlLongest: urlLongest,
+        methodById: methodById
     }
 }]);
 app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactory){
@@ -45,21 +75,59 @@ app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactor
         return $http.get(apiUrlFactory.methods(),{params:data});
     };
 
+    this.methodById = function(id,data){
+        return $http.get(apiUrlFactory.methodById(id),data);
+    };
+
+    /**
+     * Get cpu usage from startTimestamp to endTimestamp
+     * @param data {Object | String}
+     * @returns {HttpPromise}
+     */
     this.cpuApps = function(data){
         return $http.get(apiUrlFactory.cpuApps(),{params:data});
     };
 
+    /**
+     * get visualizer server current time
+     * @returns {HttpPromise}
+     */
     this.currentTime = function(){
         return $http.get(apiUrlFactory.currentTime());
     };
 
+    /**
+     * get memory pools from startTimestamp to endTimestamp, with specific type
+     * @param data
+     * @returns {HttpPromise}
+     */
     this.memoryPools = function(data){
         return $http.get(apiUrlFactory.memoryPools(),{params:data});
     };
-
+    
     this.memoryApps = function(data){
         return $http.get(apiUrlFactory.memoryApps(),{params:data});
     };
+
+    /**
+     * get request time handling from startTimestamp to endTimestamp, ordered from longest
+     * @param data
+     * @returns {HttpPromise}
+     */
+    this.requestTimes = function(data){
+        return $http.get(apiUrlFactory.requestTimes(),{params:data});
+    };
+
+    /**
+     * get method call (servlet method call) from startTimestamp to endTimestamp, ordered from longest, unique per url
+     * @param data
+     * @returns {HttpPromise}
+     */
+    this.urlLongest = function(data){
+        return $http.get(apiUrlFactory.urlLongest(),{params:data});
+    }
+    
+    
 }]);
 app.factory('mockData',function(){
     return {};
@@ -327,8 +395,51 @@ app.service('canvasJsService',['dataParser',function(dataParser){
 
         chart.render();
     };
+
+    this.drawRequestTime = function(htmlId,data){
+        var dataPointsContainer = dataParser.parseRequestTime(data);
+        var chart = new CanvasJS.Chart(htmlId,
+            {
+                title :{
+                    text: "Request Handling Performance"
+                },
+                animationEnabled: false,
+                axisX:{
+                    valueFormatString: "MM-DD HH:mm:ss",
+                    labelAngle: -40
+                },
+                axisY:{
+                    title: "ms"
+                },
+                legend: {
+                    verticalAlign: "bottom",
+                    horizontalAlign: "center",
+                    cursor:"pointer"
+                },
+                data: [
+                    {
+                        name: "time",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        type: "stackedArea",
+                        color :"rgba(211,19,14,.8)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.reqTime
+                    }
+                ]
+            });
+
+        chart.render();
+    };
 }]);
 app.service('dataParser',[function(){
+    var parseRequestTime = function(data){
+        var dataPointsContainer = {"reqTime":[]};
+        data.forEach(function(datum){
+            dataPointsContainer.reqTime.push({x:new Date(datum.timestamp),y:datum.loadTime});
+        });
+        return dataPointsContainer;
+    };
     /**
      *
      * @param memPoolData
@@ -444,6 +555,7 @@ app.service('dataParser',[function(){
         return dataPointsContainer;
     };
 
+    this.parseRequestTime = parseRequestTime;
     this.groupByMemorySpaceName = groupByMemorySpaceName;
     this.groupByHeapAndNonHeap = groupByHeapAndNonHeap;
     this.parseCPUUsage = parseCPUUsage;

@@ -22,5 +22,13 @@ app.config(['$routeProvider','$locationProvider',function($routeProvider,$locati
             templateUrl: 'views/partials/test.html',
             controller: 'testCtrl'
         })
+        .when('/request-time',{
+            templateUrl: 'views/partials/request-time.html',
+            controller: 'requestTimeCtrl'
+        })
+        .when('/url-detail/:id',{
+            templateUrl: 'views/partials/url-detail.html',
+            controller: 'urlDetailCtrl'
+        })
         .otherwise('/')
 }]);
