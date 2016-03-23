@@ -33,7 +33,7 @@ controllers.controller('homeCtrl',['restApiClient','$scope','$location',function
         $location.path("/cpu");
     }
 }]);
-controllers.controller('memoryCtrl',['restApiClient','canvasJsService','$scope',
+controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope',
     function(restApiClient,canvasJsService,$scope){
     $scope.showMemoryUsage= true;
     $scope.showMemoryPool = true;

@@ -54,7 +54,7 @@
             <div class="navbar-collapse collapse navbar-material-light-blue-collapse">
                 <ul class="nav navbar-nav">
                     <li><a ng-href="#/">Home</a></li>
-                    <li><a ng-href="#/memories">Memory</a></li>
+                    <li><a ng-href="#/resources">Resources</a></li>
                     <li><a ng-href="#/cpu">Cpu</a></li>
                 </ul>
             </div>

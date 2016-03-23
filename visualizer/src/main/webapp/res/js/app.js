@@ -14,9 +14,9 @@ app.config(['$routeProvider','$locationProvider',function($routeProvider,$locati
             templateUrl: 'views/partials/cpu.html',
             controller: 'cpuCtrl'
         })
-        .when('/memories',{
-            templateUrl: 'views/partials/memory.html',
-            controller: 'memoryCtrl'
+        .when('/resources',{
+            templateUrl: 'views/partials/resource.html',
+            controller: 'resourceCtrl'
         })
         .when('/test',{
             templateUrl: 'views/partials/test.html',
