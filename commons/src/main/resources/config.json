@@ -71,6 +71,26 @@
       "methods": [
         { "name": "executeQuery", "trace":true }
       ]
+    },
+    //methods for spring-petclinic
+    {
+      "name": "org.springframework.samples.petclinic.service.ClinicServiceImpl",
+      "methods": [
+        { "name": "findPetTypes"},
+        { "name": "findOwnerById"},
+        { "name": "findPetById"},
+        { "name": "savePet"},
+        { "name": "saveVisit"},
+        { "name": "findVets"},
+        { "name": "saveOwner"},
+        { "name": "findOwnerByLastName"}
+      ]
+    },
+    {
+      "name": "org.springframework.samples.petclinic.repository.jpa.JpaOwnerRepositoryImpl",
+      "methods": [
+        {"name":"findByLastName"}
+      ]
     }
   ],
   "collector" : {
@@ -87,7 +107,7 @@
   "resourceMonitor" : {
     "active": true,
     "sendToCollector": true,
-    "collectRateMillis": 5000,
+    "collectRateMillis": 10000,
     "debug": true
   }
 }
