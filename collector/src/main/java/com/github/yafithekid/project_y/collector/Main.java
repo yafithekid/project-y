@@ -1,10 +1,11 @@
 package com.github.yafithekid.project_y.collector;
 
-import com.github.yafithekid.project_y.collector.services.ProfilingWriterMongoImpl;
+import com.github.yafithekid.project_y.collector.services.ProfilingWriterDBImpl;
 import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
 import com.github.yafithekid.project_y.collector.services.ProfilingWriterMockImpl;
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
+import com.github.yafithekid.project_y.db.services.DaoFactory;
 import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 
 import java.io.FileNotFoundException;
@@ -25,7 +26,8 @@ public class Main {
         if (config.getCollector().getMongoHandler().isActive()){
             MorphiaFactory morphiaFactory = new MorphiaFactory(mongoHandler.getHost()
                     ,mongoHandler.getPort(),mongoHandler.getDbName());
-            profilingWriters.add(new ProfilingWriterMongoImpl(morphiaFactory,config));
+            DaoFactory daoFactory = new DaoFactory(morphiaFactory,DaoFactory.MONGO_DB);
+            profilingWriters.add(new ProfilingWriterDBImpl(daoFactory,config));
         }
 
         try {
