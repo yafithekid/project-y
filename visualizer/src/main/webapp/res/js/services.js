@@ -297,7 +297,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
                         dataPoints: dataPointsContainer.heap_used
                     },
                     {
-                        name: "commited heap left",
+                        name: "non heap used",
                         showInLegend: true,
                         legendMarkerType: "square",
                         type: "stackedArea",
@@ -306,7 +306,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
                         dataPoints: dataPointsContainer.non_heap_used
                     },
                     {
-                        name: "non heap used",
+                        name: "commited heap left",
                         showInLegend: true,
                         legendMarkerType: "square",
                         type: "stackedArea",
