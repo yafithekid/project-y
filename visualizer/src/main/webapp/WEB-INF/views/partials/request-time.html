@@ -1,5 +1,5 @@
 <div class="col-sm-12">
-    <div class="col-sm-4">
+    <div class="col-sm-6">
         <div class="row">
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -33,7 +33,7 @@
                         </div>
                         <div class="form-group">
                             <div class="pull-right">
-                                <button class="btn btn-primary" ng-click="drawGraph()">Refresh</button>
+                                <button class="btn btn-primary" ng-click="refreshGraph()">Refresh</button>
                             </div>
                         </div>
                     </form>
@@ -42,7 +42,8 @@
             </div>
         </div>
         <div class="row">
-            <legend>Longest HTTP process</legend>
+            <legend>Longest HTTP response time</legend>
+            Between {{startTimestamp | date : 'yyyy-MM-dd HH:mm'}} and {{endTimestamp | date : 'yyyy-MM-dd HH:mm'}}
             <table class="table table-condensed">
                 <thead>
                     <tr>
@@ -55,7 +56,7 @@
                 <tbody>
                     <tr ng-repeat="method in methods">
                         <td>{{method.reqMethod}} {{method.url}}</td>
-                        <td>{{method.start}}</td>
+                        <td>{{method.start | date: 'y-MM-d HH:mm:ss'}}</td>
                         <td>{{method.end - method.start}}</td>
                         <td>
                             <a ng-click="redirectToUrlDetail($index)">
@@ -67,10 +68,12 @@
             </table>
         </div>
     </div>
-    <div class="col-sm-8" style="padding-left:40px;">
+    <div class="col-sm-6" style="padding-left:40px;">
         <div class="row">
-            <div class="well">
-                <div id="graph" class="graph"></div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="graph" class="graph"></div>
+                </div>
             </div>
         </div>
     </div>

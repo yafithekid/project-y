@@ -7,6 +7,7 @@
 <spring:url value="/res/js/app.js" var="appJs"/>
 <spring:url value="/res/js/controllers.js" var="controllersJs"/>
 <spring:url value="/res/js/services.js" var="servicesJs"/>
+<spring:url value="/res/js/directives.js" var="directivesJs"/>
 <spring:url value="/res/js/example-spring-services.js" var="exampleSpringServicesJs"/>
 <spring:url value="/res/bower_components/d3/d3.js" var="d3Js"/>
 <spring:url value="/res/canvasjs-1.8.0/source/canvasjs.js" var="canvasJs"/>
@@ -35,6 +36,7 @@
     <script src="${dateTimePickerJs}"></script>
     <script src="${dateTimePickerTemplatesJs}"></script>
     <script src="${servicesJs}"></script>
+    <script src="${directivesJs}"></script>
     <script src="${exampleSpringServicesJs}"></script>
     <script src="${controllersJs}"></script>
     <script src="${appJs}"></script>

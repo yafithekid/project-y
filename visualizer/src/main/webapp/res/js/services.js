@@ -2,12 +2,30 @@ var app = angular.module('visualizerServices',[]);
 app.factory('visualizerConfig',function(){
     /**
      * default time to fetch data from last timestamp
-     * @type {number}
+     * @type {number} in minutes
      */
-    var visualizerMinutesInterval = 1;
+    //buat demo snapshot 1 menit
+    // var visualizerMinutesInterval = 1;
+    //buat demo snapshot selamanya
+    var visualizerMinutesInterval = 1200;
+    /**
+     * When a method invoked between timestamp a and b,
+     * url-detail will show memory usage and cpu graph between a-offset and b+offset
+     * @type {number} in millis
+     */
+    var offsetVisualizerUrlDetail = 1000;
+
+    var memoryPools= [{name : "PS Eden Space", type : "heap"},
+        {name : "PS Survivor Space", type : "heap"},
+        {name : "PS Old Gen", type: "heap"},
+        {name : "Code Cache", type: "non_heap"},
+        {name : "Metaspace", type: "non_heap"},
+        {name : "Compressed Class Space", type: "non_heap"}];
 
     return {
-        VISUALIZER_MINUTES_INTERVAL: visualizerMinutesInterval
+        VISUALIZER_MINUTES_INTERVAL: visualizerMinutesInterval,
+        MEMORY_POOL_KEYS: memoryPools,
+        OFFSET_VISUALIZER_URL_DETAIL: offsetVisualizerUrlDetail
     };
 });
 app.factory('apiUrlFactory',['$location',function($location) {
@@ -571,4 +589,53 @@ app.service('dataParser',[function(){
     this.groupByHeapAndNonHeap = groupByHeapAndNonHeap;
     this.parseCPUUsage = parseCPUUsage;
     this.groupHeapNonHeapByUsedCommitedAndMax = groupHeapNonHeapByUsedCommitedAndMax;
+
+    this.createMethodInvocationTree = function(data){
+        var isParent = {};
+        var adjMatrix = [];
+        data.forEach(function(c,i){
+            adjMatrix[i] = [];
+        });
+        //create adjacency list
+        data.forEach(function(child,c){
+            isParent[c] = true;
+            var _parent = -1;
+            var smallestDiff = -1;
+            data.forEach(function(parent,p){
+                if (c != p){
+                    if (parent.start <= child.start && child.end <= parent.end){
+                        isParent[c] = false;
+                        if (smallestDiff == -1 || smallestDiff > (parent.end - parent.start)){
+                            smallestDiff = parent.end - parent.start;
+                            _parent = p;
+                        }
+                    }
+                }
+            });
+            if (_parent != -1){
+                adjMatrix[_parent].push(c);
+            }
+
+        });
+        function DFS(adjMatrix,node,data,depth){
+            data[node].nodes = [];
+            adjMatrix[node].forEach(function(child){
+                data[node].nodes.push(data[child]);
+                DFS(adjMatrix,child,data,depth +1);
+            });
+        }
+
+        adjMatrix.forEach(function(_,node){
+            // console.log(node+" " +isParent[node]);
+            if (isParent[node]){
+                // console.log("run dfs on node="+node);
+                DFS(adjMatrix,node,data,0);
+            }
+        });
+        var result = [];
+        data.forEach(function(datum,i){
+            if (isParent[i]) result.push(datum);
+        });
+        return result;
+    };
 }]);

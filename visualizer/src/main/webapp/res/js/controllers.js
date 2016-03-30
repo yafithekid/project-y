@@ -1,38 +1,71 @@
 var controllers = angular.module('visualizerCtrls',[
-    'visualizerServices','exampleSpringServices'
+    'visualizerServices','exampleSpringServices','visualizerDirectives'
 ]);
 controllers.controller('testCtrl',['',function(){
 
 }]);
-controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams',function($scope,restApiClient,$routeParams){
+controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams','visualizerConfig','canvasJsService','dataParser',function($scope,restApiClient,$routeParams,visualizerConfig,canvasJsService,dataParser){
     $scope.startTimestamp = parseInt($routeParams.startTimestamp);
     $scope.endTimestamp = parseInt($routeParams.startTimestamp);
     $scope.id = $routeParams.id;
     $scope.httpRequestMethodCall = null;
     $scope.methods = [];
 
-    var drawGraph = function(id,params){
-
+    /**
+     *
+     * @param id method id
+     * @param params object parameter
+     */
+    var drawGraph = function(id){
         restApiClient.methodById(id,{})
             .success(function(httpRequest){
                 $scope.httpRequestMethodCall = httpRequest;
                 restApiClient.methods({start:httpRequest.start,end:httpRequest.end,invocationId:httpRequest.invocationId})
                     .success(function(methods){
-                        $scope.methods = methods;
+                        $scope.methods = dataParser.createMethodInvocationTree(methods);
+                        console.log($scope.methods);
                     })
                     .error(function(message){
                         alert(message);
                         console.log(message);
-                    })
+                    });
+                var offest = visualizerConfig.OFFSET_VISUALIZER_URL_DETAIL;
+                var params = {
+                    startTimestamp: httpRequest.start - offest,
+                    endTimestamp: httpRequest.end + offest
+                };
+                restApiClient.memoryPools(params)
+                    .success(function(data){
+                        var memSpaceKeys =  visualizerConfig.MEMORY_POOL_KEYS;
+                        //per 1024KB
+                        for(var i = 0; i < data.length; i++){
+                            data[i].used /= 1024;
+                            data[i].commited/= 1024;
+                            data[i].max /= 1024;
+                        }
+                        // canvasJsService.drawAppMemoryUsageDetail("graphAppMemUsage",data);
+                        canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
+                    }).error(function(message){ alert(message);});
+                //draw cpu
+                restApiClient.cpuSys(params)
+                    .success(function(data){
+                        //scale to 100%
+                        for(var i = 0; i < data.length; i++){
+                            if (data[i].load < 0.0){
+                                data[i].load = 0.0;
+                            }
+                            data[i].load *= 100.0;
+                        }
+                        canvasJsService.drawCpuUsage("graphCpuUsage",data);
+                    }).error(function(message){ alert(message); });
             })
             .error(function(data){
                 alert(message);
             });
+
     };
 
-
-    $scope.drawGraph = drawGraph;
-    drawGraph($scope.id,{});
+    drawGraph($scope.id);
 
 }]);
 controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerConfig','canvasJsService', '$location',function($scope,restApiClient,visualizerConfig,canvasJsService,$location){
@@ -58,17 +91,16 @@ controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerCo
             })
     };
 
-    $scope.drawGraph = drawGraph;
+    $scope.refreshGraph = function(){
+        var params = {startTimestamp:$scope.startTimestamp.getTime(),endTimestamp:$scope.endTimestamp.getTime()};
+        drawGraph(params);
+    };
 
-    var params = {startTimestamp:$scope.startTimestamp.getTime(),endTimestamp:$scope.endTimestamp.getTime()};
-    drawGraph(params);
+    $scope.refreshGraph();
 
     $scope.redirectToUrlDetail = function(index){
         console.log($scope.methods[index].url);
-        $location.path("/url-detail/"+$scope.methods[index].id).search({
-            startTimestamp: $scope.startTimestamp.getTime(),
-            endTimestamp : $scope.endTimestamp.getTime()
-        });
+        $location.path("/url-detail/"+$scope.methods[index].id);
     };
 }]);
 controllers.controller('homeCtrl',['restApiClient','$scope','$location',function(restApiClient,$scope,$location){
@@ -114,14 +146,7 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
         //draw memory
         restApiClient.memoryPools(par)
             .success(function(data){
-                var memSpaceKeys = [
-                    {name : "PS Eden Space", type : "heap"},
-                    {name : "PS Survivor Space", type : "heap"},
-                    {name : "PS Old Gen", type: "heap"},
-                    {name : "Code Cache", type: "non_heap"},
-                    {name : "Metaspace", type: "non_heap"},
-                    {name : "Compressed Class Space", type: "non_heap"}
-                ];
+                var memSpaceKeys =  visualizerConfig.MEMORY_POOL_KEYS;
                 //per 1024KB
                 for(var i = 0; i < data.length; i++){
                     data[i].used /= 1024;

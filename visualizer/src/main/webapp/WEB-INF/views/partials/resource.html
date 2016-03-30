@@ -1,9 +1,9 @@
 <div class="col-sm-12">
-    <div class="col-sm-4">
+    <div class="col-sm-6">
         <div class="row">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <legend>Memory Usage</legend>
+                    <legend>Resource Usage</legend>
                     <form>
                         <!--<div class="form-group">-->
                         <!--<div class="row">-->
@@ -60,10 +60,12 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-8" style="padding-left:40px;">
+    <div class="col-sm-6" style="padding-left:40px;">
         <div class="row">
-            <div class="well">
+            <div class="panel panel-default">
+                <div class="panel-body">
                 <div id="graphAppMemUsage" class="graph"></div>
+                </div>
             </div>
         </div>
         <div class="row" ng-show="showMemoryPool">

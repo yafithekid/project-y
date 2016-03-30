@@ -4,3 +4,16 @@
 .table-unbordered-row tr td{
     border: 0 !important;
 }
+
+.table-wrap-long {
+    table-layout: fixed;
+}
+
+.table-wrap-long td {
+    word-wrap: break-word;
+}
+
+ul.method-invocation-tree {
+    word-wrap: break-word;
+    padding-left:20px;
+}
