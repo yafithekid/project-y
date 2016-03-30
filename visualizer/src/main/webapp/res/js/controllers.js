@@ -132,7 +132,7 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
                 canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
             }).error(function(message){ alert(message);});
         //draw cpu
-        restApiClient.cpuApps(par)
+        restApiClient.cpuSys(par)
             .success(function(data){
                 //scale to 100%
                 for(var i = 0; i < data.length; i++){

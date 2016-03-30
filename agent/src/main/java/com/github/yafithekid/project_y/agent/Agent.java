@@ -34,10 +34,15 @@ public class Agent {
 
         ResourceMonitor rm = config.getResourceMonitor();
         if (rm.isActive() && hardwareThread == null){
-            installGCMonitoring();
+//            installGCMonitoring();
             List<HardwareDaemonWriter> writers = new ArrayList<HardwareDaemonWriter>();
 
-            if (rm.isDebug()) writers.add(new HardwareDaemonWriterMockImpl());
+            if (rm.isDebug()){
+                System.out.println("use debug");
+                writers.add(new HardwareDaemonWriterMockImpl());
+            } else {
+                System.out.println("not using debug");
+            }
             if (rm.isSendToCollector()) writers.add(new HardwareDaemonWriterCollectorImpl(config));
             hardwareThread = new HardwareDaemon(config,writers);
             hardwareThread.start();

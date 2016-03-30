@@ -4,7 +4,7 @@ app.factory('visualizerConfig',function(){
      * default time to fetch data from last timestamp
      * @type {number}
      */
-    var visualizerMinutesInterval = 1200;
+    var visualizerMinutesInterval = 1;
 
     return {
         VISUALIZER_MINUTES_INTERVAL: visualizerMinutesInterval
@@ -28,6 +28,10 @@ app.factory('apiUrlFactory',['$location',function($location) {
 
     var cpuApps = function(){
         return BASE_URL+"/cpus/app";
+    };
+
+    var cpuSys = function(){
+        return BASE_URL+"/cpus/sys";
     };
 
     var currentTime = function(){
@@ -63,7 +67,8 @@ app.factory('apiUrlFactory',['$location',function($location) {
         memoryApps: memoryApps,
         requestTimes: requestTimes,
         urlLongest: urlLongest,
-        methodById: methodById
+        methodById: methodById,
+        cpuSys: cpuSys
     }
 }]);
 app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactory){
@@ -125,6 +130,10 @@ app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactor
      */
     this.urlLongest = function(data){
         return $http.get(apiUrlFactory.urlLongest(),{params:data});
+    };
+
+    this.cpuSys = function(data){
+        return $http.get(apiUrlFactory.cpuSys(),{params:data});
     }
     
     
@@ -149,7 +158,9 @@ app.service('canvasJsService',['dataParser',function(dataParser){
                     //maximum: 100
                 },
                 axisY:{
-                    title: "Load (%)"
+                    title: "Load (%)",
+                    minimum: 0,
+                    maximum: 100
                 },
                 legend: {
                     verticalAlign: "bottom",

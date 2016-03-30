@@ -73,8 +73,42 @@ public class DefaultController {
         return client.getAllMeat();
     }
 
+    @RequestMapping("/cpu")
+    public String testCpu(
+            @RequestParam(name="time", defaultValue = "10000") long time
+    ){
+        Thread t = new FooThread(time);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return String.valueOf("Runned for " +time);
+        //create new thread and run it
+
+    }
+
     public static void main(String[] args) throws IOException {
         BaconIpsumRestClient client = new BaconIpsumRestClient();
         System.out.println(client.getAllMeat());
     }
+}
+
+class FooThread extends Thread{
+    long duration;
+
+    public FooThread(long duration){
+        this.duration = duration;
+    }
+
+    @Override
+    public void run() {
+        long stopTime = System.currentTimeMillis() + duration;
+        int x = 0;
+        while (System.currentTimeMillis() < stopTime){
+            x++;
+        }
+    }
+
 }

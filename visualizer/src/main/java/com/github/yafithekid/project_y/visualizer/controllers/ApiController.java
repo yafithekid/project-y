@@ -2,7 +2,9 @@ package com.github.yafithekid.project_y.visualizer.controllers;
 
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
+import com.github.yafithekid.project_y.db.daos.SystemCPUUsageDao;
 import com.github.yafithekid.project_y.db.models.*;
+import com.github.yafithekid.project_y.db.services.DaoFactory;
 import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -24,8 +26,10 @@ import java.util.*;
 @RequestMapping(value="/api")
 public class ApiController {
 
-    static Config config;
-    static Datastore datastore;
+    private static Config config;
+    private static Datastore datastore;
+
+    private SystemCPUUsageDao systemCPUUsageDao;
 
     public ApiController () throws FileNotFoundException {
         if (config == null){
@@ -35,6 +39,8 @@ public class ApiController {
         MorphiaFactory morphiaFactory = new MorphiaFactory(
                 mongoHandler.getHost(),mongoHandler.getPort(),mongoHandler.getDbName());
         datastore = morphiaFactory.createDatastore();
+        DaoFactory daoFactory = new DaoFactory(morphiaFactory,DaoFactory.MONGO_DB);
+        systemCPUUsageDao = daoFactory.createSystemCPUUsageDao();
     }
 
     @RequestMapping("/urls")
@@ -142,6 +148,14 @@ public class ApiController {
                 .field("timestamp").greaterThanOrEq(startTimestamp)
                 .order("-timestamp")
                 .asList();
+    }
+
+    @RequestMapping("/cpus/sys")
+    public List<SystemCPUUsage> getSystemCPUUsage(
+            @RequestParam(name = "startTimestamp") long startTimestamp,
+            @RequestParam(name = "endTimestamp") long endTimestamp
+    ){
+        return systemCPUUsageDao.getWithinTimestamp(startTimestamp,endTimestamp);
     }
 
     @RequestMapping("/memories/app")

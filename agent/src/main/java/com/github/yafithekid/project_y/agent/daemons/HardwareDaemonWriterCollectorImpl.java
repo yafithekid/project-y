@@ -23,7 +23,7 @@ public class HardwareDaemonWriterCollectorImpl implements HardwareDaemonWriter {
             OutputStream outToServer = client.getOutputStream();
             if (!(data).endsWith("\n")) { data += "\n"; }
             DataOutputStream out = new java.io.DataOutputStream(outToServer);
-            System.out.println(data);
+//            System.out.println(data);
             out.writeUTF(data);
             client.close();
         } catch (IOException e) {

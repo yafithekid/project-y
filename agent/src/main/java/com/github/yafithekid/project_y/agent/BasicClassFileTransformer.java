@@ -242,7 +242,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             "java.io.OutputStream __outToServer = __client.getOutputStream();" +
             "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +
             "java.io.DataOutputStream __out = new java.io.DataOutputStream(__outToServer);" +
-            "System.out.println($1);" +
+//            "System.out.println($1);" +
             "__out.writeUTF($1);"+
             "__client.close();" +
             "}";
