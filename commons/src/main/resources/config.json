@@ -1,75 +1,67 @@
 {
   "classes" : [
     {
-      "name": "com.github.yafithekid.project_y.example.Service",
+      "name": "com.github.yafithekid.project_y.example_spring.services.mock.Service",
       "methods": [
-        { "name": "overrideNoSuper","trace":true}
+        { "name": "foo"}
       ]
     },
     {
-      "name": "com.github.yafithekid.project_y.example.AbsService",
+      "name": "com.github.yafithekid.project_y.example_spring.services.mock.AbsService",
       "methods": [
-        { "name": "overrideWithSuper","trace":true},
-        { "name": "overrideNoSuper", "trace":true},
-        { "name": "foo", "trace": true },
-        { "name": "bar", "trace": true },
-        { "name": "staticVoid", "trace": true},
-        { "name": "staticInt", "trace":true}
+        { "name": "foo"},
+        { "name": "bar"},
+        { "name": "overrideWithSuper"},
+        { "name": "overrideNoSuper"}
       ]
     },
     {
-      "name": "com.github.yafithekid.project_y.example.AbsServiceImpl",
+      "name": "com.github.yafithekid.project_y.example_spring.services.mock.AbsServiceImpl",
       "methods": [
-        { "name": "overrideWithSuper","trace":true},
-        { "name": "overrideNoSuper", "trace":true},
-        { "name": "foo", "trace": true },
-        { "name": "bar", "trace": true },
-        { "name": "staticVoid", "trace": true},
-        { "name": "staticInt", "trace":true}
+        { "name": "overrideWithSuper"},
+        { "name": "overrideNoSuper"},
+        { "name": "foo"},
+        { "name": "staticVoid"},
+        { "name": "staticInt"}
       ]
     },
-//    {
-//      "name": "com.github.yafithekid.project_y.example.TReturn",
-//      "methods": [
-//        { "name": "returnVoid", "trace": true},
-//        { "name": "returnInt", "trace": true},
-//        { "name": "returnString", "trace": true}
-//      ]
-//    },
-//    {
-//      "name": "com.github.yafithekid.project_y.example.TResource",
-//      "methods": [
-//        { "name": "testTime", "trace": true},
-//        { "name": "testMemory", "trace": true}
-//      ]
-//    },
-//    {
-//      "name": "com.github.yafithekid.project_y.example.Sleeping",
-//      "methods": [
-//        { "name": "randomSleep", "trace": false},
-//        { "name": "bigList", "trace": false},
-//        { "name": "callBC", "trace": true},
-//        { "name": "callBCInt", "trace": true},
-//        { "name": "b", "trace": true},
-//        { "name": "c", "trace": true}
-//      ]
-//    },
+    {
+      "name": "com.github.yafithekid.project_y.example_spring.services.mock.ServiceImpl",
+      "methods": [
+        { "name": "foo"}
+      ]
+    },
+    {
+      "name": "com.github.yafithekid.project_y.example_spring.controllers.DefaultController",
+      "methods": [
+        { "name": "testHttp"},
+        { "name": "testCpu"},
+        { "name": "testMethodA"},
+        { "name": "testMethodB"},
+        { "name": "methodA"},
+        { "name": "methodB"},
+        { "name": "testLong"},
+        { "name": "testMemories"},
+        { "name": "testHome"},
+        { "name": "testDB"}
+      ]
+    },
     {
       "name": "org.springframework.web.servlet.DispatcherServlet",
       "methods": [
-        { "name": "doDispatch", "trace":false,"requestHandler": true}
+        { "name": "doDispatch","requestHandler": true}
       ]
     },
     {
       "name" : "sun.net.www.protocol.http.HttpURLConnection",
       "methods": [
-        { "name": "getInputStream","trace":true}
+        { "name": "getInputStream"}
       ]
     },
     {
       "name" : "com.mysql.jdbc.PreparedStatement",
       "methods": [
-        { "name": "executeQuery", "trace":true }
+        { "name": "executeQuery"}
       ]
     },
     //methods for spring-petclinic
@@ -108,6 +100,6 @@
     "active": true,
     "sendToCollector": true,
     "collectRateMillis": 1000,
-    "debug": false
+    "debug": true
   }
 }

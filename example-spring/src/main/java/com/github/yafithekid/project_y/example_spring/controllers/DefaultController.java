@@ -1,6 +1,10 @@
 package com.github.yafithekid.project_y.example_spring.controllers;
 
 import com.github.yafithekid.project_y.example_spring.services.BaconIpsumRestClient;
+import com.github.yafithekid.project_y.example_spring.services.mock.AbsService;
+import com.github.yafithekid.project_y.example_spring.services.mock.AbsServiceImpl;
+import com.github.yafithekid.project_y.example_spring.services.mock.Service;
+import com.github.yafithekid.project_y.example_spring.services.mock.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,10 +93,59 @@ public class DefaultController {
 
     }
 
+    @RequestMapping("/methoda")
+    public String testMethodA(){
+        return methodA();
+
+    }
+
+    @RequestMapping("/methodb")
+    public String testMethodB(){
+        return methodB();
+    }
+
+    @RequestMapping("/methodinv")
+    public String testMethodInvocation(){
+        AbsService absService = new AbsServiceImpl();
+        AbsServiceImpl absServiceImpl = new AbsServiceImpl();
+        Service service = new ServiceImpl();
+        ServiceImpl serviceImpl = new ServiceImpl();
+        //TC-01-01
+        service.foo();
+        //TC-01-02
+        absService.bar();
+        //TC-01-03
+        absService.foo();
+        //TC-01-04
+        absServiceImpl.foo();
+        //TC-01-05
+        absServiceImpl.overrideNoSuper();
+        //TC-01-06
+        absServiceImpl.overrideWithSuper();
+        //TC-01-07
+        AbsServiceImpl.staticVoid();
+        //TC-01-08
+        AbsServiceImpl.staticInt();
+        //TC-01-09
+        serviceImpl.foo();
+        return "method invocation ends. see the visualization";
+    }
+
+    @RequestMapping("/db")
+    public String testDB(){
+        //TODO impl
+        //TODO return value
+        return "";
+    }
+
     public static void main(String[] args) throws IOException {
         BaconIpsumRestClient client = new BaconIpsumRestClient();
         System.out.println(client.getAllMeat());
     }
+
+    private String methodA(){ return "method A"; }
+
+    private String methodB(){ return "method B"; }
 }
 
 class FooThread extends Thread{
