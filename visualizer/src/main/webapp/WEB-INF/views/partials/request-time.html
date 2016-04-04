@@ -3,7 +3,7 @@
         <div class="row">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <legend>Response Performance</legend>
+                    <legend>Filter</legend>
                     <form>
                         <div class="form-group">
                             <div class="col-sm-12" style="padding-bottom:10px;">
@@ -56,7 +56,7 @@
                 <tbody>
                     <tr ng-repeat="method in methods">
                         <td>{{method.reqMethod}} {{method.url}}</td>
-                        <td>{{method.start | date: 'y-MM-d HH:mm:ss'}}</td>
+                        <td>{{method.start | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td>{{method.end - method.start}}</td>
                         <td>
                             <a ng-click="redirectToUrlDetail($index)">

@@ -168,6 +168,13 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
                 }
                 canvasJsService.drawCpuUsage("graphCpuUsage",data);
             }).error(function(message){ alert(message); });
+        restApiClient.urlLongest(par)
+            .success(function(data){
+                $scope.methods = data;
+            })
+            .error(function(message){
+                alert(message);
+            })
     };
 
     $scope.drawGraph = function(){

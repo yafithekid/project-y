@@ -81,6 +81,27 @@
       ]
     },
     {
+      "name": "org.springframework.samples.petclinic.web.OwnerController",
+      "methods": [
+        {"name":"initFindForm"},
+        {"name":"processFindForm"},
+        {"name":"showOwner"}
+      ]
+    },
+    {
+      "name": "org.springframework.samples.petclinic.web.VisitController",
+      "methods": [
+        {"name":"initNewVisitForm"},
+        {"name":"processNewVisitForm"}
+      ]
+    },
+    {
+      "name": "org.springframework.samples.petclinic.web.VetController",
+      "methods": [
+        {"name":"showVetList"}
+      ]
+    },
+    {
       "name": "org.springframework.samples.petclinic.repository.jpa.JpaOwnerRepositoryImpl",
       "methods": [
         {"name":"findByLastName"}

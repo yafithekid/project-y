@@ -3,7 +3,7 @@
         <div class="row">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <legend>Resource Usage</legend>
+                    <legend>Filter</legend>
                     <form>
                         <!--<div class="form-group">-->
                         <!--<div class="row">-->
@@ -55,9 +55,30 @@
             </div>
         </div>
         <div class="row">
-            <div class="panel panel-default">
-
-            </div>
+            <legend>Longest HTTP response time</legend>
+            Between {{startTimestamp | date : 'yyyy-MM-dd HH:mm'}} and {{endTimestamp | date : 'yyyy-MM-dd HH:mm'}}
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>URL</th>
+                    <th>Start</th>
+                    <th>Duration (ms)</th>
+                    <th>View</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="method in methods">
+                    <td>{{method.reqMethod}} {{method.url}}</td>
+                    <td>{{method.start | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td>{{method.end - method.start}}</td>
+                    <td>
+                        <a ng-click="redirectToUrlDetail($index)">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="col-sm-6" style="padding-left:40px;">

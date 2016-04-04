@@ -205,7 +205,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
     this.drawMemoryPoolUsage = function(htmlId,memPoolData,memSpaceKeys){
         //per 1024 KB
         var dataPointsContainer = dataParser.groupByMemorySpaceName(memPoolData,memSpaceKeys);
-        console.log(dataPointsContainer);
+        // console.log(dataPointsContainer);
         var chartData = [];
         var insertToChartData = function(name,color,dataPoints){
             chartData.push({
@@ -497,7 +497,7 @@ app.service('dataParser',[function(){
                 ref.heap_commited_left += datum.commited - datum.used;
                 ref.heap_uncommited_left += datum.max - datum.commited;
             } else if(datum.type == "non_heap"){
-                console.log(datum.timestamp + " " + datum.used);
+                // console.log(datum.timestamp + " " + datum.used);
                 ref.non_heap_used += datum.used;
                 ref.non_heap_commited_left += datum.commited - datum.used;
             }
@@ -509,7 +509,7 @@ app.service('dataParser',[function(){
             dataPointsContainer.heap_commited_left.push({x:timestamp,y:datum.heap_commited_left});
             dataPointsContainer.heap_uncommited_left.push({x:timestamp,y:datum.heap_uncommited_left});
             dataPointsContainer.non_heap_used.push({x:timestamp,y:datum.non_heap_used});
-            console.log(datum.non_heap_used);
+            // console.log(datum.non_heap_used);
             dataPointsContainer.non_heap_commited_left.push({x:timestamp,y:datum.non_heap_commited_left});
         }
         console.log(dataPointsContainer);
