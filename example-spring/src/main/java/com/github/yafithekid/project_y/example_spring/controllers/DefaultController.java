@@ -138,6 +138,14 @@ public class DefaultController {
         return "";
     }
 
+    @RequestMapping("/loop")
+    public String testLoop(@RequestParam(name="n",defaultValue = "100") long n){
+        for(long i = 0; i < n; i++){
+            loop();
+        }
+        return "Executed loop "+n+" times.";
+    }
+
     public static void main(String[] args) throws IOException {
         BaconIpsumRestClient client = new BaconIpsumRestClient();
         System.out.println(client.getAllMeat());
@@ -146,6 +154,8 @@ public class DefaultController {
     private String methodA(){ return "method A"; }
 
     private String methodB(){ return "method B"; }
+
+    private void loop(){}
 }
 
 class FooThread extends Thread{

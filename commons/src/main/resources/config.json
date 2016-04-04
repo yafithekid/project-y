@@ -43,7 +43,9 @@
         { "name": "testLong"},
         { "name": "testMemories"},
         { "name": "testHome"},
-        { "name": "testDB"}
+        { "name": "testDB"},
+        { "name": "testLoop"},
+        { "name": "loop"}
       ]
     },
     {
