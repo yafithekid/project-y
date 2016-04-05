@@ -1,6 +1,11 @@
 {
   "classes" : [
     {
+      //doesn't exist class
+      "name": "Blablah",
+      "methods": []
+    },
+    {
       "name": "com.github.yafithekid.project_y.example_spring.services.mock.Service",
       "methods": [
         { "name": "foo"}
@@ -12,7 +17,9 @@
         { "name": "foo"},
         { "name": "bar"},
         { "name": "overrideWithSuper"},
-        { "name": "overrideNoSuper"}
+        { "name": "overrideNoSuper"},
+        //doesn't exist method
+        { "name":"blabla"}
       ]
     },
     {
@@ -120,9 +127,14 @@
     "debug": true
   },
   "resourceMonitor" : {
-    "active": true,
+    "active": false,
     "sendToCollector": true,
     "collectRateMillis": 1000,
     "debug": true
+  },
+  "configErrorAction": {
+    "isInterface": "continue",
+    "isAbstractMethod": "continue",
+    "methodNotExists": "continue"
   }
 }

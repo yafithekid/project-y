@@ -4,24 +4,21 @@ package com.github.yafithekid.project_y.agent;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
-import java.util.*;
 
-import com.github.yafithekid.project_y.agent.exceptions.ClassNotExistException;
 import com.github.yafithekid.project_y.agent.exceptions.IsAbstractMethodException;
+import com.github.yafithekid.project_y.agent.exceptions.RestrictedClassException;
 import com.github.yafithekid.project_y.agent.exceptions.IsInterfaceException;
 import com.github.yafithekid.project_y.commons.config.*;
 import javassist.*;
-import javassist.expr.ExprEditor;
-import javassist.expr.MethodCall;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {
     /**
      * Method name for data collecting. will be appended to each end of method
      */
     public static final String DATA_COLLECT_METHOD = "__dcMethod";
+
+    static final String SOCKET_FIELD = "__socket";
 
     /**
      * Collector hostname
@@ -33,12 +30,14 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      */
     public final int mCollectorPort;
 
+    private Config mConfig;
     private MonitoredClassSearchMap mMonitoredClassSearchMap;
 
     public BasicClassFileTransformer(Config config){
         mCollectorHost = config.getCollector().getHost();
         mCollectorPort = config.getCollector().getPort();
         mMonitoredClassSearchMap = new MonitoredClassSearchMap(config.getClasses());
+        mConfig = config;
     }
 
     @Override
@@ -54,10 +53,9 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
      * @return modified bytecode
      */
     public byte[] modifyClass(MonitoredClass monitoredClass)
-            throws IsInterfaceException,ClassNotExistException {
+            throws IsInterfaceException,RestrictedClassException {
         ClassPool cp = ClassPool.getDefault();
-                ClassLoader cl
-                = Thread.currentThread().getContextClassLoader(); // or something else
+        ClassLoader cl = Thread.currentThread().getContextClassLoader(); // or something else
         cp.insertClassPath(new LoaderClassPath(cl));
         CtClass cc;
         byte ret[];
@@ -65,6 +63,9 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             cc = cp.get(monitoredClass.getName());
             if (cc.isInterface()){
                 throw new IsInterfaceException(monitoredClass.getName());
+            }
+            if (RestrictedPackagePrefix.isRestricted(monitoredClass.getName())){
+                throw new RestrictedClassException(monitoredClass.getName());
             }
             createDataCollectMethod(cc);
 //            createSenderMethodCall(cc);
@@ -79,15 +80,22 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                     }
                 } catch (NotFoundException e) {
                     System.out.println(monitoredClass.getName()+"#"+method.getName()+" does not exists");
+                    if (mConfig.getConfigErrorAction().getMethodNotExists().equals(ConfigErrorAction.QUIT)){
+                        System.exit(1);
+                    }
                 } catch (IsAbstractMethodException e) {
                     System.out.println(e.getMessage());
+                    if (mConfig.getConfigErrorAction().getIsAbstractMethod().equals(ConfigErrorAction.QUIT)){
+                        System.exit(1);
+                    }
                 }
             }
             ret = cc.toBytecode();
             cc.detach();
             return ret;
         } catch (NotFoundException e) {
-            throw new ClassNotExistException(monitoredClass.getName());
+            e.printStackTrace();
+            return null;
         } catch (CannotCompileException e) {
             e.printStackTrace();
             return null;
@@ -114,8 +122,12 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                 return modifyClass(mc);
             } catch (IsInterfaceException e) {
                 System.out.println(e.getMessage());
+                if (mConfig.getConfigErrorAction().getIsInterface().equals(ConfigErrorAction.QUIT)){
+                    System.exit(1);
+                }
                 return byteCode;
-            } catch (ClassNotExistException e) {
+            } catch (RestrictedClassException e) {
+                //TODO this won't work since different classloader
                 System.out.println(e.getMessage());
                 return byteCode;
             }
@@ -231,6 +243,42 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 //
 //    }
 
+    void createSocket(CtClass ctClass){
+        try {
+            ClassPool cp = ClassPool.getDefault();
+            CtClass socketClass = cp.get("java.net.Socket");
+            CtField ctField = CtField.make(SOCKET_FIELD,ctClass);
+            ctField.setType(socketClass);
+            ctField.setModifiers(Modifier.STATIC);
+            ctClass.addField(ctField,"new java.net.Socket(\""+ mCollectorHost +"\","+mCollectorPort +");");
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void createDataCollectMethodWithSender(CtClass ctClass){
+        try {
+            //TODO set to async
+            ClassPool cp = ClassPool.getDefault();
+            //construct method body
+            //make the method abstract, insert the method and set to non-abstract.
+            String methodBody = "{" +
+                    "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +
+                    "Sender.getInstance().send($1);" +
+                    "}";
+            CtMethod dataCollectMethod = CtNewMethod.make("public abstract static void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
+
+            dataCollectMethod.setBody(methodBody);
+
+            dataCollectMethod.setModifiers(dataCollectMethod.getModifiers() & ~Modifier.ABSTRACT);
+            ctClass.addMethod(dataCollectMethod);
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        }
+    }
+
     void createDataCollectMethod(CtClass ctClass){
         try {
             //TODO set to async
@@ -238,6 +286,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             //construct method body
             //make the method abstract, insert the method and set to non-abstract.
             String methodBody = "{" +
+            "com.github.yafithekid.project_y.agent.Sender.getInstance();" +
             "java.net.Socket __client = new java.net.Socket(\""+ mCollectorHost +"\","+ mCollectorPort +");" +
             "java.io.OutputStream __outToServer = __client.getOutputStream();" +
             "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +

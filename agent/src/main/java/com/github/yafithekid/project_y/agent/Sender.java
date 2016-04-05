@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class Sender implements SendToCollector {
+    public static String classLoaderName = Sender.class.getClassLoader().getClass().getName();
     public static Sender instance;
 
     public final String mCollectorHost;

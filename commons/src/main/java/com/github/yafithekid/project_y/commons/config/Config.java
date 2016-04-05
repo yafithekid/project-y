@@ -19,6 +19,7 @@ public class Config {
     private List<MonitoredClass> classes;
     private CollectorConfig collector;
     private ResourceMonitor resourceMonitor;
+    private ConfigErrorAction configErrorAction;
 
     public static Config readFromFile(String location) throws FileNotFoundException {
         Gson gson = new Gson();
@@ -71,5 +72,9 @@ public class Config {
 
     public void setResourceMonitor(ResourceMonitor resourceMonitor) {
         this.resourceMonitor = resourceMonitor;
+    }
+
+    public ConfigErrorAction getConfigErrorAction() {
+        return configErrorAction;
     }
 }

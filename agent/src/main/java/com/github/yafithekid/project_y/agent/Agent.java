@@ -13,15 +13,15 @@ import javax.management.Notification;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Agent {
     //singleton to prevent multiple thread of hardware daemon within tomcat or other webserver
