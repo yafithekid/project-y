@@ -1,14 +1,9 @@
 package com.github.yafithekid.project_y.agent;
 
 import com.github.yafithekid.project_y.commons.JsonConstruct;
-import com.github.yafithekid.project_y.commons.config.CollectorConfig;
 import com.github.yafithekid.project_y.commons.config.Config;
-import com.github.yafithekid.project_y.commons.config.ProfilingPrefix;
 
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 public class Sender implements SendToCollector {
@@ -17,16 +12,27 @@ public class Sender implements SendToCollector {
 
     public final String mCollectorHost;
     public final int mCollectorPort;
+    boolean isFlushOutput;
     JsonConstruct jsonConstruct;
 
-    private Sender(Config config){
+    private static ThreadLocal<BufferedWriter> mDataOutputStream;
+
+    private Sender(Config config) throws IOException {
         this.mCollectorHost = config.getCollector().getHost();
         this.mCollectorPort = config.getCollector().getPort();
         jsonConstruct = new JsonConstruct();
+        Socket socket = new Socket(mCollectorHost,mCollectorPort);
+        OutputStream outputStream = socket.getOutputStream();
+        mDataOutputStream = new ThreadLocal<BufferedWriter>(){
+            @Override
+            protected BufferedWriter initialValue() {
+                return new BufferedWriter(new OutputStreamWriter(outputStream));
+            };
+        };
+        isFlushOutput = config.isFlushOutput();
     }
 
-    public static Sender getInstance() throws FileNotFoundException {
-        System.out.println("get instance");
+    public static Sender getInstance() throws IOException {
         if (instance == null) {
             Config config = Config.readFromFile(Config.DEFAULT_FILE_CONFIG_LOCATION);
             instance = new Sender(config);
@@ -39,7 +45,7 @@ public class Sender implements SendToCollector {
         String data = jsonConstruct.constructMethodCall(className,methodName,Long.parseLong(startTime),Long.parseLong(endTime),Long.parseLong(startMem),Long.parseLong(endMem),threadId);
 //        String data = String.format("%s %s %s %d %d %d %d %s",
 //                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId);
-        sendToCollector(data);
+        send(data);
     }
 
     @Override
@@ -48,20 +54,30 @@ public class Sender implements SendToCollector {
 //        String data = String.format("%s %s %s %d %d %d %d %s %s %s",
 //                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId,
 //                httpVerb,url);
-        sendToCollector(data);
+        send(data);
     }
 
-    private void sendToCollector(String data){
+    public void send(String data){
         try {
-            Socket client = new Socket(mCollectorHost,mCollectorPort);
-            OutputStream outToServer = client.getOutputStream();
-            if (!(data).endsWith("\n")) { data += "\n"; }
-            DataOutputStream out = new java.io.DataOutputStream(outToServer);
-            System.out.println(data);
-            out.writeUTF(data);
-            client.close();
+            mDataOutputStream.get().write(data);
+            mDataOutputStream.get().newLine();
+            if (isFlushOutput){
+                mDataOutputStream.get().flush();
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            //try to reconnect. if failed then just throw exception
+            try {
+                Socket socket = new Socket(mCollectorHost,mCollectorPort);
+                OutputStream outputStream = socket.getOutputStream();
+                mDataOutputStream = new ThreadLocal<BufferedWriter>(){
+                    @Override
+                    protected BufferedWriter initialValue() {
+                        return new BufferedWriter(new OutputStreamWriter(outputStream));
+                    };
+                };
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

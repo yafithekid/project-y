@@ -41,7 +41,9 @@ public class HardwareDaemon extends Thread {
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
         OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         //noinspection InfiniteLoopStatement
+
         while(true){
+            long startTime = System.currentTimeMillis();
             long currTime = mConfig.getCurrentTimestampRounded();
             List<MemoryPoolMXBean> memoryMXBeans = ManagementFactory.getMemoryPoolMXBeans();
             for (HardwareDaemonWriter writer : mHardwareWriters) {
@@ -71,7 +73,8 @@ public class HardwareDaemon extends Thread {
                 writer.write(jsonConstruct.constructSystemCpuUsage(currTime,
                         operatingSystemMXBean.getSystemCpuLoad()));
             }
-
+            long endTime = System.currentTimeMillis();
+            System.out.println("Run in "+(endTime - startTime)+" ms");
             try {
                 Thread.sleep(mResourceRateCollect);
             } catch (InterruptedException e) {

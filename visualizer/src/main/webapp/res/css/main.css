@@ -9,8 +9,13 @@
     table-layout: fixed;
 }
 
-.table-wrap-long td {
+.table-wrap-long td.wrap {
     word-wrap: break-word;
+    white-space: normal;
+}
+
+.table-wrap-long td{
+    white-space: nowrap;
 }
 
 ul.method-invocation-tree {

@@ -127,14 +127,15 @@
     "debug": true
   },
   "resourceMonitor" : {
-    "active": false,
+    "active": true,
     "sendToCollector": true,
-    "collectRateMillis": 1000,
+    "collectRateMillis": 5000,
     "debug": true
   },
   "configErrorAction": {
     "isInterface": "continue",
     "isAbstractMethod": "continue",
     "methodNotExists": "continue"
-  }
+  },
+  "flushOutput": true
 }

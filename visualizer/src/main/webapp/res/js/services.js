@@ -7,7 +7,7 @@ app.factory('visualizerConfig',function(){
     //buat demo snapshot 1 menit
     // var visualizerMinutesInterval = 1;
     //buat demo snapshot selamanya
-    var visualizerMinutesInterval = 1200;
+    var visualizerMinutesInterval = 1;
     /**
      * When a method invoked between timestamp a and b,
      * url-detail will show memory usage and cpu graph between a-offset and b+offset

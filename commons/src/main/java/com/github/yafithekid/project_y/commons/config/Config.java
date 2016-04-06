@@ -20,6 +20,7 @@ public class Config {
     private CollectorConfig collector;
     private ResourceMonitor resourceMonitor;
     private ConfigErrorAction configErrorAction;
+    private boolean flushOutput;
 
     public static Config readFromFile(String location) throws FileNotFoundException {
         Gson gson = new Gson();
@@ -76,5 +77,9 @@ public class Config {
 
     public ConfigErrorAction getConfigErrorAction() {
         return configErrorAction;
+    }
+
+    public boolean isFlushOutput() {
+        return flushOutput;
     }
 }

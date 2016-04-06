@@ -15,6 +15,7 @@ import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.GarbageCollectorMXBean;
@@ -43,7 +44,11 @@ public class Agent {
             } else {
                 System.out.println("not using debug");
             }
-            if (rm.isSendToCollector()) writers.add(new HardwareDaemonWriterCollectorImpl(config));
+            if (rm.isSendToCollector()) try {
+                writers.add(new HardwareDaemonWriterCollectorImpl(config));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             hardwareThread = new HardwareDaemon(config,writers);
             hardwareThread.start();
         }

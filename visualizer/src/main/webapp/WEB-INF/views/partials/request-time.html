@@ -44,7 +44,7 @@
         <div class="row">
             <legend>Longest HTTP response time</legend>
             Between {{startTimestamp | date : 'yyyy-MM-dd HH:mm'}} and {{endTimestamp | date : 'yyyy-MM-dd HH:mm'}}
-            <table class="table table-condensed">
+            <table class="table table-condensed table-wrap-long">
                 <thead>
                     <tr>
                         <th>URL</th>
@@ -55,7 +55,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="method in methods">
-                        <td>{{method.reqMethod}} {{method.url}}</td>
+                        <td class="wrap">{{method.reqMethod}} {{method.url}}</td>
                         <td>{{method.start | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td>{{method.end - method.start}}</td>
                         <td>

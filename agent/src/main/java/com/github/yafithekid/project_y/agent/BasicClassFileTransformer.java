@@ -13,6 +13,7 @@ import com.github.yafithekid.project_y.commons.config.*;
 import javassist.*;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {
+    static final String SEPARATOR = "#";
     /**
      * Method name for data collecting. will be appended to each end of method
      */
@@ -286,14 +287,15 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             //construct method body
             //make the method abstract, insert the method and set to non-abstract.
             String methodBody = "{" +
-            "com.github.yafithekid.project_y.agent.Sender.getInstance();" +
-            "java.net.Socket __client = new java.net.Socket(\""+ mCollectorHost +"\","+ mCollectorPort +");" +
-            "java.io.OutputStream __outToServer = __client.getOutputStream();" +
-            "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +
-            "java.io.DataOutputStream __out = new java.io.DataOutputStream(__outToServer);" +
-//            "System.out.println($1);" +
-            "__out.writeUTF($1);"+
-            "__client.close();" +
+            "($1) = ($1) +\""+SEPARATOR+"\";"+
+            "com.github.yafithekid.project_y.agent.Sender.getInstance().send($1);" +
+//            "java.net.Socket __client = new java.net.Socket(\""+ mCollectorHost +"\","+ mCollectorPort +");" +
+//            "java.io.OutputStream __outToServer = __client.getOutputStream();" +
+//            "if (!($1).endsWith(\"\\n\")) { ($1) = ($1) + \"\\n\"; } " +
+//            "java.io.DataOutputStream __out = new java.io.DataOutputStream(__outToServer);" +
+////            "System.out.println($1);" +
+//            "__out.writeUTF($1);"+
+//            "__client.close();" +
             "}";
 //            String methodBody = "{" + "System.out.println($1);" + "}";
             CtMethod dataCollectMethod = CtNewMethod.make("public abstract static void "+DATA_COLLECT_METHOD+"(java.lang.String data);",ctClass);
