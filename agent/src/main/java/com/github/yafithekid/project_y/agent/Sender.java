@@ -41,23 +41,27 @@ public class Sender implements SendToCollector {
     }
 
     @Override
-    public void methodCall(String className, String methodName,String startTime, String endTime, String startMem,String endMem,String threadId) {
-        String data = jsonConstruct.constructMethodCall(className,methodName,Long.parseLong(startTime),Long.parseLong(endTime),Long.parseLong(startMem),Long.parseLong(endMem),threadId);
+    public void methodCall(String className, String methodName,long startTime, long endTime, long startMem,long endMem,String threadId,Object retVal) {
+        String data = jsonConstruct.constructMethodCall(className,methodName,startTime,endTime,startMem,endMem,threadId);
+        System.out.println(Agent.getObjectSize(retVal));
 //        String data = String.format("%s %s %s %d %d %d %d %s",
 //                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId);
+        data += BasicClassFileTransformer.SEPARATOR;
         send(data);
     }
 
     @Override
-    public void reqHandlerMethodCall(String className, String methodName, long startTime, long endTime, long startMem, long endMem,String threadId, String httpVerb, String url) {
+    public void reqHandlerMethodCall(String className, String methodName, long startTime, long endTime, long startMem, long endMem,String threadId, String httpVerb, String url,Object retVal) {
         String data = jsonConstruct.constructReqHandlerMethodCall(className,methodName,startTime,endTime,startMem,endMem,threadId,httpVerb,url);
+        System.out.println(Agent.getObjectSize(retVal));
 //        String data = String.format("%s %s %s %d %d %d %d %s %s %s",
 //                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId,
 //                httpVerb,url);
+        data += BasicClassFileTransformer.SEPARATOR;
         send(data);
     }
 
-    public void send(String data){
+    private void send(String data){
         try {
             mDataOutputStream.get().write(data);
             mDataOutputStream.get().newLine();
@@ -73,7 +77,7 @@ public class Sender implements SendToCollector {
                     @Override
                     protected BufferedWriter initialValue() {
                         return new BufferedWriter(new OutputStreamWriter(outputStream));
-                    };
+                    }
                 };
             } catch (IOException e1) {
                 e1.printStackTrace();

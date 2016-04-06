@@ -11,6 +11,8 @@ import com.github.yafithekid.project_y.agent.exceptions.RestrictedClassException
 import com.github.yafithekid.project_y.agent.exceptions.IsInterfaceException;
 import com.github.yafithekid.project_y.commons.config.*;
 import javassist.*;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {
     static final String SEPARATOR = "#";
@@ -68,7 +70,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
             if (RestrictedPackagePrefix.isRestricted(monitoredClass.getName())){
                 throw new RestrictedClassException(monitoredClass.getName());
             }
-            createDataCollectMethod(cc);
+//            createDataCollectMethod(cc);
 //            createSenderMethodCall(cc);
             for(MonitoredMethod method:monitoredClass.getMethods()) {
                 try {
@@ -161,19 +163,32 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                 "\\\"freeMemEnd\\\":\"+%s+\","+
                 "\\\"invocationId\\\":\\\"\"+%s+\"\\\"",ProfilingPrefix.METHOD_INVOCATION,cc.getName(),m.getName(),"__startTime","__endTime","__startMem","__endMem","__invocationId");
 //        String data = "\"metinv "+cc.getName()+" "+m.getName()+" \"+__startTime+\" \"+__endTime+\" \"+__startMem+\" \"+__endMem+\" \"+__invocationId";
+        String methodCall;
         if (mm.isRequestHandler()){
             data += String.format("," +
                     "\\\"reqMethod\\\":\\\"\"+%s+\"\\\","+
-                    "\\\"url\\\":\\\"\"+%s+\"\\\"}\"","($1).getMethod()","($1).getRequestURI()");
+                    "\\\"url\\\":\\\"\"+%s+\"\\\"}%s\"","($1).getMethod()","($1).getRequestURI()",SEPARATOR);
+            methodCall = String.format("com.github.yafithekid.project_y.agent.Sender.getInstance().reqHandlerMethodCall(\"%s\",\"%s\",__startTime,__endTime,__startMem,__endMem,__invocationId,\"\"+%s+\"\",\"\"+%s+\"\",__result);",
+                    cc.getName(),m.getName(),"($1).getMethod()","($1).getRequestURI()");
 //            m.insertBefore("System.out.println(($1).getRequestURI());");
 //            data += "+\" \"+(($1).getMethod())+\" \"+(($1).getRequestURI())";
         } else {
-            data +="}\"";
+            data +="}"+SEPARATOR+"\"";
+            methodCall = String.format("com.github.yafithekid.project_y.agent.Sender.getInstance().methodCall(\"%s\",\"%s\",__startTime,__endTime,__startMem,__endMem,__invocationId,__result);",
+                    cc.getName(),m.getName());
         }
+
+
         m.insertAfter("{" +
                 "__endMem = Runtime.getRuntime().freeMemory();" +
                 "__endTime = System.currentTimeMillis();" +
-                DATA_COLLECT_METHOD+"("+data+");" +
+//                DATA_COLLECT_METHOD+"("+data+");" +
+                "Object __result = ($w) $_;"+
+                methodCall+
+//                reqHandlerMethodCall(String className, String methodName, long startTime, long endTime, long startMem, long endMem,String threadId, String httpVerb, String url,Object retVal) {
+//                "com.github.yafithekid.project_y.agent.Sender.getInstance().reqHandlerMethodCall(""));" +
+//                "System.out.println(com.github.yafithekid.project_y.agent.Agent.getObjectSize(result));"+
+//                "com.github.yafithekid.project_y.agent.Sender.getInstance().send("+data+");" +
 //                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
                 "}");
     }

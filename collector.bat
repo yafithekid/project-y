@@ -1,0 +1,1 @@
+java -jar collector\build\libs\collector.jar

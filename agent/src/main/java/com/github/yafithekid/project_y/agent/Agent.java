@@ -28,8 +28,12 @@ public class Agent {
     //singleton to prevent multiple thread of hardware daemon within tomcat or other webserver
     private static Thread hardwareThread;
 
+    //the java instrumentation object
+    private static Instrumentation globalInst;
+
     public static void premain(String agentArgs, Instrumentation inst) throws FileNotFoundException {
         Config config = Config.readFromFile(Config.DEFAULT_FILE_CONFIG_LOCATION);
+        globalInst = inst;
 
         inst.addTransformer(new BasicClassFileTransformer(config));
 
@@ -116,6 +120,59 @@ public class Agent {
         }
     }
 
+    public static long getObjectSize(Object object){
+        if (globalInst == null){
+            throw new IllegalStateException("Agent not initialized");
+        }
+        if (object == null){
+            return -1;
+        } else {
+            long totalSize = globalInst.getObjectSize(object);
+            if (object instanceof List){
+                List list = (List) object;
+                for(int i = 0; i < list.size();i++){
+                    if (list.get(i)!=null){
+                        totalSize += globalInst.getObjectSize(list.get(i));
+                    }
+                }
+            }
+            globalInst.getObjectSize(object);
+            System.out.println(object.getClass()+" "+totalSize);
+            return totalSize;
+        }
+    }
+
+//    public static long getObjectSize(int x){
+//        return 4;
+//    }
+//
+//    public static long getObjectSize(float x){
+//        return 4;
+//    }
+//
+//    public static long getObjectSize(double x){
+//        return 8;
+//    }
+//
+//    public static long getObjectSize(char x){
+//        return 1;
+//    }
+//
+//    public static long getObjectSize(boolean x){
+//        return 1;
+//    }
+//
+//    public static long getObjectSize(byte b){
+//        return 1;
+//    }
+//
+//    public static long getObjectSize(long x){
+//        return 8;
+//    }
+//
+//    public static long getObjectSize(Void v){
+//        return 0;
+//    }
 
 
 }
