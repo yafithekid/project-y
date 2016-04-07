@@ -125,7 +125,7 @@ public class Agent {
             throw new IllegalStateException("Agent not initialized");
         }
         if (object == null){
-            return -1;
+            return 0;
         } else {
             long totalSize = globalInst.getObjectSize(object);
             if (object instanceof List){
@@ -137,7 +137,6 @@ public class Agent {
                 }
             }
             globalInst.getObjectSize(object);
-            System.out.println(object.getClass()+" "+totalSize);
             return totalSize;
         }
     }

@@ -9,31 +9,33 @@ import java.util.Map;
 public class JsonConstruct {
     static Gson gson = new Gson();
 
-    public String constructMethodCall(String clazz,String method,long startTime,long endTime,long startFreeMem,long endFreeMem,String invocationId) {
+    public String constructMethodCall(String clazz,String method,long startTime,long endTime,
+                                      long memory,String invocationId,String returnClass) {
         Map<String,String> map = new HashMap<String,String>();
         map.put("_prefix", ProfilingPrefix.METHOD_INVOCATION);
         map.put("clazz",clazz);
         map.put("method",method);
         map.put("start",""+startTime);
         map.put("end",""+endTime);
-        map.put("freeMemStart",""+startFreeMem);
-        map.put("freeMemEnd",""+endFreeMem);
+        map.put("memory",""+memory);
         map.put("invocationId",invocationId);
+        map.put("retClass",returnClass);
         return gson.toJson(map);
     }
 
-    public String constructReqHandlerMethodCall(String clazz,String method,long startTime,long endTime,long startFreeMem,long endFreeMem,String invocationId,String reqMethod,String url) {
+    public String constructReqHandlerMethodCall(String clazz,String method,long startTime,long endTime,
+                                                long memory,String invocationId,String reqMethod,String url,String returnClass) {
         Map<String,String> map = new HashMap<String,String>();
         map.put("_prefix",ProfilingPrefix.METHOD_INVOCATION);
         map.put("clazz",clazz);
         map.put("method",method);
         map.put("start",""+startTime);
         map.put("end",""+endTime);
-        map.put("freeMemStart",""+startFreeMem);
-        map.put("freeMemEnd",""+endFreeMem);
+        map.put("memory",""+memory);
         map.put("invocationId",invocationId);
         map.put("reqMethod",reqMethod);
         map.put("url",url);
+        map.put("retClass",returnClass);
         return gson.toJson(map);
     }
 

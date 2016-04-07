@@ -11,8 +11,6 @@ import com.github.yafithekid.project_y.agent.exceptions.RestrictedClassException
 import com.github.yafithekid.project_y.agent.exceptions.IsInterfaceException;
 import com.github.yafithekid.project_y.commons.config.*;
 import javassist.*;
-import javassist.expr.ExprEditor;
-import javassist.expr.MethodCall;
 
 public class BasicClassFileTransformer implements ClassFileTransformer {
     static final String SEPARATOR = "#";
@@ -83,12 +81,12 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                     }
                 } catch (NotFoundException e) {
                     System.out.println(monitoredClass.getName()+"#"+method.getName()+" does not exists");
-                    if (mConfig.getConfigErrorAction().getMethodNotExists().equals(ConfigErrorAction.QUIT)){
+                    if (mConfig.getAgentConfig().getErrorAction().getMethodNotExists().equals(AgentConfigErrorAction.QUIT)){
                         System.exit(1);
                     }
                 } catch (IsAbstractMethodException e) {
                     System.out.println(e.getMessage());
-                    if (mConfig.getConfigErrorAction().getIsAbstractMethod().equals(ConfigErrorAction.QUIT)){
+                    if (mConfig.getAgentConfig().getErrorAction().getIsAbstractMethod().equals(AgentConfigErrorAction.QUIT)){
                         System.exit(1);
                     }
                 }
@@ -125,7 +123,7 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
                 return modifyClass(mc);
             } catch (IsInterfaceException e) {
                 System.out.println(e.getMessage());
-                if (mConfig.getConfigErrorAction().getIsInterface().equals(ConfigErrorAction.QUIT)){
+                if (mConfig.getAgentConfig().getErrorAction().getIsInterface().equals(AgentConfigErrorAction.QUIT)){
                     System.exit(1);
                 }
                 return byteCode;

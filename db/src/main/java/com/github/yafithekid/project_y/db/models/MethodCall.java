@@ -19,12 +19,12 @@ public class MethodCall {
     private String method;
     private Long start;
     private Long end;
-    private Long freeMemStart;
-    private Long freeMemEnd;
+    private long memory;
     private String invocationId;
     private String reqMethod;
     private String url;
     private boolean isReqHandler;
+    private String retClass;
 
     public static MethodCall newInstance(Map<String,String> map){
         MethodCall mc = new MethodCall();
@@ -32,9 +32,9 @@ public class MethodCall {
         mc.setMethod(map.get("method"));
         mc.setStart(Long.parseLong(map.get("start")));
         mc.setEnd(Long.parseLong(map.get("end")));
-        mc.setFreeMemStart(Long.parseLong(map.get("freeMemStart")));
-        mc.setFreeMemEnd(Long.parseLong(map.get("freeMemEnd")));
+        mc.setMemory(Long.parseLong(map.get("memory")));
         mc.setInvocationId(map.get("invocationId"));
+        mc.setRetClass(map.get("retClass"));
         if (map.containsKey("reqMethod") && map.containsKey("url")){
             mc.setReqHandler(true);
             mc.setReqMethod(map.get("reqMethod"));
@@ -43,32 +43,12 @@ public class MethodCall {
         return mc;
     }
 
-    /**
-     * Create new instance based from agent output
-     * @param data agent output
-     * @return new instance
-     */
-    public static MethodCall newInstance(String data){
-        MethodCall methodCall = new MethodCall();
-        //This will cause any number of consecutive spaces to split
-        String[] strings = data.split("\\s+");
-        methodCall.setClazz(strings[1]);
-        methodCall.setMethod(strings[2]);
-        methodCall.setStart(Long.parseLong(strings[3]));
-        methodCall.setEnd(Long.parseLong(strings[4]));
-        methodCall.setFreeMemStart(Long.parseLong(strings[5]));
-        methodCall.setFreeMemEnd(Long.parseLong(strings[6]));
-        methodCall.setInvocationId(strings[7]);
-        try {
-            methodCall.setUrl(strings[9]);
-            methodCall.setReqMethod(strings[8]);
-            methodCall.setReqHandler(true);
-        } catch(ArrayIndexOutOfBoundsException e){
-            methodCall.setUrl(null);
-            methodCall.setReqMethod(null);
-            methodCall.setReqHandler(false);
-        }
-        return methodCall;
+    public String getRetClass() {
+        return retClass;
+    }
+
+    public void setRetClass(String retClass) {
+        this.retClass = retClass;
     }
 
     public String getReqMethod() {
@@ -127,22 +107,6 @@ public class MethodCall {
         this.invocationId = invocationId;
     }
 
-    public Long getFreeMemStart() {
-        return freeMemStart;
-    }
-
-    public void setFreeMemStart(Long freeMemStart) {
-        this.freeMemStart = freeMemStart;
-    }
-
-    public Long getFreeMemEnd() {
-        return freeMemEnd;
-    }
-
-    public void setFreeMemEnd(Long freeMemEnd) {
-        this.freeMemEnd = freeMemEnd;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -157,5 +121,28 @@ public class MethodCall {
 
     public void setReqHandler(boolean reqHandler) {
         isReqHandler = reqHandler;
+    }
+
+    public long getMemory() {
+        return memory;
+    }
+
+    public void setMemory(long memory) {
+        this.memory = memory;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder()
+                .append(getClazz())
+                .append("#")
+                .append(getMethod())
+                .append(":").append(getRetClass())
+                .append(" [").append(getEnd() - getStart()).append("ms,")
+                .append(" ").append(getMemory()).append(" byte]");
+        if (isReqHandler()){
+            sb.append(" ").append(getReqMethod()).append(getUrl());
+        }
+        return sb.toString();
     }
 }

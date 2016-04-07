@@ -132,10 +132,13 @@
     "collectRateMillis": 5000,
     "debug": true
   },
-  "configErrorAction": {
-    "isInterface": "continue",
-    "isAbstractMethod": "continue",
-    "methodNotExists": "continue"
-  },
-  "flushOutput": true
+  "agentConfig": {
+    "debug": true,
+    "flushOutput": true,
+    "errorAction": {
+      "isInterface": "continue",
+      "isAbstractMethod": "continue",
+      "methodNotExists": "continue"
+    }
+  }
 }

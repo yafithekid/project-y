@@ -19,8 +19,7 @@ public class Config {
     private List<MonitoredClass> classes;
     private CollectorConfig collector;
     private ResourceMonitor resourceMonitor;
-    private ConfigErrorAction configErrorAction;
-    private boolean flushOutput;
+    private AgentConfig agentConfig;
 
     public static Config readFromFile(String location) throws FileNotFoundException {
         Gson gson = new Gson();
@@ -63,6 +62,7 @@ public class Config {
         return collector;
     }
 
+    @SuppressWarnings("unused")
     public void setCollector(CollectorConfig collector) {
         this.collector = collector;
     }
@@ -71,15 +71,17 @@ public class Config {
         return resourceMonitor;
     }
 
+    @SuppressWarnings("unused")
     public void setResourceMonitor(ResourceMonitor resourceMonitor) {
         this.resourceMonitor = resourceMonitor;
     }
 
-    public ConfigErrorAction getConfigErrorAction() {
-        return configErrorAction;
+    public AgentConfig getAgentConfig() {
+        return agentConfig;
     }
 
-    public boolean isFlushOutput() {
-        return flushOutput;
+    @SuppressWarnings("unused")
+    public void setAgentConfig(AgentConfig agentConfig) {
+        this.agentConfig = agentConfig;
     }
 }

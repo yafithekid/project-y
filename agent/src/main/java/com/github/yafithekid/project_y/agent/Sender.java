@@ -13,6 +13,7 @@ public class Sender implements SendToCollector {
     public final String mCollectorHost;
     public final int mCollectorPort;
     boolean isFlushOutput;
+    boolean debug;
     JsonConstruct jsonConstruct;
 
     private static ThreadLocal<BufferedWriter> mDataOutputStream;
@@ -29,7 +30,8 @@ public class Sender implements SendToCollector {
                 return new BufferedWriter(new OutputStreamWriter(outputStream));
             };
         };
-        isFlushOutput = config.isFlushOutput();
+        isFlushOutput = config.getAgentConfig().isFlushOutput();
+        debug = config.getAgentConfig().isDebug();
     }
 
     public static Sender getInstance() throws IOException {
@@ -42,8 +44,11 @@ public class Sender implements SendToCollector {
 
     @Override
     public void methodCall(String className, String methodName,long startTime, long endTime, long startMem,long endMem,String threadId,Object retVal) {
-        String data = jsonConstruct.constructMethodCall(className,methodName,startTime,endTime,startMem,endMem,threadId);
-        System.out.println(Agent.getObjectSize(retVal));
+        String retClass = "Void";
+        if (retVal != null){
+            retClass = retVal.getClass().getName();
+        }
+        String data = jsonConstruct.constructMethodCall(className,methodName,startTime,endTime,Agent.getObjectSize(retVal),threadId,retClass);
 //        String data = String.format("%s %s %s %d %d %d %d %s",
 //                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId);
         data += BasicClassFileTransformer.SEPARATOR;
@@ -52,8 +57,11 @@ public class Sender implements SendToCollector {
 
     @Override
     public void reqHandlerMethodCall(String className, String methodName, long startTime, long endTime, long startMem, long endMem,String threadId, String httpVerb, String url,Object retVal) {
-        String data = jsonConstruct.constructReqHandlerMethodCall(className,methodName,startTime,endTime,startMem,endMem,threadId,httpVerb,url);
-        System.out.println(Agent.getObjectSize(retVal));
+        String retClass = "Void";
+        if (retVal != null){
+            retClass = retVal.getClass().getName();
+        }
+        String data = jsonConstruct.constructReqHandlerMethodCall(className,methodName,startTime,endTime,Agent.getObjectSize(retVal),threadId,httpVerb,url,retClass);
 //        String data = String.format("%s %s %s %d %d %d %d %s %s %s",
 //                ProfilingPrefix.METHOD_INVOCATION,className,methodName,startTime,endTime,startMem,endMem,threadId,
 //                httpVerb,url);
@@ -68,6 +76,7 @@ public class Sender implements SendToCollector {
             if (isFlushOutput){
                 mDataOutputStream.get().flush();
             }
+            System.out.println(data);
         } catch (IOException e) {
             //try to reconnect. if failed then just throw exception
             try {

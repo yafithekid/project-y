@@ -16,7 +16,7 @@ public class HardwareDaemonWriterCollectorImpl implements HardwareDaemonWriter {
     public HardwareDaemonWriterCollectorImpl(Config config) throws IOException{
         mCollectorHost = config.getCollector().getHost();
         mCollectorPort = config.getCollector().getPort();
-        flushOutput = config.isFlushOutput();
+        flushOutput = config.getAgentConfig().isFlushOutput();
 //        mSocket = new ThreadLocal<Socket>(){
 //            @Override
 //            protected Socket initialValue() {

@@ -10,11 +10,7 @@ public class ProfilingWriterMockImpl implements ProfilingWriter {
 //        System.out.println(String.format("%s: %s %s %s %s %s %s %s","[method call]",methodCall.getClazz(),
 //                methodCall.getMethod(),methodCall.getInvocationId(),new Date(methodCall.getStart()).toString(),
 //                new Date(methodCall.getEnd()).toString(),methodCall.getFreeMemStart(),methodCall.getFreeMemEnd()));
-        System.out.println(String.format("%s: %s %s %s %s %s %s %s %s ms %s byte %s %s","[method call]",methodCall.getClazz(),
-                methodCall.getMethod(),methodCall.getInvocationId(),methodCall.getStart(),
-                methodCall.getEnd(),methodCall.getFreeMemStart(),methodCall.getFreeMemEnd(),
-                (methodCall.getEnd() - methodCall.getStart()),(methodCall.getFreeMemEnd() - methodCall.getFreeMemStart()),
-                methodCall.getReqMethod(),methodCall.getUrl()));
+        System.out.println(methodCall.toString());
     }
 
     @Override

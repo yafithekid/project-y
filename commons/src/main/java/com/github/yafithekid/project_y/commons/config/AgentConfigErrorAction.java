@@ -1,6 +1,6 @@
 package com.github.yafithekid.project_y.commons.config;
 
-public class ConfigErrorAction {
+public class AgentConfigErrorAction {
     public final static String QUIT = "quit";
     public final static String CONTINUE = "continue";
 
