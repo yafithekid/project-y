@@ -145,7 +145,7 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
                     data[i].commited/= 1024;
                     data[i].max /= 1024;
                 }
-                canvasJsService.drawAppMemoryUsageDetail("graphAppMemUsage",data);
+                // canvasJsService.drawAppMemoryUsageDetail("graphAppMemUsage",data);
                 canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
             }).error(function(message){ alert(message);});
         //draw cpu

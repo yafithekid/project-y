@@ -5,6 +5,24 @@ public class MongoHandler {
     String dbName;
     int port;
     boolean active;
+    private int maxQueueSize;
+    private long queueInsertMillis;
+
+    public int getMaxQueueSize() {
+        return maxQueueSize;
+    }
+
+    public void setMaxQueueSize(int maxQueueSize) {
+        this.maxQueueSize = maxQueueSize;
+    }
+
+    public long getQueueInsertMillis() {
+        return queueInsertMillis;
+    }
+
+    public void setQueueInsertMillis(long queueInsertMillis) {
+        this.queueInsertMillis = queueInsertMillis;
+    }
 
     public String getDbName() {
         return dbName;

@@ -1,6 +1,7 @@
 package com.github.yafithekid.project_y.db.daos;
 
 import com.github.yafithekid.project_y.db.models.RequestTime;
+import com.mongodb.WriteConcern;
 import org.mongodb.morphia.Datastore;
 
 public class RequestTimeDaoImpl implements RequestTimeDao {
@@ -12,7 +13,7 @@ public class RequestTimeDaoImpl implements RequestTimeDao {
 
     @Override
     public void save(RequestTime requestTime) {
-        datastore.save(requestTime);
+        datastore.save(requestTime, WriteConcern.UNACKNOWLEDGED);
     }
 
     @Override

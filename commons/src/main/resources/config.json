@@ -122,18 +122,20 @@
       "dbName": "profiling",
       "active" : true,
       "host" : "127.0.0.1",
-      "port" : 27017
+      "port" : 27017,
+      "maxQueueSize": 1000000,
+      "queueInsertMillis": 1000
     },
     "debug": true
   },
   "resourceMonitor" : {
     "active": true,
     "sendToCollector": true,
-    "collectRateMillis": 3000,
+    "collectRateMillis": 1000,
     "debug": true
   },
   "agentConfig": {
-    "debug": true,
+    "debug": false,
     "flushOutput": true,
     "errorAction": {
       "isInterface": "continue",

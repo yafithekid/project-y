@@ -8,6 +8,8 @@ import com.github.yafithekid.project_y.db.services.DaoFactory;
 import com.github.yafithekid.project_y.db.services.MorphiaFactory;
 import org.mongodb.morphia.Datastore;
 
+import java.util.Queue;
+
 public class ProfilingWriterDBImpl implements ProfilingWriter {
     AppCPUUsageDao appCPUUsageDao;
     MemoryPoolDao memoryPoolDao;
@@ -16,6 +18,7 @@ public class ProfilingWriterDBImpl implements ProfilingWriter {
     SystemCPUUsageDao systemCPUUsageDao;
     AppMemoryUsageDao appMemoryUsageDao;
     SystemMemoryUsageDao systemMemoryUsageDao;
+    private MethodCallQueue methodCallQueue;
     final Config mConfig;
 
     public ProfilingWriterDBImpl(DaoFactory daoFactory,Config config){
@@ -26,23 +29,13 @@ public class ProfilingWriterDBImpl implements ProfilingWriter {
         systemCPUUsageDao = daoFactory.createSystemCPUUsageDao();
         appMemoryUsageDao = daoFactory.createAppMemoryUsageDao();
         systemMemoryUsageDao = daoFactory.createSystemMemoryUsageDao();
+        methodCallQueue = new MethodCallQueue(config,methodCallDao,requestTimeDao);
         mConfig = config;
     }
 
     @Override
     public void methodCall(MethodCall methodCall){
-        long currentTimestamp = mConfig.getCurrentTimestampRounded();
-        methodCallDao.save(methodCall);
-        if (methodCall.isReqHandler()){
-            RequestTime requestTime = requestTimeDao.findEqualTimestamp(currentTimestamp);
-            if (requestTime == null){
-                requestTime = new RequestTime();
-                requestTime.setTimestamp(currentTimestamp);
-            }
-            long timeDiff = methodCall.getEnd() - methodCall.getStart();
-            requestTime.setLoadTime(Math.max(requestTime.getLoadTime(),timeDiff));
-            requestTimeDao.save(requestTime);
-        }
+        methodCallQueue.enqueue(methodCall);
     }
 
     @Override

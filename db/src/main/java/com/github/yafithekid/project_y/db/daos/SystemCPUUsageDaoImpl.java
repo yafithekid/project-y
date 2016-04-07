@@ -1,6 +1,7 @@
 package com.github.yafithekid.project_y.db.daos;
 
 import com.github.yafithekid.project_y.db.models.SystemCPUUsage;
+import com.mongodb.WriteConcern;
 import org.mongodb.morphia.Datastore;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class SystemCPUUsageDaoImpl implements SystemCPUUsageDao {
 
     @Override
     public void save(SystemCPUUsage systemCPUUsage) {
-        datastore.save(systemCPUUsage);
+        datastore.save(systemCPUUsage, WriteConcern.UNACKNOWLEDGED);
     }
 
     @Override

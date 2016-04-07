@@ -44,6 +44,7 @@ public class ApiController {
 
     @RequestMapping("/urls")
     public List<MethodCall> getUrls() {
+        updateMaxMemory();
         return datastore.find(MethodCall.class)
                 .field("url").exists()
                 .order("-start")
@@ -56,20 +57,7 @@ public class ApiController {
             @RequestParam("startTimestamp") long startTimestamp,
             @RequestParam("endTimestamp") long endTimestamp
     ){
-        //update all method call http request that has undefined max memory usage
-        List<MethodCall> httpRequests = methodCallDao.getUndefinedMaxMemoryHTTPRequest();
-        if (httpRequests != null){
-            for(MethodCall httpReq:httpRequests){
-                List<MethodCall> chaineds = methodCallDao
-                        .getMethodsInvokedByThisId(httpReq.getId().toString());
-                long result = -1;
-                for(MethodCall chained: chaineds){
-                    result = Math.max(result,chained.getMemory());
-                }
-                httpReq.setMaxMemory(result);
-                methodCallDao.save(httpReq);
-            }
-        }
+        updateMaxMemory();
         return methodCallDao.getMostConsumingMemoryHTTPRequest(startTimestamp,endTimestamp);
     }
 
@@ -237,6 +225,23 @@ public class ApiController {
                 .field("timestamp").lessThanOrEq(endTimestamp)
                 .asList();
 
+    }
+
+    void updateMaxMemory(){
+        //update all method call http request that has undefined max memory usage
+        List<MethodCall> httpRequests = methodCallDao.getUndefinedMaxMemoryHTTPRequest();
+        if (httpRequests != null){
+            for(MethodCall httpReq:httpRequests){
+                List<MethodCall> chaineds = methodCallDao
+                        .getMethodsInvokedByThisId(httpReq.getId().toString());
+                long result = -1;
+                for(MethodCall chained: chaineds){
+                    result = Math.max(result,chained.getMemory());
+                }
+                httpReq.setMaxMemory(result);
+                methodCallDao.save(httpReq);
+            }
+        }
     }
 
 }

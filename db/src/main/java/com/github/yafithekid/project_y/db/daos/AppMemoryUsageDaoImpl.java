@@ -1,6 +1,7 @@
 package com.github.yafithekid.project_y.db.daos;
 
 import com.github.yafithekid.project_y.db.models.AppMemoryUsage;
+import com.mongodb.WriteConcern;
 import org.mongodb.morphia.Datastore;
 
 public class AppMemoryUsageDaoImpl implements AppMemoryUsageDao {
@@ -11,6 +12,6 @@ public class AppMemoryUsageDaoImpl implements AppMemoryUsageDao {
     }
 
     public void save(AppMemoryUsage appMemoryUsage){
-        datastore.save(appMemoryUsage);
+        datastore.save(appMemoryUsage, WriteConcern.UNACKNOWLEDGED);
     }
 }

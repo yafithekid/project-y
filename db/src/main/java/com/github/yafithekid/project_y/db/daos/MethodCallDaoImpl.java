@@ -1,6 +1,7 @@
 package com.github.yafithekid.project_y.db.daos;
 
 import com.github.yafithekid.project_y.db.models.MethodCall;
+import com.mongodb.WriteConcern;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
@@ -16,7 +17,7 @@ public class MethodCallDaoImpl implements MethodCallDao {
 
     @Override
     public void save(MethodCall methodCall) {
-        datastore.save(methodCall);
+        datastore.save(methodCall, WriteConcern.UNACKNOWLEDGED);
     }
 
     @Override

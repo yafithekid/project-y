@@ -76,7 +76,9 @@ public class Sender implements SendToCollector {
             if (isFlushOutput){
                 mDataOutputStream.get().flush();
             }
-            System.out.println(data);
+            if (debug){
+                System.out.println(data);
+            }
         } catch (IOException e) {
             //try to reconnect. if failed then just throw exception
             try {
