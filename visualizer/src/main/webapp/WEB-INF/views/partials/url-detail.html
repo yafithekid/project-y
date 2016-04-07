@@ -1,5 +1,5 @@
 <div class="col-sm-12">
-    <div class="col-sm-6">
+    <div class="col-sm-12">
         <legend>HTTP Request</legend>
         <table class="table table-condensed table-unbordered-row">
             <tbody>
@@ -15,25 +15,29 @@
                 <td>Duration (ms)</td>
                 <td>{{httpRequestMethodCall.end - httpRequestMethodCall.start}}</td>
             </tr>
+            <tr>
+                <td>Max return value memory (bytes)</td>
+                <td>{{httpRequestMethodCall.maxMemory}}</td>
+            </tr>
             </tbody>
         </table>
         <legend>Method Invoked By This Request</legend>
         <node-tree ng-model="methods"></node-tree>
     </div>
-    <div class="col-sm-6">
-        <div class="row">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div id="graphMemPoolUsage" class="graph"></div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div id="graphCpuUsage" class="graph"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!--<div class="col-sm-6">-->
+        <!--<div class="row">-->
+            <!--<div class="panel panel-default">-->
+                <!--<div class="panel-body">-->
+                    <!--<div id="graphMemPoolUsage" class="graph"></div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="row">-->
+            <!--<div class="panel panel-default">-->
+                <!--<div class="panel-body">-->
+                    <!--<div id="graphCpuUsage" class="graph"></div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>

@@ -20,7 +20,7 @@ controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams',
         restApiClient.methodById(id,{})
             .success(function(httpRequest){
                 $scope.httpRequestMethodCall = httpRequest;
-                restApiClient.methods({start:httpRequest.start,end:httpRequest.end,invocationId:httpRequest.invocationId})
+                restApiClient.methodsInvokedByThisId(httpRequest.id)
                     .success(function(methods){
                         $scope.methods = dataParser.createMethodInvocationTree(methods);
                         console.log($scope.methods);
@@ -44,7 +44,7 @@ controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams',
                             data[i].max /= 1024;
                         }
                         // canvasJsService.drawAppMemoryUsageDetail("graphAppMemUsage",data);
-                        canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
+                        // canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
                     }).error(function(message){ alert(message);});
                 //draw cpu
                 restApiClient.cpuSys(params)
@@ -56,11 +56,11 @@ controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams',
                             }
                             data[i].load *= 100.0;
                         }
-                        canvasJsService.drawCpuUsage("graphCpuUsage",data);
+                        // canvasJsService.drawCpuUsage("graphCpuUsage",data);
                     }).error(function(message){ alert(message); });
             })
-            .error(function(data){
-                alert(message);
+            .error(function(data,status){
+                alert(status);
             });
 
     };
@@ -117,23 +117,15 @@ controllers.controller('homeCtrl',['restApiClient','$scope','$location',function
         $scope.isShowDetail = false;
         var request = $scope.requests[index];
         var params = {invocationId:request.invocationId,start: request.start,end: request.end};
-        restApiClient.methods(params)
-            .success(function(data){
-                $scope.methods = data;
-                $scope.isShowDetail = true;
-            })
-            .error(function(message){
-                alert(message);
-                $scope.isShowDetail = true;
-            });
+        $location.path("/url-detail/"+$scope.requests[index].id);
     };
 
     $scope.toCpu = function(){
         $location.path("/cpu");
     }
 }]);
-controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope','visualizerConfig',
-    function(restApiClient,canvasJsService,$scope,visualizerConfig){
+controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope','visualizerConfig','$location',
+    function(restApiClient,canvasJsService,$scope,visualizerConfig,$location){
     $scope.showMemoryUsage= true;
     $scope.showMemoryPool = true;
     $scope.showCpuUsage = true;
@@ -168,7 +160,7 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
                 }
                 canvasJsService.drawCpuUsage("graphCpuUsage",data);
             }).error(function(message){ alert(message); });
-        restApiClient.urlLongest(par)
+        restApiClient.urlMostMemoryConsuming(par)
             .success(function(data){
                 $scope.methods = data;
             })
@@ -182,6 +174,10 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
         drawGraph(par);
     };
 
+    $scope.redirectToUrlDetail = function(index){
+        console.log($scope.methods[index].url);
+        $location.path("/url-detail/"+$scope.methods[index].id);
+    };
     //run
     $scope.drawGraph();
 }]);

@@ -120,16 +120,16 @@
     "port" : 9000,
     "mongoHandler": {
       "dbName": "profiling",
-      "active" : false,
+      "active" : true,
       "host" : "127.0.0.1",
       "port" : 27017
     },
     "debug": true
   },
   "resourceMonitor" : {
-    "active": false,
+    "active": true,
     "sendToCollector": true,
-    "collectRateMillis": 5000,
+    "collectRateMillis": 3000,
     "debug": true
   },
   "agentConfig": {

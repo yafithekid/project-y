@@ -3,6 +3,7 @@ package com.github.yafithekid.project_y.db.daos;
 import com.github.yafithekid.project_y.db.models.SystemCPUUsage;
 import org.mongodb.morphia.Datastore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SystemCPUUsageDaoImpl implements SystemCPUUsageDao {
@@ -23,5 +24,25 @@ public class SystemCPUUsageDaoImpl implements SystemCPUUsageDao {
                 .field("timestamp").greaterThanOrEq(start)
                 .field("timestamp").lessThanOrEq(end)
                 .asList();
+    }
+
+    @Override
+    public List<SystemCPUUsage> getNearTimestamp(long start, long end) {
+        SystemCPUUsage lowerbound = datastore.find(SystemCPUUsage.class)
+                .field("timestamp")
+                .lessThanOrEq(start)
+                .order("-timestamp")
+                .limit(1).get();
+        SystemCPUUsage upperbound = datastore.find(SystemCPUUsage.class)
+                .field("timestamp")
+                .greaterThanOrEq("timestamp")
+                .order("timestamp")
+                .limit(1).get();
+        long lowerTs = (lowerbound == null)?start:lowerbound.getTimestamp();
+        long upperTs = (upperbound == null)?end:upperbound.getTimestamp();
+        return datastore.find(SystemCPUUsage.class)
+                .field("timestamp").greaterThanOrEq(lowerTs)
+                .field("timestamp").lessThanOrEq(upperTs)
+                .order("timestamp").asList();
     }
 }

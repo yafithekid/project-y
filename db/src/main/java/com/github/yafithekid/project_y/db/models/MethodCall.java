@@ -10,16 +10,25 @@ import java.util.Map;
     @Index(fields = {@Field("clazz")}),
     @Index(fields = {@Field("start"),@Field("end")}),
     @Index(fields = {@Field("invocationId")}),
-    @Index(fields = {@Field("isReqHandler")})
+    @Index(fields = {@Field("isReqHandler")}),
+    @Index(fields = {@Field("duration")}),
+    @Index(fields = {@Field("memory")})
 })
 public class MethodCall {
+    public static final long UNDEFINED_MAX_MEMORY = -1;
     @Id
     private ObjectId id;
     private String clazz;
     private String method;
     private Long start;
     private Long end;
+    private long duration;
     private long memory;
+    /**
+     * Max memory usage of all methods invoked by this http request
+     * Invoked
+     */
+    private long maxMemory;
     private String invocationId;
     private String reqMethod;
     private String url;
@@ -32,7 +41,10 @@ public class MethodCall {
         mc.setMethod(map.get("method"));
         mc.setStart(Long.parseLong(map.get("start")));
         mc.setEnd(Long.parseLong(map.get("end")));
+        mc.setDuration(mc.getEnd() - mc.getStart());
+
         mc.setMemory(Long.parseLong(map.get("memory")));
+        mc.setMaxMemory(UNDEFINED_MAX_MEMORY);
         mc.setInvocationId(map.get("invocationId"));
         mc.setRetClass(map.get("retClass"));
         if (map.containsKey("reqMethod") && map.containsKey("url")){
@@ -131,6 +143,22 @@ public class MethodCall {
         this.memory = memory;
     }
 
+    public long getDuration() {
+        return duration;
+    }
+
+    public long getMaxMemory() {
+        return maxMemory;
+    }
+
+    public void setMaxMemory(long maxMemory) {
+        this.maxMemory = maxMemory;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder()
@@ -138,7 +166,7 @@ public class MethodCall {
                 .append("#")
                 .append(getMethod())
                 .append(":").append(getRetClass())
-                .append(" [").append(getEnd() - getStart()).append("ms,")
+                .append(" [").append(getDuration()).append("ms,")
                 .append(" ").append(getMemory()).append(" byte]");
         if (isReqHandler()){
             sb.append(" ").append(getReqMethod()).append(getUrl());

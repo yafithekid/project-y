@@ -40,6 +40,10 @@ app.factory('apiUrlFactory',['$location',function($location) {
         return BASE_URL+"/methods/"+methodCallId;
     };
 
+    var methodsInvokedByThisId = function(methodCallId){
+        return BASE_URL+"/invoked_methods/"+methodCallId;
+    };
+
     var methods = function(){
         return BASE_URL+"/methods";
     };
@@ -72,6 +76,10 @@ app.factory('apiUrlFactory',['$location',function($location) {
         return BASE_URL+"/urls/longest";
     };
 
+    var urlMostMemory = function(){
+        return BASE_URL+"/urls/most_memory_consuming";
+    };
+
     var methodById = function(id){
         return BASE_URL+"/methods/"+id;
     };
@@ -85,7 +93,9 @@ app.factory('apiUrlFactory',['$location',function($location) {
         memoryApps: memoryApps,
         requestTimes: requestTimes,
         urlLongest: urlLongest,
+        urlMostMemory: urlMostMemory,
         methodById: methodById,
+        methodsInvokedByThisId: methodsInvokedByThisId,
         cpuSys: cpuSys
     }
 }]);
@@ -100,6 +110,10 @@ app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactor
 
     this.methodById = function(id,data){
         return $http.get(apiUrlFactory.methodById(id),data);
+    };
+
+    this.methodsInvokedByThisId = function(id){
+        return $http.get(apiUrlFactory.methodsInvokedByThisId(id));
     };
 
     /**
@@ -148,6 +162,10 @@ app.service('restApiClient',['$http','apiUrlFactory',function($http,apiUrlFactor
      */
     this.urlLongest = function(data){
         return $http.get(apiUrlFactory.urlLongest(),{params:data});
+    };
+
+    this.urlMostMemoryConsuming = function(data){
+        return $http.get(apiUrlFactory.urlMostMemory(),{params:data});
     };
 
     this.cpuSys = function(data){

@@ -1,7 +1,8 @@
 <div class="row">
-    <div class="col-sm-6">
-        <div class="well">
-            <legend>Recent HTTP calls</legend>
+    <div class="col-sm-12">
+        <legend>Recent HTTP calls</legend>
+        <div class="panel panel-default">
+            <div class="panel-body">
             <table class="table table-hover">
                 <tbody>
                     <tr>
@@ -9,24 +10,24 @@
                         <th>Verb</th>
                         <th>URL</th>
                         <th>Duration (ms)</th>
-                        <th>Memory (Byte)</th>
+                        <th>Max memory (Byte)</th>
                         <th>Act</th>
                     </tr>
                     <tr ng-repeat="request in requests">
-                        <td>{{request.start}}</td>
+                        <td>{{request.start | date: 'yyyy-MM-dd hh:mm'}}</td>
                         <td>{{request.reqMethod}}</td>
                         <td>{{request.url}}</td>
                         <td>{{request.end - request.start}}</td>
-                        <td>{{request.freeMemEnd - request.freeMemStart}}</td>
+                        <td>{{request.maxMemory}}</td>
                         <td>
-                            <a ng-click="showDetail($index)"
-                               class="btn btn-primary btn-raised">
+                            <a ng-click="showDetail($index)">
                                 <span class="glyphicon glyphicon-search"></span>
                             </a>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
     <div class="col-sm-6">
