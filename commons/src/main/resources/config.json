@@ -132,7 +132,7 @@
     "active": true,
     "sendToCollector": true,
     "collectRateMillis": 1000,
-    "debug": true
+    "debug": false
   },
   "agentConfig": {
     "debug": false,

@@ -11,6 +11,8 @@ controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams',
     $scope.httpRequestMethodCall = null;
     $scope.methods = [];
 
+    $scope.Math = Math;
+
     /**
      *
      * @param id method id
@@ -104,6 +106,8 @@ controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerCo
     };
 }]);
 controllers.controller('homeCtrl',['restApiClient','$scope','$location',function(restApiClient,$scope,$location){
+    $scope.Math = Math;
+    
     restApiClient.urls()
         .success(function(data){
             $scope.woi = "woi";
@@ -133,6 +137,8 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
     //take 2 hours earlier, should be enough for thesis defense
     $scope.endTimestamp = new Date();
     $scope.startTimestamp = new Date($scope.endTimestamp - (visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 * 1000));
+
+    $scope.Math = Math;
 
     var drawGraph = function(par){
         //draw memory

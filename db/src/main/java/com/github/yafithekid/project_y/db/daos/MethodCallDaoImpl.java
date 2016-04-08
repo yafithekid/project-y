@@ -56,6 +56,13 @@ public class MethodCallDaoImpl implements MethodCallDao {
     }
 
     @Override
+    public List<MethodCall> getUndefinedCPUUsageHTTPRequest() {
+        return datastore.find(MethodCall.class)
+                .field("isReqHandler").equal(true)
+                .field("avgCpu").lessThan(-0.000000001).asList();
+    }
+
+    @Override
     public MethodCall findMethodById(String id) {
         return datastore.find(MethodCall.class)
                 .field("id").equal(new ObjectId(id)).get();

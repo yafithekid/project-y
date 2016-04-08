@@ -19,6 +19,10 @@
                 <td>Max return value memory (bytes)</td>
                 <td>{{httpRequestMethodCall.maxMemory}}</td>
             </tr>
+            <tr>
+                <td>Average CPU Usage</td>
+                <td>{{Math.ceil(httpRequestMethodCall.avgCpu * 100)}} %</td>
+            </tr>
             </tbody>
         </table>
         <legend>Method Invoked By This Request</legend>

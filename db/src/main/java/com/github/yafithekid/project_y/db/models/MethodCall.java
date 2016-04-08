@@ -12,10 +12,12 @@ import java.util.Map;
     @Index(fields = {@Field("invocationId")}),
     @Index(fields = {@Field("isReqHandler")}),
     @Index(fields = {@Field("duration")}),
-    @Index(fields = {@Field("memory")})
+    @Index(fields = {@Field("memory")}),
+    @Index(fields = {@Field("avgCpu")})
 })
 public class MethodCall {
     public static final long UNDEFINED_MAX_MEMORY = -1;
+    public static final long UNDEFINED_CPU_USAGE = -1;
     @Id
     private ObjectId id;
     private String clazz;
@@ -24,11 +26,18 @@ public class MethodCall {
     private Long end;
     private long duration;
     private long memory;
+
     /**
      * Max memory usage of all methods invoked by this http request
      * Invoked
      */
     private long maxMemory;
+
+    /**
+     * Average CPU usage when the method is called
+     */
+    private double avgCpu;
+
     private String invocationId;
     private String reqMethod;
     private String url;
@@ -45,6 +54,7 @@ public class MethodCall {
 
         mc.setMemory(Long.parseLong(map.get("memory")));
         mc.setMaxMemory(UNDEFINED_MAX_MEMORY);
+        mc.setAvgCpu(UNDEFINED_CPU_USAGE);
         mc.setInvocationId(map.get("invocationId"));
         mc.setRetClass(map.get("retClass"));
         if (map.containsKey("reqMethod") && map.containsKey("url")){
@@ -157,6 +167,14 @@ public class MethodCall {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public double getAvgCpu() {
+        return avgCpu;
+    }
+
+    public void setAvgCpu(double avgCpu) {
+        this.avgCpu = avgCpu;
     }
 
     @Override

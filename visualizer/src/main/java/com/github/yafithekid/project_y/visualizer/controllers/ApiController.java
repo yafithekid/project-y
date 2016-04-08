@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 @RestController
@@ -45,6 +46,7 @@ public class ApiController {
     @RequestMapping("/urls")
     public List<MethodCall> getUrls() {
         updateMaxMemory();
+        updateCpuUsage();
         return datastore.find(MethodCall.class)
                 .field("url").exists()
                 .order("-start")
@@ -58,6 +60,7 @@ public class ApiController {
             @RequestParam("endTimestamp") long endTimestamp
     ){
         updateMaxMemory();
+        updateCpuUsage();
         return methodCallDao.getMostConsumingMemoryHTTPRequest(startTimestamp,endTimestamp);
     }
 
@@ -136,6 +139,8 @@ public class ApiController {
     @RequestMapping("/methods/{id}")
     public ResponseEntity<MethodCall> getMethodById(
             @PathVariable("id") String id){
+        updateCpuUsage();
+        updateMaxMemory();
         MethodCall mc = methodCallDao.findMethodById(id);
         if (mc == null){
             return new ResponseEntity<MethodCall>(new MethodCall(),HttpStatus.NOT_FOUND);
@@ -225,6 +230,22 @@ public class ApiController {
                 .field("timestamp").lessThanOrEq(endTimestamp)
                 .asList();
 
+    }
+
+    void updateCpuUsage(){
+        List<MethodCall> httpRequests = methodCallDao.getUndefinedCPUUsageHTTPRequest();
+        if (httpRequests != null){
+            for (MethodCall httpReq: httpRequests){
+                List<SystemCPUUsage> cpus = systemCPUUsageDao.getNearTimestamp(httpReq.getStart(), httpReq.getEnd());
+                double sum = 0, n = 0;
+                for(SystemCPUUsage cpu: cpus){
+                    sum += cpu.getLoad();
+                    n+= 1.;
+                }
+                httpReq.setAvgCpu(sum/n);
+                methodCallDao.save(httpReq);
+            }
+        }
     }
 
     void updateMaxMemory(){

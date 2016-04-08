@@ -32,5 +32,7 @@ public interface MethodCallDao {
      */
     List<MethodCall> getUndefinedMaxMemoryHTTPRequest();
 
+    List<MethodCall> getUndefinedCPUUsageHTTPRequest();
+
     MethodCall findMethodById(String id);
 }

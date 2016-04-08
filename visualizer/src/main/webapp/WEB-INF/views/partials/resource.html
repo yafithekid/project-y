@@ -63,14 +63,16 @@
                     <th>URL</th>
                     <th>Start</th>
                     <th>Max memory (bytes)</th>
+                    <th>Avg CPU</th>
                     <th>View</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="method in methods">
                     <td class="wrap">{{method.reqMethod}} {{method.url}}</td>
-                    <td>{{method.start | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td class="wrap">{{method.start | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
                     <td>{{method.maxMemory}}</td>
+                    <td>{{Math.ceil(method.avgCpu * 100.0)}} %</td>
                     <td>
                         <a ng-click="redirectToUrlDetail($index)">
                             <span class="glyphicon glyphicon-search"></span>

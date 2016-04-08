@@ -11,6 +11,7 @@
                         <th>URL</th>
                         <th>Duration (ms)</th>
                         <th>Max memory (Byte)</th>
+                        <th>Avg CPU snapshot</th>
                         <th>Act</th>
                     </tr>
                     <tr ng-repeat="request in requests">
@@ -19,6 +20,7 @@
                         <td>{{request.url}}</td>
                         <td>{{request.end - request.start}}</td>
                         <td>{{request.maxMemory}}</td>
+                        <td>{{Math.ceil(request.avgCpu * 100)}} %</td>
                         <td>
                             <a ng-click="showDetail($index)">
                                 <span class="glyphicon glyphicon-search"></span>
