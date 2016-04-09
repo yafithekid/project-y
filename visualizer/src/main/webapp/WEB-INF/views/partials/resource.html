@@ -19,35 +19,40 @@
                         <!--</div>-->
                         <!--</div>-->
                         <div class="form-group">
-                            <div class="col-sm-12" style="padding-bottom:10px;">
-                                <div class="dropdown">
-                                    <label>Start</label>
-                                    <a class="dropdown-toggle btn btn-primary" id="dropdown1" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0)">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </a>
-                                    <span style="padding-left:10px;">{{startTimestamp | date : 'yyyy-MM-dd HH:mm'}}</span>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <datetimepicker data-ng-model="startTimestamp" data-datetimepicker-config="{ dropdownSelector: '#dropdown1','minuteStep':2 }"/>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-sm-12">
-                                <div class="dropdown">
-                                    <label>End&nbsp;</label>
-                                    <a class="dropdown-toggle btn btn-primary" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0)">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </a>
-                                    <span style="padding-left:10px;">{{endTimestamp | date : 'yyyy-MM-dd HH:mm'}}</span>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <datetimepicker data-ng-model="endTimestamp" data-datetimepicker-config="{ dropdownSelector: '#dropdown2','minuteStep':2 }"/>
-                                    </ul>
-                                </div>
-                            </div>
+                            <label>Start</label>
+                            <input type="text" ng-model="startTimestamp" class="form-control" />
                         </div>
                         <div class="form-group">
-                            <div class="pull-right">
-                                <button class="btn btn-primary" ng-click="drawGraph()">Refresh</button>
-                            </div>
+                            <label>End</label>
+                            <input type="text" ng-model="endTimestamp" class="form-control">
+                        </div>
+                            <!--<div class="col-sm-12" style="padding-bottom:10px;">-->
+                                <!--<div class="dropdown">-->
+                                    <!--<label>Start</label>-->
+                                    <!--<a class="dropdown-toggle btn btn-primary" id="dropdown1" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0)">-->
+                                        <!--<span class="glyphicon glyphicon-calendar"></span>-->
+                                    <!--</a>-->
+                                    <!--<span style="padding-left:10px;">{{startTimestamp | date : 'yyyy-MM-dd HH:mm'}}</span>-->
+                                    <!--<ul class="dropdown-menu" role="menu">-->
+                                        <!--<datetimepicker data-ng-model="startTimestamp" data-datetimepicker-config="{ dropdownSelector: '#dropdown1','minuteStep':2 }"/>-->
+                                    <!--</ul>-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+                            <!--<div class="col-sm-12">-->
+                                <!--<div class="dropdown">-->
+                                    <!--<label>End&nbsp;</label>-->
+                                    <!--<a class="dropdown-toggle btn btn-primary" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="javascript:void(0)">-->
+                                        <!--<span class="glyphicon glyphicon-calendar"></span>-->
+                                    <!--</a>-->
+                                    <!--<span style="padding-left:10px;">{{endTimestamp | date : 'yyyy-MM-dd HH:mm'}}</span>-->
+                                    <!--<ul class="dropdown-menu" role="menu">-->
+                                        <!--<datetimepicker data-ng-model="endTimestamp" data-datetimepicker-config="{ dropdownSelector: '#dropdown2','minuteStep':2 }"/>-->
+                                    <!--</ul>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <div class="form-group">
+                            <button class="btn btn-primary" ng-click="drawGraph()">Refresh</button>
                         </div>
                     </form>
                     <div style="clear: both;"></div>
@@ -56,7 +61,7 @@
         </div>
         <div class="row">
             <legend>Most Consuming Memory HTTP requests</legend>
-            Between {{startTimestamp | date : 'yyyy-MM-dd HH:mm'}} and {{endTimestamp | date : 'yyyy-MM-dd HH:mm'}}
+            Between {{startTimestamp}} and {{endTimestamp}}
             <table class="table table-condensed table-wrap-long">
                 <thead>
                 <tr>

@@ -15,7 +15,7 @@
                         <th>Act</th>
                     </tr>
                     <tr ng-repeat="request in requests">
-                        <td>{{request.start | date: 'yyyy-MM-dd hh:mm'}}</td>
+                        <td>{{request.start | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td>{{request.reqMethod}}</td>
                         <td>{{request.url}}</td>
                         <td>{{request.end - request.start}}</td>

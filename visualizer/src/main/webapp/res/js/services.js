@@ -25,7 +25,9 @@ app.factory('visualizerConfig',function(){
     return {
         VISUALIZER_MINUTES_INTERVAL: visualizerMinutesInterval,
         MEMORY_POOL_KEYS: memoryPools,
-        OFFSET_VISUALIZER_URL_DETAIL: offsetVisualizerUrlDetail
+        OFFSET_VISUALIZER_URL_DETAIL: offsetVisualizerUrlDetail,
+        DATETIME_FORMAT: "yyyy-MM-ddTHH:mm:ss",
+        DATETIME_PATTERN: /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/
     };
 });
 app.factory('apiUrlFactory',['$location',function($location) {

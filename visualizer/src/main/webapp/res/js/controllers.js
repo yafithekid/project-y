@@ -80,10 +80,12 @@ controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams',
     drawGraph($scope.id);
 
 }]);
-controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerConfig','canvasJsService', '$location',function($scope,restApiClient,visualizerConfig,canvasJsService,$location){
+controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerConfig','canvasJsService', '$location','$filter',
+    function($scope,restApiClient,visualizerConfig,canvasJsService,$location,$filter){
         //
-    $scope.endTimestamp = new Date();
-    $scope.startTimestamp = new Date($scope.endTimestamp.getTime() - visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 *1000);
+    var d = new Date();
+    $scope.endTimestamp = $filter('date')(d,visualizerConfig.DATETIME_FORMAT);
+    $scope.startTimestamp = $filter('date')(new Date(d.getTime()  - (visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 * 1000)),visualizerConfig.DATETIME_FORMAT);
     $scope.data = [];
 
     var drawGraph = function(params){
@@ -104,7 +106,12 @@ controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerCo
     };
 
     $scope.refreshGraph = function(){
-        var params = {startTimestamp:$scope.startTimestamp.getTime(),endTimestamp:$scope.endTimestamp.getTime()};
+        var startTimestamp = new Date($scope.startTimestamp);
+        var endTimestamp = new Date($scope.endTimestamp);
+        var params = {
+            startTimestamp:startTimestamp.getTime() + startTimestamp.getTimezoneOffset()*60*1000,
+            endTimestamp:endTimestamp.getTime() + startTimestamp.getTimezoneOffset()*60*1000
+        };
         drawGraph(params);
     };
 
@@ -138,15 +145,15 @@ controllers.controller('homeCtrl',['restApiClient','$scope','$location',function
         $location.path("/cpu");
     }
 }]);
-controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope','visualizerConfig','$location',
-    function(restApiClient,canvasJsService,$scope,visualizerConfig,$location){
+controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope','visualizerConfig','$location','$filter',
+    function(restApiClient,canvasJsService,$scope,visualizerConfig,$location,$filter){
     $scope.showMemoryUsage= true;
     $scope.showMemoryPool = true;
     $scope.showCpuUsage = true;
 
-    //take 2 hours earlier, should be enough for thesis defense
-    $scope.endTimestamp = new Date();
-    $scope.startTimestamp = new Date($scope.endTimestamp - (visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 * 1000));
+    var d = new Date(Date.now());
+    $scope.endTimestamp = $filter('date')(d,visualizerConfig.DATETIME_FORMAT);
+    $scope.startTimestamp = $filter('date')(new Date(d.getTime()  - (visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 * 1000)),visualizerConfig.DATETIME_FORMAT);
 
     $scope.Math = Math;
 
@@ -186,16 +193,21 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
     };
 
     $scope.drawGraph = function(){
-        var par = {startTimestamp:$scope.startTimestamp.getTime(),endTimestamp:$scope.endTimestamp.getTime(),type:""};
-        drawGraph(par);
+        var startTimestamp = new Date($scope.startTimestamp);
+        var endTimestamp = new Date($scope.endTimestamp);
+        var params = {
+            startTimestamp:startTimestamp.getTime() + startTimestamp.getTimezoneOffset()*60*1000,
+            endTimestamp:endTimestamp.getTime() + startTimestamp.getTimezoneOffset()*60*1000
+        };
+        drawGraph(params);
     };
+
+    $scope.drawGraph();
 
     $scope.redirectToUrlDetail = function(index){
         console.log($scope.methods[index].url);
         $location.path("/url-detail/"+$scope.methods[index].id);
     };
-    //run
-    $scope.drawGraph();
 }]);
 controllers.controller('cpuCtrl',['restApiClient','canvasJsService',function(restApiClient,canvasJsService){
     var endTimestamp = new Date().getTime();
