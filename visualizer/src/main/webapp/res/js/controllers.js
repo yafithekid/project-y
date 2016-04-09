@@ -1,8 +1,18 @@
 var controllers = angular.module('visualizerCtrls',[
     'visualizerServices','exampleSpringServices','visualizerDirectives'
 ]);
-controllers.controller('testCtrl',['',function(){
+controllers.controller('testCtrl',['$http','$scope',function($http,$scope){
+    var TEST_URL = "http://localhost:8081/example-spring/loop?n=0";
 
+    $scope.testConcurrent = function(n){
+        for(var i = 0; i < n; i++){
+            setTimeout(function(){
+                $http.get(TEST_URL).success(function(){
+                }).error(function(){
+                });
+            },0);
+        }
+    }
 }]);
 controllers.controller('urlDetailCtrl',['$scope','restApiClient','$routeParams','visualizerConfig','canvasJsService','dataParser',function($scope,restApiClient,$routeParams,visualizerConfig,canvasJsService,dataParser){
     $scope.startTimestamp = parseInt($routeParams.startTimestamp);

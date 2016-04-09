@@ -126,7 +126,7 @@
       "maxQueueSize": 1000000,
       "queueInsertMillis": 1000
     },
-    "debug": true
+    "debug": false
   },
   "resourceMonitor" : {
     "active": true,
