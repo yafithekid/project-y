@@ -185,6 +185,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
         var dataPointsContainer = dataParser.parseCPUUsage(cpuData);
         var chart = new CanvasJS.Chart(htmlId,
             {
+                zoomEnabled: true,
                 title :{
                     text: "CPU"
                 },
@@ -220,6 +221,8 @@ app.service('canvasJsService',['dataParser',function(dataParser){
             });
 
         chart.render();
+
+        return chart;
     };
 
     this.drawMemoryPoolUsage = function(htmlId,memPoolData,memSpaceKeys){
@@ -267,6 +270,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
 
         var chart = new CanvasJS.Chart(htmlId,
             {
+                zoomEnabled: true,
                 title :{
                     text: "Memory Pool"
                 },
@@ -298,6 +302,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
             });
 
         chart.render();
+        return chart;
     };
     /**
      * Draw application memory usage, with commited and max
@@ -449,6 +454,7 @@ app.service('canvasJsService',['dataParser',function(dataParser){
         var dataPointsContainer = dataParser.parseRequestTime(data);
         var chart = new CanvasJS.Chart(htmlId,
             {
+                zoomEnabled: true,
                 title :{
                     text: "Request Handling Performance"
                 },
@@ -477,8 +483,8 @@ app.service('canvasJsService',['dataParser',function(dataParser){
                     }
                 ]
             });
-
         chart.render();
+        return chart;
     };
 }]);
 app.service('dataParser',[function(){

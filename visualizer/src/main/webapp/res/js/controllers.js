@@ -91,7 +91,15 @@ controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerCo
     var drawGraph = function(params){
         restApiClient.requestTimes(params)
             .success(function(data){
-                canvasJsService.drawRequestTime("graph",data);
+                var chart = canvasJsService.drawRequestTime("graph",data);
+                chart.options.rangeChanged = function(event){
+                    //update graph
+                    var params = {
+                        startTimestamp: Math.round(Math.floor(event.axisX.viewportMinimum)),
+                        endTimestamp: Math.round(Math.ceil(event.axisX.viewportMaximum))
+                    };
+                    drawGraph(params);
+                }
             })
             .error(function(message){
                 alert(message);
@@ -169,7 +177,15 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
                     data[i].max /= 1024;
                 }
                 // canvasJsService.drawAppMemoryUsageDetail("graphAppMemUsage",data);
-                canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
+                var chart = canvasJsService.drawMemoryPoolUsage("graphMemPoolUsage",data,memSpaceKeys);
+                chart.options.rangeChanged = function(event){
+                    //update graph
+                    var params = {
+                        startTimestamp: Math.round(Math.floor(event.axisX.viewportMinimum)),
+                        endTimestamp: Math.round(Math.ceil(event.axisX.viewportMaximum))
+                    };
+                    drawGraph(params);
+                }
             }).error(function(message){ alert(message);});
         //draw cpu
         restApiClient.cpuSys(par)
@@ -181,7 +197,15 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
                     }
                     data[i].load *= 100.0;
                 }
-                canvasJsService.drawCpuUsage("graphCpuUsage",data);
+                var chart = canvasJsService.drawCpuUsage("graphCpuUsage",data);
+                chart.options.rangeChanged = function(event){
+                    //update graph
+                    var params = {
+                        startTimestamp: Math.round(Math.floor(event.axisX.viewportMinimum)),
+                        endTimestamp: Math.round(Math.ceil(event.axisX.viewportMaximum))
+                    };
+                    drawGraph(params);
+                }
             }).error(function(message){ alert(message); });
         restApiClient.urlMostMemoryConsuming(par)
             .success(function(data){
