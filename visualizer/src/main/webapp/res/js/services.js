@@ -15,6 +15,9 @@ app.factory('visualizerConfig',function(){
      */
     var offsetVisualizerUrlDetail = 1000;
 
+    var demoStartTimestamp = 1461498627000;
+    var demoEndTimestamp = 1461498927000;
+
     var memoryPools= [{name : "PS Eden Space", type : "heap"},
         {name : "PS Survivor Space", type : "heap"},
         {name : "PS Old Gen", type: "heap"},
@@ -23,6 +26,8 @@ app.factory('visualizerConfig',function(){
         {name : "Compressed Class Space", type: "non_heap"}];
 
     return {
+        DEMO_START_TIMESTAMP: demoStartTimestamp,
+        DEMO_END_TIMESTAMP: demoEndTimestamp,
         VISUALIZER_MINUTES_INTERVAL: visualizerMinutesInterval,
         MEMORY_POOL_KEYS: memoryPools,
         OFFSET_VISUALIZER_URL_DETAIL: offsetVisualizerUrlDetail,
