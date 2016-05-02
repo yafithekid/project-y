@@ -12,7 +12,7 @@ public class CollectorClient
     public void connect()
     {
         String serverName = "127.0.0.1";
-        int port = Collector.DEFAULT_PORT;
+        int port = SocketCollector.DEFAULT_PORT;
         try
         {
             System.out.println("Connecting to " + serverName +
