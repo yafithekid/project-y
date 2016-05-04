@@ -2,60 +2,33 @@ package com.github.yafithekid.project_y.agent.daemons;
 
 import com.github.yafithekid.project_y.commons.config.Config;
 
-import java.io.*;
-import java.net.Socket;
+import java.io.IOException;
+import java.net.*;
 
 public class HardwareDaemonWriterCollectorImpl implements HardwareDaemonWriter {
-    static final char SEPARATOR = '#';
-    String mCollectorHost;
-    boolean flushOutput;
-    int mCollectorPort;
-//    private ThreadLocal<Socket> mSocket;
-    private ThreadLocal<BufferedWriter> mDataOutputStream;
+    private Config config;
+    private DatagramSocket datagramSocket;
+    private static String suffix = "#";
 
-    public HardwareDaemonWriterCollectorImpl(Config config) throws IOException{
-        mCollectorHost = config.getCollector().getHost();
-        mCollectorPort = config.getCollector().getPort();
-        flushOutput = config.getAgentConfig().isFlushOutput();
-//        mSocket = new ThreadLocal<Socket>(){
-//            @Override
-//            protected Socket initialValue() {
-//                try {
-//                    return new Socket(mCollectorHost,mCollectorPort);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return null;
-//                }
-//            }
-//        };
-        Socket socket = new Socket(mCollectorHost,mCollectorPort);
-        OutputStream out = socket.getOutputStream();
-        mDataOutputStream = new ThreadLocal<BufferedWriter>(){
-            @Override
-            protected BufferedWriter initialValue() {
-                return new BufferedWriter(new OutputStreamWriter(out));
-            }
-        };
+    public HardwareDaemonWriterCollectorImpl(Config config) throws SocketException {
+        this.config = config;
+        this.datagramSocket = new DatagramSocket();
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
-    public void write(String data){
-        OutputStream outToServer;
+    public void write(String data) {
+        if (!data.endsWith(suffix)){
+            data += suffix;
+        }
+        byte[] sendData;
+        sendData = data.getBytes();
+        SocketAddress socketAddress = new InetSocketAddress(config.getCollector().getHost(),config.getCollector().getPort());
+        DatagramPacket datagramPacket = new DatagramPacket(sendData,sendData.length,socketAddress);
         try {
-//            outToServer = mSocket.get().getOutputStream();
-//            if (!(data).endsWith("\n")) { data += "\n"; }
-//            DataOutputStream out = new java.io.DataOutputStream(outToServer);
-//            System.out.println(data);
-            mDataOutputStream.get().write(data+SEPARATOR);
-            mDataOutputStream.get().newLine();
-            if (flushOutput){
-                mDataOutputStream.get().flush();
-            }
-//            out.writeUTF(data);
+            datagramSocket.send(datagramPacket);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }

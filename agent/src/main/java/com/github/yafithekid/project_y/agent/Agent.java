@@ -1,10 +1,7 @@
 package com.github.yafithekid.project_y.agent;
 
 
-import com.github.yafithekid.project_y.agent.daemons.HardwareDaemon;
-import com.github.yafithekid.project_y.agent.daemons.HardwareDaemonWriter;
-import com.github.yafithekid.project_y.agent.daemons.HardwareDaemonWriterCollectorImpl;
-import com.github.yafithekid.project_y.agent.daemons.HardwareDaemonWriterMockImpl;
+import com.github.yafithekid.project_y.agent.daemons.*;
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.ResourceMonitor;
 import com.sun.management.GarbageCollectionNotificationInfo;
@@ -13,14 +10,11 @@ import javax.management.Notification;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeData;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.util.*;
 

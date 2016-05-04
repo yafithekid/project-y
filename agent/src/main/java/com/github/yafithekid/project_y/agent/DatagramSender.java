@@ -9,9 +9,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.*;
 
-/**
- * Created by yafi on 02-May-16.
- */
 public class DatagramSender extends SenderTrait implements SendToCollector {
     DatagramSocket datagramSocket;
     Config config;
