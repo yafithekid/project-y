@@ -18,6 +18,7 @@ public class DatagramConnectionHandler extends Thread {
     public DatagramConnectionHandler(String data,List<ProfilingWriter> profilingWriters){
         this.data = data;
         this.mProfilingWriters = profilingWriters;
+        mGson = new Gson();
     }
 
     @Override

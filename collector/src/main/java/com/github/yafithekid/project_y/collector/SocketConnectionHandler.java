@@ -16,13 +16,13 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 
-public class ConnectionHandler extends Thread{
+public class SocketConnectionHandler extends Thread{
     static final String SEPARATOR = "#";
     private Socket mSocket;
     private List<ProfilingWriter> mProfilingWriters;
     private Gson mGson;
 
-    public ConnectionHandler(Socket socket, List<ProfilingWriter> profilingWriters){
+    public SocketConnectionHandler(Socket socket, List<ProfilingWriter> profilingWriters){
         this.mSocket = socket;
         this.mProfilingWriters = profilingWriters;
         mGson = new Gson();

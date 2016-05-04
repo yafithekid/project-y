@@ -31,8 +31,8 @@ public class Main {
         }
 
         try {
-            collector = new SocketCollector(SocketCollector.DEFAULT_PORT,profilingWriters);
-//            collector = new DatagramCollector(SocketCollector.DEFAULT_PORT,profilingWriters);
+//            collector = new SocketCollector(SocketCollector.DEFAULT_PORT,profilingWriters);
+            collector = new DatagramCollector(SocketCollector.DEFAULT_PORT,profilingWriters);
             collector.run();
         } catch (IOException e) {
             System.out.println("[ERROR] Cannot start collector!");

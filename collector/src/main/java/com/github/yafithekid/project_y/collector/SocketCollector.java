@@ -1,7 +1,6 @@
 package com.github.yafithekid.project_y.collector;
 
 import com.github.yafithekid.project_y.collector.services.ProfilingWriter;
-import org.mongodb.morphia.mapping.lazy.proxy.CollectionObjectReference;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -30,7 +29,7 @@ public class SocketCollector implements Collector{
                 Socket server = mServerSocket.accept();
                 System.out.println("Just connected to "
                         + server.getRemoteSocketAddress());
-                Thread t = new ConnectionHandler(server,mProfilingWriters);
+                Thread t = new SocketConnectionHandler(server,mProfilingWriters);
                 t.start();
             } catch(SocketTimeoutException s)
             {
