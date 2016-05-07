@@ -186,8 +186,8 @@ app.factory('mockData',function(){
 
 });
 app.service('canvasJsService',['dataParser',function(dataParser){
-    this.drawCpuUsage = function(htmlId,cpuData){
-        var dataPointsContainer = dataParser.parseCPUUsage(cpuData);
+    this.drawCpuUsage = function(htmlId,cpuData,appCpuUsageData){
+        var dataPointsContainer = dataParser.parseCPUUsage(cpuData,appCpuUsageData);
         var chart = new CanvasJS.Chart(htmlId,
             {
                 zoomEnabled: true,
@@ -214,11 +214,19 @@ app.service('canvasJsService',['dataParser',function(dataParser){
 
                 data: [
                     {
+                        name:"Java CPU",
+                        showInLegend:true,
+                        legendMarkerType:"circle",
+                        type:"stackedArea",
+                        color: "rgba(211,19,14,.8)",
+                        markerSize: 0,
+                        dataPoints: dataPointsContainer.appCpu
+                    },{
                         name: "cpu",
                         showInLegend: true,
                         legendMarkerType: "square",
                         type: "stackedArea",
-                        color :"rgba(211,19,14,.8)",
+                        color :"rgba(22,115,211,.8)",
                         markerSize: 0,
                         dataPoints: dataPointsContainer.cpu
                     }
@@ -607,10 +615,16 @@ app.service('dataParser',[function(){
         return dataPointsContainer;
     };
 
-    var parseCPUUsage = function(cpuData){
-        var dataPointsContainer = {"cpu":[]};
+    var parseCPUUsage = function(cpuData,appCpuData){
+        var dataPointsContainer = {"cpu":[],"appCpu":[]};
+        var appCpuLoads = {};
+        appCpuData.forEach(function(datum){
+            dataPointsContainer.appCpu.push({x: new Date(datum.timestamp),y:datum.load});
+            appCpuLoads[datum.timestamp] = datum.load;
+        });
+
         cpuData.forEach(function(datum){
-            dataPointsContainer.cpu.push({x: new Date(datum.timestamp), y: datum.load})
+            dataPointsContainer.cpu.push({x: new Date(datum.timestamp), y: datum.load - appCpuLoads[datum.timestamp]});
         });
         return dataPointsContainer;
     };

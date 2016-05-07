@@ -2,6 +2,7 @@ package com.github.yafithekid.project_y.visualizer.controllers;
 
 import com.github.yafithekid.project_y.commons.config.Config;
 import com.github.yafithekid.project_y.commons.config.MongoHandler;
+import com.github.yafithekid.project_y.db.daos.AppCPUUsageDao;
 import com.github.yafithekid.project_y.db.daos.MethodCallDao;
 import com.github.yafithekid.project_y.db.daos.SystemCPUUsageDao;
 import com.github.yafithekid.project_y.db.models.*;
@@ -28,6 +29,7 @@ public class ApiController {
 
     private SystemCPUUsageDao systemCPUUsageDao;
     private MethodCallDao methodCallDao;
+    private AppCPUUsageDao appCPUUsageDao;
 
     public ApiController () throws FileNotFoundException {
         if (config == null){
@@ -40,6 +42,7 @@ public class ApiController {
         DaoFactory daoFactory = new DaoFactory(morphiaFactory,DaoFactory.MONGO_DB);
         systemCPUUsageDao = daoFactory.createSystemCPUUsageDao();
         methodCallDao = daoFactory.createMethodCallDao();
+        appCPUUsageDao = daoFactory.createAppCPUUsageDao();
     }
 
     @RequestMapping("/urls")
@@ -164,11 +167,7 @@ public class ApiController {
             @RequestParam(name = "startTimestamp") long startTimestamp,
             @RequestParam(name = "endTimestamp") long endTimestamp
     ){
-        return datastore.find(AppCPUUsage.class)
-                .field("timestamp").lessThanOrEq(endTimestamp)
-                .field("timestamp").greaterThanOrEq(startTimestamp)
-                .order("-timestamp")
-                .asList();
+        return appCPUUsageDao.getWithinTimestamp(startTimestamp,endTimestamp);
     }
 
     @RequestMapping("/cpus/sys")

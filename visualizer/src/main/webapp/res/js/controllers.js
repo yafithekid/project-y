@@ -196,25 +196,35 @@ controllers.controller('resourceCtrl',['restApiClient','canvasJsService','$scope
                     drawGraph(params);
                 }
             }).error(function(message){ alert(message);});
+        var cpuApps = restApiClient.cpuApps(par);
         //draw cpu
         restApiClient.cpuSys(par)
-            .success(function(data){
+            .success(function(sysCpuData){
                 //scale to 100%
-                for(var i = 0; i < data.length; i++){
-                    if (data[i].load < 0.0){
-                        data[i].load = 0.0;
+                for(var i = 0; i < sysCpuData.length; i++){
+                    if (sysCpuData[i].load < 0.0){
+                        sysCpuData[i].load = 0.0;
                     }
-                    data[i].load *= 100.0;
+                    sysCpuData[i].load *= 100.0;
                 }
-                var chart = canvasJsService.drawCpuUsage("graphCpuUsage",data);
-                chart.options.rangeChanged = function(event){
-                    //update graph
-                    var params = {
-                        startTimestamp: Math.round(Math.floor(event.axisX.viewportMinimum)),
-                        endTimestamp: Math.round(Math.ceil(event.axisX.viewportMaximum))
-                    };
-                    drawGraph(params);
-                }
+                cpuApps.success(function(appCpuData){
+                    for(var i = 0; i < appCpuData.length;i++){
+                        if (appCpuData[i].load < 0.0){
+                            appCpuData[i].load = 0.0;
+                        }
+                        appCpuData[i].load *= 100.0;
+                        console.log(appCpuData[i].load);
+                    }
+                    var chart = canvasJsService.drawCpuUsage("graphCpuUsage",sysCpuData,appCpuData);
+                    chart.options.rangeChanged = function(event){
+                        //update graph
+                        var params = {
+                            startTimestamp: Math.round(Math.floor(event.axisX.viewportMinimum)),
+                            endTimestamp: Math.round(Math.ceil(event.axisX.viewportMaximum))
+                        };
+                        drawGraph(params);
+                    }
+                });
             }).error(function(message){ alert(message); });
         restApiClient.urlMostMemoryConsuming(par)
             .success(function(data){
