@@ -29,10 +29,12 @@ public interface MethodCallDao {
     /**
      * Get all http request that has undefined max memory in its field
      * @return list of method call
+     * @param startTimestamp
+     * @param endTimestamp
      */
-    List<MethodCall> getUndefinedMaxMemoryHTTPRequest();
+    List<MethodCall> getUndefinedMaxMemoryHTTPRequest(long startTimestamp, long endTimestamp);
 
-    List<MethodCall> getUndefinedCPUUsageHTTPRequest();
+    List<MethodCall> getUndefinedCPUUsageHTTPRequest(long startTimestamp, long endTimestamp);
 
     MethodCall findMethodById(String id);
 }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 @RestController
@@ -45,8 +44,6 @@ public class ApiController {
 
     @RequestMapping("/urls")
     public List<MethodCall> getUrls() {
-        updateMaxMemory();
-        updateCpuUsage();
         return datastore.find(MethodCall.class)
                 .field("url").exists()
                 .order("-start")
@@ -59,8 +56,8 @@ public class ApiController {
             @RequestParam("startTimestamp") long startTimestamp,
             @RequestParam("endTimestamp") long endTimestamp
     ){
-        updateMaxMemory();
-        updateCpuUsage();
+        updateMaxMemory(startTimestamp,endTimestamp);
+        updateCpuUsage(startTimestamp,endTimestamp);
         return methodCallDao.getMostConsumingMemoryHTTPRequest(startTimestamp,endTimestamp);
     }
 
@@ -139,12 +136,14 @@ public class ApiController {
     @RequestMapping("/methods/{id}")
     public ResponseEntity<MethodCall> getMethodById(
             @PathVariable("id") String id){
-        updateCpuUsage();
-        updateMaxMemory();
         MethodCall mc = methodCallDao.findMethodById(id);
         if (mc == null){
             return new ResponseEntity<MethodCall>(new MethodCall(),HttpStatus.NOT_FOUND);
         } else {
+            updateCpuUsage(mc.getStart(),mc.getEnd());
+            updateMaxMemory(mc.getStart(),mc.getEnd());
+            //once again call the database for updated result
+            mc = methodCallDao.findMethodById(id);
             return new ResponseEntity<MethodCall>(mc,HttpStatus.OK);
         }
     }
@@ -232,8 +231,8 @@ public class ApiController {
 
     }
 
-    void updateCpuUsage(){
-        List<MethodCall> httpRequests = methodCallDao.getUndefinedCPUUsageHTTPRequest();
+    void updateCpuUsage(long startTimestamp, long endTimestamp){
+        List<MethodCall> httpRequests = methodCallDao.getUndefinedCPUUsageHTTPRequest(startTimestamp,endTimestamp);
         if (httpRequests != null){
             for (MethodCall httpReq: httpRequests){
                 List<SystemCPUUsage> cpus = systemCPUUsageDao.getNearTimestamp(httpReq.getStart(), httpReq.getEnd());
@@ -248,9 +247,9 @@ public class ApiController {
         }
     }
 
-    void updateMaxMemory(){
+    void updateMaxMemory(long startTimestamp, long endTimestamp){
         //update all method call http request that has undefined max memory usage
-        List<MethodCall> httpRequests = methodCallDao.getUndefinedMaxMemoryHTTPRequest();
+        List<MethodCall> httpRequests = methodCallDao.getUndefinedMaxMemoryHTTPRequest(startTimestamp,endTimestamp );
         if (httpRequests != null){
             for(MethodCall httpReq:httpRequests){
                 List<MethodCall> chaineds = methodCallDao

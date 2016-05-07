@@ -48,17 +48,21 @@ public class MethodCallDaoImpl implements MethodCallDao {
     }
 
     @Override
-    public List<MethodCall> getUndefinedMaxMemoryHTTPRequest() {
+    public List<MethodCall> getUndefinedMaxMemoryHTTPRequest(long startTimestamp, long endTimestamp) {
         return datastore.find(MethodCall.class)
                 .field("isReqHandler").equal(true)
                 .field("maxMemory").equal(MethodCall.UNDEFINED_MAX_MEMORY)
+                .field("start").greaterThanOrEq(startTimestamp)
+                .field("end").lessThanOrEq(endTimestamp)
                 .asList();
     }
 
     @Override
-    public List<MethodCall> getUndefinedCPUUsageHTTPRequest() {
+    public List<MethodCall> getUndefinedCPUUsageHTTPRequest(long startTimestamp, long endTimestamp) {
         return datastore.find(MethodCall.class)
                 .field("isReqHandler").equal(true)
+                .field("start").greaterThanOrEq(startTimestamp)
+                .field("end").lessThanOrEq(endTimestamp)
                 .field("avgCpu").lessThan(-0.000000001).asList();
     }
 
