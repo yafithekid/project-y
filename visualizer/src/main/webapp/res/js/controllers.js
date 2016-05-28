@@ -86,11 +86,11 @@ controllers.controller('requestTimeCtrl',['$scope','restApiClient','visualizerCo
     var d = new Date();
 
     //buat demo
-    $scope.endTimestamp = $filter('date')(new Date(visualizerConfig.DEMO_END_TIMESTAMP),visualizerConfig.DATETIME_FORMAT);
-    $scope.startTimestamp = $filter('date')(new Date(visualizerConfig.DEMO_START_TIMESTAMP),visualizerConfig.DATETIME_FORMAT);
+    // $scope.endTimestamp = $filter('date')(new Date(visualizerConfig.DEMO_END_TIMESTAMP),visualizerConfig.DATETIME_FORMAT);
+    // $scope.startTimestamp = $filter('date')(new Date(visualizerConfig.DEMO_START_TIMESTAMP),visualizerConfig.DATETIME_FORMAT);
     //yang bener
-    //$scope.endTimestamp = $filter('date')(d,visualizerConfig.DATETIME_FORMAT);
-    //$scope.startTimestamp = $filter('date')(new Date(d.getTime()  - (visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 * 1000)),visualizerConfig.DATETIME_FORMAT);
+    $scope.endTimestamp = $filter('date')(d,visualizerConfig.DATETIME_FORMAT);
+    $scope.startTimestamp = $filter('date')(new Date(d.getTime()  - (visualizerConfig.VISUALIZER_MINUTES_INTERVAL * 60 * 1000)),visualizerConfig.DATETIME_FORMAT);
     $scope.data = [];
 
     var drawGraph = function(params){
