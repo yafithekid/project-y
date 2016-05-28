@@ -5,6 +5,8 @@ package com.github.yafithekid.project_y.example_scala
   */
 object Main {
   def main(args: Array[String]): Unit ={
+    val a = new A()
+    a.methodA()
     println("Hello world")
   }
 }

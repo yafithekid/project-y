@@ -19,22 +19,22 @@ public class Main {
 //        System.out.println(tReturn.returnString());
 //        tReturn.returnVoid();
         Gson gson = new Gson();
-        URL url = null;
-        try {
-            url = new URL("http://baconipsum.com/api/?type=all-meat");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer result = new StringBuffer();
-            while ((inputLine = in.readLine())!= null){
-                result.append(inputLine);
-            }
-            in.close();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        URL url = null;
+//        try {
+//            url = new URL("http://baconipsum.com/api/?type=all-meat");
+//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//            String inputLine;
+//            StringBuffer result = new StringBuffer();
+//            while ((inputLine = in.readLine())!= null){
+//                result.append(inputLine);
+//            }
+//            in.close();
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         AbsService absService = new AbsServiceImpl();
         AbsServiceImpl absServiceImpl = new AbsServiceImpl();

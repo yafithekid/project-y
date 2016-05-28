@@ -113,6 +113,34 @@
       "methods": [
         {"name":"findByLastName"}
       ]
+    },
+    {
+      "name": "com.github.yafithekid.project_y.example.Main",
+      "methods": [
+        {"name":"main"}
+      ]
+    },
+    {
+      "name": "com.github.yafithekid.project_y.example_scala.Main",
+      "methods": [
+        {"name":"main"}
+      ]
+    },
+    {
+      "name": "com.github.yafithekid.project_y.example_scala.A",
+      "methods": [
+        {"name":"methodA"}
+      ]
+    },
+    {
+      "name": "com.github.yafithekid.project_y.example.AbsServiceImpl",
+      "methods": [
+        { "name": "overrideWithSuper"},
+        { "name": "overrideNoSuper"},
+        { "name": "foo"},
+        { "name": "staticVoid"},
+        { "name": "staticInt"}
+      ]
     }
   ],
   "collector" : {
