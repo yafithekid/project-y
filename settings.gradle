@@ -1,3 +1,4 @@
 include ':commons',':example',':agent',':collector', ':example-spring', ':example-scala', ':visualizer', ':db'
 include 'example-groovy'
+include 'example-java'
 
