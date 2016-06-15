@@ -133,6 +133,12 @@
       ]
     },
     {
+      "name": "com.github.yafithekid.project_y.example_java.Main",
+      "methods": [
+        {"name":"main"}
+      ]
+    },
+    {
       "name": "com.github.yafithekid.project_y.example.AbsServiceImpl",
       "methods": [
         { "name": "overrideWithSuper"},
@@ -157,13 +163,13 @@
     "debug": false
   },
   "resourceMonitor" : {
-    "active": true,
-    "sendToCollector": true,
+    "active": false,
+    "sendToCollector": false,
     "collectRateMillis": 1000,
     "debug": false
   },
   "agentConfig": {
-    "debug": false,
+    "debug": true,
     "flushOutput": true,
     "errorAction": {
       "isInterface": "continue",

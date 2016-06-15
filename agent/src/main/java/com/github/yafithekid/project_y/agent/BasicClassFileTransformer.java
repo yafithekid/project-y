@@ -189,6 +189,9 @@ public class BasicClassFileTransformer implements ClassFileTransformer {
 //                "com.github.yafithekid.project_y.agent.Sender.getInstance().send("+data+");" +
 //                "com.github.yafithekid.project_y.agent.Sender.get().send("+data+");" +
                 "}");
+        if (mConfig.getAgentConfig().isDebug()){
+            m.insertAfter("System.out.println(\"Method "+cc.getName()+"#"+m.getName()+" executed in \"+(__endTime - __startTime)+\"ms\");");
+        }
     }
 
 //    void insertDataCollect(CtClass cc,CtMethod m,MonitoredMethod mm) throws CannotCompileException {
