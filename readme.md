@@ -1,6 +1,20 @@
 # JVM-Based Web Profiling Tools with Javassist
 
-This project is about a profiling tools with [bytecode instrumentation](https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/Instrumentation.html).
+This project is about a profiling tools with [bytecode instrumentation](https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/Instrumentation.html). With bytecode instrumentation you can alter the content of a JAR/WAR file by modifying the loaded class files in the JVM.
+
+## Features
+
+Measure the memory and CPU usage of running Java web application
+
+![running apps](https://raw.githubusercontent.com/yafithekid/project-y/master/images/metinv.jpg)
+
+Measure the response time of HTTP request
+
+![response time](https://raw.githubusercontent.com/yafithekid/project-y/master/images/responsetime.jpg)
+
+Know the execution time and object size returned from a method
+
+![method invocation chain](https://raw.githubusercontent.com/yafithekid/project-y/master/images/chain.png)
  
 ## How to build or clean
 
@@ -27,3 +41,6 @@ The profiling tools contains five modules:
 5. [Instrumenting a web application with Tomcat Servlet Container]()
 6. [Visualize the result with visualizer]()
 
+## Acknowledgement
+
+Thanks to Riza Satria Perdana, S.T., M.T. and Yudistira Dwi Wardhana Asnar, S.T. Ph.D as my supervisor of thesis project
