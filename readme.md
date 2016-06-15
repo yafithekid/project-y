@@ -36,10 +36,9 @@ The profiling tools contains five modules:
 
 1. [First setup - Instrumenting a JAR](https://github.com/yafithekid/project-y/wiki/first-setup)
 2. [Running the hardware monitoring thread](https://github.com/yafithekid/project-y/wiki/hardware-monitoring-thread)
-3. [Send the data to collector]()
-4. [Save the data with MongoDB]()
-5. [Instrumenting a web application with Tomcat Servlet Container]()
-6. [Visualize the result with visualizer]()
+3. [Send the data to collector](https://github.com/yafithekid/project-y/wiki/send-to-collector)
+4. [TODO - Instrumenting a web application with Tomcat Servlet Container]()
+5. [TODO - Visualize the result with visualizer]()
 
 ## Acknowledgement
 
